@@ -1,0 +1,639 @@
+{
+  "metadata": {
+    "title": "Ownership calculator reference cases",
+    "createdAt": "2026-09-13T20:55:10.302939+00:00",
+    "currency": "CAD",
+    "kind": "computed reference inputs, not observed properties or market quotes",
+    "sourceFactsAsset": "calgary-ownership-facts.json",
+    "method": "60-digit Python Decimal. Monthly payment is principal divided by an explicit sum of discounted payments; balances use a month-by-month recurrence. Compared with the closed form independently.",
+    "rounding": "Round half-up to cents for display. Carry unrounded payment and interest through amortization. Contractual lender rounding can cause small differences.",
+    "comparisonTolerance": {
+      "displayCurrency": 0.01,
+      "unroundedPayment": 1e-6,
+      "effectiveMonthlyRate": 1e-12
+    },
+    "scope": "Canadian fixed nominal annual rate compounded semiannually; monthly payments. Mortgage rates are case inputs, not current offers."
+  },
+  "mortgageCases": [
+    {
+      "id": "600k-20pct-5pct-25yr",
+      "inputs": {
+        "purchasePrice": 600000.0,
+        "downPayment": 120000.0,
+        "nominalAnnualRate": 0.05,
+        "amortizationYears": 25,
+        "financedPremium": 0.0,
+        "paymentsElapsed": 60
+      },
+      "expected": {
+        "principal": 480000.0,
+        "effectiveMonthlyRateExact": "0.004123915465144271",
+        "monthlyPayment": 2791.7,
+        "monthlyPaymentExact": "2791.703928177686704841",
+        "balanceAfterElapsedPayments": 424836.03,
+        "interestDuringElapsedPayments": 112338.27,
+        "principalRepaidDuringElapsedPayments": 55163.97
+      }
+    },
+    {
+      "id": "600k-20pct-zero-rate-25yr",
+      "inputs": {
+        "purchasePrice": 600000.0,
+        "downPayment": 120000.0,
+        "nominalAnnualRate": 0.0,
+        "amortizationYears": 25,
+        "financedPremium": 0.0,
+        "paymentsElapsed": 60
+      },
+      "expected": {
+        "principal": 480000.0,
+        "effectiveMonthlyRateExact": "0.000000000000000000",
+        "monthlyPayment": 1600.0,
+        "monthlyPaymentExact": "1600.000000000000000000",
+        "balanceAfterElapsedPayments": 384000.0,
+        "interestDuringElapsedPayments": 0.0,
+        "principalRepaidDuringElapsedPayments": 96000.0
+      }
+    },
+    {
+      "id": "600k-min-down-insured-25yr",
+      "inputs": {
+        "purchasePrice": 600000.0,
+        "downPayment": 35000.0,
+        "nominalAnnualRate": 0.05,
+        "amortizationYears": 25,
+        "financedPremium": 22600.0,
+        "paymentsElapsed": 60
+      },
+      "expected": {
+        "principal": 587600.0,
+        "effectiveMonthlyRateExact": "0.004123915465144271",
+        "monthlyPayment": 3417.51,
+        "monthlyPaymentExact": "3417.510892077518141177",
+        "balanceAfterElapsedPayments": 520070.11,
+        "interestDuringElapsedPayments": 137520.77,
+        "principalRepaidDuringElapsedPayments": 67529.89
+      }
+    },
+    {
+      "id": "600k-min-down-home-start-30yr",
+      "inputs": {
+        "purchasePrice": 600000.0,
+        "downPayment": 35000.0,
+        "nominalAnnualRate": 0.05,
+        "amortizationYears": 30,
+        "financedPremium": 23730.0,
+        "paymentsElapsed": 60
+      },
+      "expected": {
+        "principal": 588730.0,
+        "effectiveMonthlyRateExact": "0.004123915465144271",
+        "monthlyPayment": 3142.0,
+        "monthlyPaymentExact": "3141.997133350802402535",
+        "balanceAfterElapsedPayments": 540228.71,
+        "interestDuringElapsedPayments": 140018.54,
+        "principalRepaidDuringElapsedPayments": 48501.29
+      }
+    }
+  ],
+  "minimumDownPaymentCases": [
+    {
+      "id": "price-499999",
+      "purchasePrice": 499999.0,
+      "expectedMinimumDownPayment": 24999.95,
+      "insuredPriceEligible": true
+    },
+    {
+      "id": "price-500000",
+      "purchasePrice": 500000.0,
+      "expectedMinimumDownPayment": 25000.0,
+      "insuredPriceEligible": true
+    },
+    {
+      "id": "price-500001",
+      "purchasePrice": 500001.0,
+      "expectedMinimumDownPayment": 25000.1,
+      "insuredPriceEligible": true
+    },
+    {
+      "id": "price-1499999",
+      "purchasePrice": 1499999.0,
+      "expectedMinimumDownPayment": 124999.9,
+      "insuredPriceEligible": true
+    },
+    {
+      "id": "price-1500000",
+      "purchasePrice": 1500000.0,
+      "expectedMinimumDownPayment": 300000.0,
+      "insuredPriceEligible": false
+    },
+    {
+      "id": "price-1500001",
+      "purchasePrice": 1500001.0,
+      "expectedMinimumDownPayment": 300000.2,
+      "insuredPriceEligible": false
+    }
+  ],
+  "insuranceCases": [
+    {
+      "id": "600k-down-120000-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 120000.0,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 480000.0,
+        "ltvExact": "0.800000000000000000",
+        "premiumRate": 0.0,
+        "premiumBeforeRoundingExact": "0.000000000000000000",
+        "premium": 0.0,
+        "financedPrincipal": 480000.0
+      }
+    },
+    {
+      "id": "600k-down-120000-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 120000.0,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 480000.0,
+        "ltvExact": "0.800000000000000000",
+        "premiumRate": 0.0,
+        "premiumBeforeRoundingExact": "0.000000000000000000",
+        "premium": 0.0,
+        "financedPrincipal": 480000.0
+      }
+    },
+    {
+      "id": "600k-down-119999.99-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 119999.99,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 480000.01,
+        "ltvExact": "0.800000016666666667",
+        "premiumRate": 0.028,
+        "premiumBeforeRoundingExact": "13440.000280000000000000",
+        "premium": 13440.0,
+        "financedPrincipal": 493440.01
+      }
+    },
+    {
+      "id": "600k-down-119999.99-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 119999.99,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 480000.01,
+        "ltvExact": "0.800000016666666667",
+        "premiumRate": 0.03,
+        "premiumBeforeRoundingExact": "14400.000300000000000000",
+        "premium": 14400.0,
+        "financedPrincipal": 494400.01
+      }
+    },
+    {
+      "id": "600k-down-90000-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 90000.0,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 510000.0,
+        "ltvExact": "0.850000000000000000",
+        "premiumRate": 0.028,
+        "premiumBeforeRoundingExact": "14280.000000000000000000",
+        "premium": 14280.0,
+        "financedPrincipal": 524280.0
+      }
+    },
+    {
+      "id": "600k-down-90000-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 90000.0,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 510000.0,
+        "ltvExact": "0.850000000000000000",
+        "premiumRate": 0.03,
+        "premiumBeforeRoundingExact": "15300.000000000000000000",
+        "premium": 15300.0,
+        "financedPrincipal": 525300.0
+      }
+    },
+    {
+      "id": "600k-down-89999.99-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 89999.99,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 510000.01,
+        "ltvExact": "0.850000016666666667",
+        "premiumRate": 0.031,
+        "premiumBeforeRoundingExact": "15810.000310000000000000",
+        "premium": 15810.0,
+        "financedPrincipal": 525810.01
+      }
+    },
+    {
+      "id": "600k-down-89999.99-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 89999.99,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 510000.01,
+        "ltvExact": "0.850000016666666667",
+        "premiumRate": 0.033,
+        "premiumBeforeRoundingExact": "16830.000330000000000000",
+        "premium": 16830.0,
+        "financedPrincipal": 526830.01
+      }
+    },
+    {
+      "id": "600k-down-60000-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 60000.0,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 540000.0,
+        "ltvExact": "0.900000000000000000",
+        "premiumRate": 0.031,
+        "premiumBeforeRoundingExact": "16740.000000000000000000",
+        "premium": 16740.0,
+        "financedPrincipal": 556740.0
+      }
+    },
+    {
+      "id": "600k-down-60000-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 60000.0,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 540000.0,
+        "ltvExact": "0.900000000000000000",
+        "premiumRate": 0.033,
+        "premiumBeforeRoundingExact": "17820.000000000000000000",
+        "premium": 17820.0,
+        "financedPrincipal": 557820.0
+      }
+    },
+    {
+      "id": "600k-down-59999.99-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 59999.99,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 540000.01,
+        "ltvExact": "0.900000016666666667",
+        "premiumRate": 0.04,
+        "premiumBeforeRoundingExact": "21600.000400000000000000",
+        "premium": 21600.0,
+        "financedPrincipal": 561600.01
+      }
+    },
+    {
+      "id": "600k-down-59999.99-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 59999.99,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 540000.01,
+        "ltvExact": "0.900000016666666667",
+        "premiumRate": 0.042,
+        "premiumBeforeRoundingExact": "22680.000420000000000000",
+        "premium": 22680.0,
+        "financedPrincipal": 562680.01
+      }
+    },
+    {
+      "id": "600k-down-35000-25yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 35000.0,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 565000.0,
+        "ltvExact": "0.941666666666666667",
+        "premiumRate": 0.04,
+        "premiumBeforeRoundingExact": "22600.000000000000000000",
+        "premium": 22600.0,
+        "financedPrincipal": 587600.0
+      }
+    },
+    {
+      "id": "600k-down-35000-30yr",
+      "inputs": {
+        "price": 600000.0,
+        "downPayment": 35000.0,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 35000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 565000.0,
+        "ltvExact": "0.941666666666666667",
+        "premiumRate": 0.042,
+        "premiumBeforeRoundingExact": "23730.000000000000000000",
+        "premium": 23730.0,
+        "financedPrincipal": 588730.0
+      }
+    },
+    {
+      "id": "500k-95pct-ltv-25yr",
+      "inputs": {
+        "price": 500000.0,
+        "downPayment": 25000.0,
+        "amortizationYears": 25,
+        "qualifiedHomeStart": false
+      },
+      "expected": {
+        "minimumDownPayment": 25000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 475000.0,
+        "ltvExact": "0.950000000000000000",
+        "premiumRate": 0.04,
+        "premiumBeforeRoundingExact": "19000.000000000000000000",
+        "premium": 19000.0,
+        "financedPrincipal": 494000.0
+      }
+    },
+    {
+      "id": "500k-95pct-ltv-30yr",
+      "inputs": {
+        "price": 500000.0,
+        "downPayment": 25000.0,
+        "amortizationYears": 30,
+        "qualifiedHomeStart": true
+      },
+      "expected": {
+        "minimumDownPayment": 25000.0,
+        "meetsMinimumDownPayment": true,
+        "baseLoan": 475000.0,
+        "ltvExact": "0.950000000000000000",
+        "premiumRate": 0.042,
+        "premiumBeforeRoundingExact": "19950.000000000000000000",
+        "premium": 19950.0,
+        "financedPrincipal": 494950.0
+      }
+    }
+  ],
+  "validationCases": [
+    {
+      "id": "600k-down-30k-too-low",
+      "inputs": { "price": 600000, "downPayment": 30000 },
+      "expected": {
+        "valid": false,
+        "reason": "Below $35,000 minimum down payment for this standard purchase scope."
+      }
+    },
+    {
+      "id": "1_5m-down-10pct",
+      "inputs": { "price": 1500000, "downPayment": 150000 },
+      "expected": {
+        "valid": false,
+        "reason": "At $1.5 million, minimum down payment is 20%; insured purchase limit is strictly below $1.5 million."
+      }
+    },
+    {
+      "id": "insured-30yr-not-qualified",
+      "inputs": {
+        "amortizationYears": 30,
+        "highRatio": true,
+        "firstTimeBuyer": false,
+        "newlyBuilt": false
+      },
+      "expected": {
+        "valid": false,
+        "reason": "Cannot present the qualified Home Start 30-year illustration as available without qualifying first-time-buyer or new-build status."
+      }
+    },
+    {
+      "id": "cash-purchase",
+      "inputs": { "price": 600000, "downPayment": 600000 },
+      "expected": {
+        "monthlyMortgage": 0,
+        "defaultInsurance": 0,
+        "newMortgageRegistrationFee": 0
+      }
+    }
+  ],
+  "registryCases": [
+    {
+      "id": "rounding-4999",
+      "inputs": {
+        "landValue": 4999.0,
+        "registeredPrincipal": 4999.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 55.0,
+        "mortgageFee": 55.0,
+        "combined": 110.0
+      }
+    },
+    {
+      "id": "rounding-5000",
+      "inputs": {
+        "landValue": 5000.0,
+        "registeredPrincipal": 5000.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 55.0,
+        "mortgageFee": 55.0,
+        "combined": 110.0
+      }
+    },
+    {
+      "id": "rounding-5001",
+      "inputs": {
+        "landValue": 5001.0,
+        "registeredPrincipal": 5001.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 60.0,
+        "mortgageFee": 60.0,
+        "combined": 120.0
+      }
+    },
+    {
+      "id": "rounding-499999",
+      "inputs": {
+        "landValue": 499999.0,
+        "registeredPrincipal": 499999.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 550.0,
+        "mortgageFee": 550.0,
+        "combined": 1100.0
+      }
+    },
+    {
+      "id": "rounding-500000",
+      "inputs": {
+        "landValue": 500000.0,
+        "registeredPrincipal": 500000.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 550.0,
+        "mortgageFee": 550.0,
+        "combined": 1100.0
+      }
+    },
+    {
+      "id": "rounding-500001",
+      "inputs": {
+        "landValue": 500001.0,
+        "registeredPrincipal": 500001.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 555.0,
+        "mortgageFee": 555.0,
+        "combined": 1110.0
+      }
+    },
+    {
+      "id": "600k-480k-one-title",
+      "inputs": {
+        "landValue": 600000.0,
+        "registeredPrincipal": 480000.0,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 650.0,
+        "mortgageFee": 530.0,
+        "combined": 1180.0
+      }
+    },
+    {
+      "id": "600k-480k-three-titles",
+      "inputs": {
+        "landValue": 600000.0,
+        "registeredPrincipal": 480000.0,
+        "titleCount": 3
+      },
+      "expected": {
+        "transferFee": 680.0,
+        "mortgageFee": 540.0,
+        "combined": 1220.0
+      }
+    },
+    {
+      "id": "600k-cash-one-title",
+      "inputs": {
+        "landValue": 600000.0,
+        "registeredPrincipal": null,
+        "titleCount": 1
+      },
+      "expected": {
+        "transferFee": 650.0,
+        "mortgageFee": 0.0,
+        "combined": 650.0
+      }
+    }
+  ],
+  "waterCase": {
+    "inputs": {
+      "waterM3": 19,
+      "billingDays": 30,
+      "cityCartPrograms": ["black", "blue", "green"]
+    },
+    "expected": {
+      "waterUsageExact": "33.077100000000000000",
+      "waterSupplyIncludingFixed": 46.91,
+      "wastewaterBillableM3": 16.72,
+      "wastewaterUsageExact": "31.851600000000000000",
+      "wastewaterIncludingFixed": 55.3,
+      "stormwater": 17,
+      "waterWastewaterStormwaterExact": "119.208700000000000000",
+      "waterWastewaterStormwater": 119.21,
+      "carts": 20.51,
+      "combinedExact": "139.718700000000000000",
+      "combined": 139.72
+    },
+    "note": "The 19 m³ usage is for this 30-day example. Fixed fees prorate with billing days; the example is not a calendar-month or annual bill."
+  },
+  "propertyTaxCase": {
+    "inputs": { "assessedResidentialValue": 600000, "year": 2026 },
+    "expected": {
+      "municipal": 2334.36,
+      "provincial": 1655.58,
+      "annualBaseTax": 3989.94,
+      "monthlyBudgetExact": "332.495",
+      "monthlyBudgetRounded": 332.5
+    },
+    "excluded": [
+      "unconfirmed local improvements",
+      "special taxes",
+      "arrears",
+      "adjustments"
+    ]
+  }
+}

@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": 1,
+  "reviewedOn": "2026-09-14",
+  "scope": "Current Calgary Neighbourhood Analytics public-demo source, datasets, calculations, map services and software notices; reviewed 14 September 2026.",
+  "publicReleaseDecision": "The noncommercial demo uses the reviewed sources and link-only current MLA records. The /privacy page describes the operator, data handling and provider limitations. These notes record source permissions and remaining limits; they are not legal clearance.",
+  "noncommercialAssumption": "Personal project without payments, advertising, brokerage lead generation or client-marketing use. A later commercial purpose triggers fresh review; no-fee access alone may be insufficient.",
+  "notLegalOpinion": true,
+  "licenceProfiles": {
+    "calgary-open": {
+      "title": "Open Government Licence – City of Calgary v2.1",
+      "url": "https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa/",
+      "permission": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "conditions": [
+        "Acknowledge source and link licence.",
+        "Personal information, unauthorized third-party rights and official symbols are excluded.",
+        "Do not imply endorsement."
+      ],
+      "attribution": "Contains information licensed under the Open Government Licence – City of Calgary."
+    },
+    "calgary-site": {
+      "title": "Calgary.ca Website Terms of Use",
+      "url": "https://www.calgary.ca/info-requests/terms-of-use.html",
+      "permission": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
+      "conditions": [
+        "Separate expressly licensed Open Calgary datasets are assessed under their own licence.",
+        "No blanket public grant for Calgary.ca PDFs, webpage content or CPS workbook.",
+        "Text hyperlink allowed; official logo use requires permission."
+      ],
+      "attribution": null
+    },
+    "alberta-open": {
+      "title": "Open Government Licence – Alberta, version 2.2",
+      "url": "https://open.alberta.ca/licence",
+      "permission": "Worldwide royalty-free reuse including copy, modify, publish and distribute, including commercially, subject to terms.",
+      "conditions": [
+        "Acknowledge source; use specified attribution or the licence fallback, and link where possible.",
+        "Excludes personal information, inaccessible records, unauthorized third-party rights, official symbols and other IP rights.",
+        "No implication of official status or endorsement.",
+        "Licence version in force on information-access date governs."
+      ],
+      "verifiedOn": "2026-09-14",
+      "verification": "Full current text read in ordinary Safari; dataset applicability verified separately against exact provincial GeoDiscover and federal metadata.",
+      "attribution": "Contains information licensed under the Open Government Licence – Alberta."
+    },
+    "alberta-site": {
+      "title": "Alberta.ca Disclaimer and copyright",
+      "url": "https://www.alberta.ca/disclaimer",
+      "permission": "Express noncommercial copying and distribution unless otherwise indicated.",
+      "conditions": [
+        "Materials must not be modified; preserve accuracy.",
+        "Identify Government of Alberta and make clear reproduction is unofficial and unendorsed.",
+        "No official symbols without permission."
+      ]
+    },
+    "canada-site": {
+      "title": "Canada.ca Terms and conditions",
+      "url": "https://www.canada.ca/en/transparency/terms.html",
+      "permission": "Express noncommercial reproduction, in whole or part and any format, unless otherwise specified.",
+      "conditions": [
+        "Accuracy; full title and author where available; link the original version.",
+        "Third-party content and official marks require separate consideration."
+      ]
+    },
+    "eccc-data": {
+      "title": "ECCC Data Services End-use Licence v2.1.1, August2026",
+      "url": "https://eccc-msc.github.io/open-data/licence/readme_en/",
+      "permission": "Express redistribution and adaptation, including commercial use.",
+      "conditions": [
+        "Attribute ECCC and identified third-party data originators and link licence.",
+        "No alteration of weather-alert content or intent; no logos/endorsement."
+      ],
+      "attribution": "Data Source: Environment and Climate Change Canada"
+    },
+    "hoc-open": {
+      "title": "House of Commons Open Data, Current Members XML",
+      "url": "https://www.ourcommons.ca/en/open-data",
+      "permission": "Official page expressly describes open data as freely shared, used and built on; specifically offers current-member XML for customized reports.",
+      "conditions": [
+        "Restrict reuse to designated factual XML datasets; this is not a licence for portraits, site prose, logos or proceedings.",
+        "Attribute House of Commons and original XML; separate current party from election-time affiliation."
+      ],
+      "verificationLimit": "No separately numbered licence found. This conclusion relies on the explicit publisher permission statement for the designated feed, not the restrictive general website copyright notice."
+    },
+    "assembly": {
+      "title": "Legislative Assembly of Alberta Disclaimer / Permitted uses",
+      "url": "https://www.assembly.ab.ca/disclaimer",
+      "permission": "Express personal and public noncommercial use of site content.",
+      "conditions": [
+        "Accurate excerpts; source permits shortening rather than unrestricted modification.",
+        "Identify Assembly and state unofficial/no endorsement.",
+        "Exact condition: materials may not be used in advertising for political party purposes or during general election or by-election periods;",
+        "Election-period scope remains ambiguous; do not assume it applies only to advertising. No portrait/logo permission inferred.",
+        "Financial-gain/commercial use requires approval."
+      ]
+    },
+    "elections-ca": {
+      "title": "Elections Canada Terms and Conditions",
+      "url": "https://www.elections.ca/content.aspx?document=index&lang=e&section=pri",
+      "permission": "Express noncommercial reproduction in any format unless otherwise stated.",
+      "conditions": [
+        "Full source title, author where available, original URL and accuracy.",
+        "Do not burden network; no trademarks/endorsement.",
+        "Keep independent calculations clearly distinct from reproduced results."
+      ]
+    },
+    "elections-ab": {
+      "title": "Elections Alberta Terms and Conditions",
+      "url": "https://www.elections.ab.ca/terms-conditions/",
+      "permission": "Express personal/public noncommercial educational reproduction.",
+      "conditions": [
+        "Do not modify materials.",
+        "Accuracy, Elections Alberta attribution, unofficial/no endorsement.",
+        "No commercial redistribution or official marks without permission."
+      ]
+    },
+    "statcan": {
+      "title": "Statistics Canada Open Licence",
+      "url": "https://www.statcan.gc.ca/en/terms-conditions/open-licence",
+      "permission": "Express reuse, adaptation and redistribution of covered StatsCan information/value-added products, including commercially.",
+      "conditions": [
+        "Accurate data and source attribution; no endorsement.",
+        "Do not join data to identify people, businesses or organizations.",
+        "Third-party and postal-product exclusions must be respected."
+      ],
+      "attribution": "Adapted from Statistics Canada, 2021 Census of Population, 2021. This does not constitute an endorsement by Statistics Canada of this product."
+    },
+    "cmhc-site": {
+      "title": "CMHC Website Terms and Conditions",
+      "url": "https://www.cmhc-schl.gc.ca/about-us/terms-conditions",
+      "permission": "Personal copying only; further republication, redistribution or derivative use requires written consent.",
+      "conditions": [
+        "Do not assume Canada.ca reproduction permission applies to CMHC domain.",
+        "Keep content link-only or use an independently licensed source."
+      ]
+    },
+    "facts": {
+      "title": "CIPO / ISED Guide to copyright",
+      "url": "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright",
+      "permission": "Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "conditions": [
+        "This does not resolve contractual website restrictions or establish a blanket database-republication right.",
+        "Independent formula and isolated numeric facts differ from copied source tables, prose, charts or PDFs."
+      ]
+    },
+    "ofm": {
+      "title": "OpenFreeMap public service and licences",
+      "url": "https://openfreemap.org/",
+      "permission": "Express website/app map integration and commercial use; code MIT, underlying data/style licences separate.",
+      "conditions": [
+        "Visible on-map data and design attribution.",
+        "Service terms prohibit unauthorized automated collection and require an adult authorized integrator.",
+        "No availability guarantee."
+      ],
+      "additionalUrls": [
+        "https://openfreemap.org/tos/",
+        "https://github.com/hyperknot/openfreemap/blob/main/LICENSE.md",
+        "https://github.com/hyperknot/openfreemap-styles/blob/main/LICENSE.md"
+      ]
+    },
+    "osm": {
+      "title": "OpenStreetMap copyright / ODbL1.0",
+      "url": "https://www.openstreetmap.org/copyright",
+      "permission": "Redistribution and adaptation with ODbL conditions.",
+      "conditions": [
+        "Visible credit and link to copyright/licence.",
+        "Derived databases may trigger share-alike; separately overlaid City datasets are not automatically relicensed.",
+        "Keep attribution in exports/printed maps."
+      ]
+    },
+    "omt": {
+      "title": "OpenMapTiles code and design licence",
+      "url": "https://github.com/openmaptiles/openmaptiles/blob/master/LICENSE.md",
+      "permission": "Code BSD3; design CC BY4.0.",
+      "conditions": [
+        "OpenMapTiles credit linked in a corner of browsable maps.",
+        "Preserve applicable notices and indicate style modifications."
+      ]
+    }
+  },
+  "entries": [
+    {
+      "id": "development",
+      "title": "Development applications",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "development.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/6933-unw5"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "Keep public permit facts; exclude personal applicant/contact details and any third-party copyrighted attachments not licensed by City.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/6933-unw5-metadata.json"
+      ]
+    },
+    {
+      "id": "transit",
+      "title": "Calgary Transit stops",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "transit.json",
+        "nearby-points.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/muzh-c9qc"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "GTFS and future route assets require separate source entry; do not use transit logos.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/muzh-c9qc-metadata.json"
+      ]
+    },
+    {
+      "id": "assessments",
+      "title": "2026 property assessments",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "properties.json",
+        "assessment-summary.json",
+        "assessment-methodology.json",
+        "API address-search responses"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/4bsw-nn7w"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "Dataset explicitly licensed; Calgary.ca Assessment Search fifty-address/internal-use rules are a different source. No owner names in assessed public fields. Do not expand into individual personal profiles.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/4bsw-nn7w-metadata.json"
+      ]
+    },
+    {
+      "id": "tax",
+      "title": "Property tax rates & calculation",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "ownership-methodology.json",
+        "calculator constants"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/property-owners/taxes/bill-rate-calculation.html",
+        "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
+      ],
+      "licenceProfileIds": [
+        "calgary-site",
+        "facts"
+      ],
+      "status": "keep-isolated-facts-and-original-calculation",
+      "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
+      "requiredAction": [
+        "Retain isolated numeric rate facts and original arithmetic; no copied City prose, chart, PDF, rate-table layout or substantial compilation.",
+        "Show factual source and verification date; do not call the Calgary.ca website open licensed.",
+        "City website terms prohibit data mining, robots and similar extraction tools. Use manually verified facts or licensed API sources for future updates; do not add automated webpage scraping without permission."
+      ],
+      "notes": "CIPO expressly says facts are not protected by copyright. Root confirmed the app uses only numeric facts/rules and original calculator code, not copied source text, images or table presentation. This is a fact-based copyright rationale, not an open-licence grant. Whether website terms are contractually binding to a particular access/use depends on context and is not determined here; attribution does not remove contractual restrictions."
+    },
+    {
+      "id": "crime",
+      "title": "CPS Community Safety Data workbook",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "crime.json",
+        "crime-derived charts/totals/API/export"
+      ],
+      "sourceUrls": [
+        "https://www.calgarypolice.ca/transparency-and-accountability/crime-statistics.html",
+        "https://www.calgarypolice.ca/content/dam/police/documents/statistics/Safety%20Community%20Data%202020-Q2%202026.xlsx"
+      ],
+      "licenceProfileIds": [
+        "calgary-site"
+      ],
+      "status": "remove-or-link-only-pending-permission",
+      "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
+      "requiredAction": [
+        "Remove numerical workbook extracts and derived totals from all publicly served assets, routes, print/export and bundles.",
+        "Keep an ordinary external link to CPS dashboard.",
+        "Request explicit redistribution/adaptation permission before restoration."
+      ],
+      "notes": "CPS page footer links Calgary.ca terms. DataNotes explain privacy rounding but no open redistribution licence was found. A downloadable XLSX is not itself permission. Historical discontinued Socrata licence cannot be transferred to this new workbook.",
+      "replacementAsset": "historical-crime-app.json",
+      "replacementStatus": "The replacement uses a separately licensed historical dataset; it does not permit redistribution of the 2026 CPS workbook.",
+      "replacementSourceUrls": [
+        "https://data.calgary.ca/d/848s-4m4z"
+      ],
+      "replacementLimit": "2018/2019 historical selected crime categories only; review supplied historical-crime-methodology.md. Must remove current-period workbook labels and numbers."
+    },
+    {
+      "id": "mains",
+      "title": "Public water mains",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "water-mains.geojson",
+        "pipes.json",
+        "water-summary.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/w6h9-w33i"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/w6h9-w33i-metadata.json"
+      ]
+    },
+    {
+      "id": "services",
+      "title": "Public water service lines",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "water-services.geojson",
+        "pipes.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/ta76-7bfx"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "Public infrastructure only; no private plumbing or owner identities. Preserve uncertainty in address matches.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/ta76-7bfx-metadata.json"
+      ]
+    },
+    {
+      "id": "breaks",
+      "title": "Historical water-main breaks",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "water-breaks.geojson",
+        "water-summary.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/dpcu-jr23"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/dpcu-jr23-metadata.json"
+      ]
+    },
+    {
+      "id": "air",
+      "title": "Calgary AQHI",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "air.json",
+        "API air responses"
+      ],
+      "sourceUrls": [
+        "https://dd.weather.gc.ca/today/air_quality/aqhi/pnr/observation/realtime/xml/AQ_OBS_IAKID_CURRENT.xml",
+        "https://api.weather.gc.ca/collections/aqhi-observations-realtime"
+      ],
+      "licenceProfileIds": [
+        "eccc-data"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express redistribution and adaptation, including commercial use.",
+      "requiredAction": [
+        "Show ECCC data-source attribution and licence link; credit originators if specified in feed metadata.",
+        "Retain observation timestamp, provisional status and rounding method."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "boundaries",
+      "title": "Community boundaries",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "communities.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/surr-xmvs"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/surr-xmvs-metadata.json"
+      ]
+    },
+    {
+      "id": "federal",
+      "title": "Members of Parliament",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "representatives.json (federal)"
+      ],
+      "sourceUrls": [
+        "https://www.ourcommons.ca/Members/en/search/xml",
+        "https://www.ourcommons.ca/en/open-data"
+      ],
+      "licenceProfileIds": [
+        "hoc-open"
+      ],
+      "status": "keep-designated-open-feed-only",
+      "allowedUse": "Official page expressly describes open data as freely shared, used and built on; specifically offers current-member XML for customized reports.",
+      "requiredAction": [
+        "Use designated XML fields only, with publisher/feed link and snapshot date.",
+        "No photos, biographies or official symbols inferred to be licensed."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "provincial",
+      "title": "MLA directory",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "representatives.json (provincial)"
+      ],
+      "sourceUrls": [
+        "https://www.assembly.ab.ca/members/members-of-the-legislative-assembly"
+      ],
+      "licenceProfileIds": [
+        "assembly"
+      ],
+      "status": "external-directory-link-only",
+      "allowedUse": "Ordinary link to the official Assembly directory. No current Assembly member roster is reproduced in the public demo.",
+      "requiredAction": [
+        "Keep provincial district matching from the separately reviewed Elections Alberta boundary source.",
+        "Do not restore Assembly-derived names, parties, individual profile IDs or current/vacant status without resolving the relevant terms."
+      ],
+      "notes": "Implemented for the 14 September 2026 public demo: 26 geographic stubs preserve joins and link to the directory. Historical election results remain separately sourced from election authorities."
+    },
+    {
+      "id": "municipal",
+      "title": "Calgary City Council",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "representatives.json (municipal)"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/council/citycouncil.html",
+        "https://data.calgary.ca/d/tz8z-hyaz"
+      ],
+      "licenceProfileIds": [
+        "calgary-site",
+        "calgary-open",
+        "facts"
+      ],
+      "status": "replace-with-open-dataset",
+      "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "requiredAction": [
+        "Replace website-derived councillor/ward listing with current Open Calgary tz8z-hyaz councillor and ward_num fields, verifying names match.",
+        "Continue official profile text links; do not copy profile photos or biographies."
+      ],
+      "notes": "tz8z-hyaz has express City OGL metadata and current2026 update. Individual officeholder names are facts, but this replacement avoids broad website compilation terms.",
+      "replacementAsset": "representatives-citywide-open.json"
+    },
+    {
+      "id": "elections",
+      "title": "Official federal and provincial election results",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "elections.json",
+        "election-history.json"
+      ],
+      "sourceUrls": [
+        "https://www.elections.ca/content.aspx?section=res&dir=rep/off/45gedata&document=index&lang=e",
+        "https://www.elections.ca/res/rep/off/ovrGE45/62/data_donnees/table_tableau11.csv",
+        "https://officialresults.elections.ab.ca/orResultsED.cfm?ED=04&EventId=101",
+        "https://www.elections.ab.ca/terms-conditions/"
+      ],
+      "licenceProfileIds": [
+        "elections-ca",
+        "elections-ab"
+      ],
+      "status": "keep-noncommercial-with-conditions",
+      "allowedUse": "Express noncommercial reproduction in any format unless otherwise stated.; Express personal/public noncommercial educational reproduction.",
+      "requiredAction": [
+        "Preserve official candidate vote counts, published one-decimal vote shares and election-time party names.",
+        "Give full report title, election date, election authority and exact original source URL.",
+        "Separate any margin/share arithmetic as Calculated by Calgary Neighbourhood Analytics from published results; never edit the official values or imply calculations are official."
+      ],
+      "notes": "Provincial no-modification condition is narrower than an open-data derivative grant. Arithmetic about unaltered facts is independent analysis, not an altered official report; this is a documented interpretation, not a legal guarantee. If reproducing an altered source table, seek permission or remove it."
+    },
+    {
+      "id": "history",
+      "title": "Assessment history",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "assessment-history.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/4ur7-wsgc"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/4ur7-wsgc-metadata.json"
+      ]
+    },
+    {
+      "id": "demographics",
+      "title": "Community census profile PDFs",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "demographics.json"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/communities/profiles.html",
+        "https://communitydata.ca/sites/default/files/ccednet-cdp_schedule-c.pdf",
+        "https://data.calgary.ca/d/f9wk-wej9",
+        "https://data.calgary.ca/d/msjx-5ygv"
+      ],
+      "licenceProfileIds": [
+        "calgary-site",
+        "statcan",
+        "calgary-open"
+      ],
+      "status": "replace-pdf-derived-extract",
+      "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Express reuse, adaptation and redistribution of covered StatsCan information/value-added products, including commercially.; Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Replace PDF-transcribed population, age and household figures with separately licensed City open datasets f9wk-wej9 and msjx-5ygv.",
+        "Until an explicit redistribution chain is confirmed, remove or link-only income, tenure, shelter costs, dwelling-condition/type and other PDF-only figures.",
+        "Do not serve the City PDFs, screenshots or their design."
+      ],
+      "notes": "StatsCan open licence covers its information including custom tables, but does not establish rights to City-added compilation/design. CDP agreement governs authorized catalogue members and is not a public licence to this app. This audit flags uncertainty, not a finding that single census facts are copyrighted.",
+      "replacementAsset": "community-demographics-open.json",
+      "replacementAudit": "community-demographics-open-audit.json",
+      "replacementStatus": "Prepared, not independently verified in deployed app",
+      "replacementScope": "313 community records and Calgary benchmark; population, age and household-size only. PDF-only topics excluded."
+    },
+    {
+      "id": "quadrants",
+      "title": "Official quadrants",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "quadrants.geojson"
+      ],
+      "sourceUrls": [
+        "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/City_quadrant_boundaries/FeatureServer/0",
+        "https://www.arcgis.com/sharing/rest/content/items/acc080a9a342412f8437509013aceb32?f=json",
+        "https://data.calgary.ca/d/g2n2-qnvh"
+      ],
+      "licenceProfileIds": [
+        "calgary-open",
+        "calgary-site"
+      ],
+      "status": "conflicting-metadata",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
+      "requiredAction": [
+        "Service-level copyright expressly points City OGL, while parent item licenceInfo links restrictive City website terms. Preserve both evidence records.",
+        "For strict no-ambiguity public release, use explicitly open Socrata geometry g2n2-qnvh with its older2021 vintage visibly disclosed, or remove geometric overlay pending clarification.",
+        "Official address-suffix assessment aggregates remain independently licensed."
+      ],
+      "notes": "Public service availability alone is not relied upon; the service has an express grant pointer but contradictory item-level terms remain."
+    },
+    {
+      "id": "aerial",
+      "title": "City 2025 orthophoto",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "aerial-source.json",
+        "direct City tile service"
+      ],
+      "sourceUrls": [
+        "https://files-us-prod.cms.commerce.dynamics.com/cms/api/tsbgmhdjmt/binary/MA4zyF",
+        "https://maps.calgary.ca/CalgaryImagery/",
+        "https://tiles.arcgis.com/tiles/AVP60cs0Q9PEA8rH/arcgis/rest/services/Calgary_Orthophoto_Web_2025/MapServer"
+      ],
+      "licenceProfileIds": [],
+      "status": "keep-direct-public-viewing-only",
+      "allowedUse": "Hosted public web-map viewing of specifically listed standard2025 orthophoto; file redistribution not covered.",
+      "requiredAction": [
+        "Use exact standard2025 service directly from City; show © The City of Calgary,2025 on map.",
+        "No caching for redistribution, proxy hosting, offline bundles, image downloads or aerial in generated print/PDF/screenshots offered by app.",
+        "Do not substitute2025 Pictometry or other restricted years."
+      ],
+      "notes": "Jan8,2026 official guide pp1–2 specifically permits hosted public and web-map viewing without a viewing licence. It requires a licence for third-party orthophoto-file distribution. ArcGIS item retains all-rights-reserved wording; narrow public-viewing permission is the basis, not general redistribution.",
+      "evidenceFile": "rights-evidence/aerial-guide.pdf"
+    },
+    {
+      "id": "flood",
+      "title": "Municipal regulatory flood map",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "flood-regulatory.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/tp6q-x2v7"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/tp6q-x2v7-metadata.json"
+      ]
+    },
+    {
+      "id": "flood-hazard",
+      "title": "Provincial flood hazard",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "flood-hazard.geojson"
+      ],
+      "sourceUrls": [
+        "https://open.canada.ca/data/en/dataset/d192b9b1-caac-405e-8d2a-ba6b21929c3f?wbdisable=true",
+        "https://geospatial.alberta.ca/mimas/rest/services/fama_data_distribution/fama_public_data_distribution/MapServer/1"
+      ],
+      "licenceProfileIds": [
+        "alberta-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Exact provincial and federal metadata identify Alberta OGL. Full current v2.2 text verified through ordinary Safari on 14 September 2026; copying, modification, publication and distribution are permitted subject to its conditions.",
+      "requiredAction": [
+        "Retain Alberta source attribution, licence link and exact FAMA source metadata.",
+        "Label clipped/simplified display and preserve original zone meaning.",
+        "Preserve privacy/third-party-rights exclusions and do not imply official endorsement."
+      ],
+      "notes": "Verified official catalogue current record links exact service, not merely another flood dataset. Service copyrightText None does not itself mean public domain."
+    },
+    {
+      "id": "noise",
+      "title": "Noise Exposure Forecast contours",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "noise.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/g5qu-w8fb"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "City expressly offers dataset under its licence; no independent airport logo or Transport Canada artwork is included.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/g5qu-w8fb-metadata.json"
+      ]
+    },
+    {
+      "id": "parks",
+      "title": "Parks pathways amenities",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "amenities.geojson",
+        "nearby-points.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/kami-qbfh",
+        "https://data.calgary.ca/d/qndb-27qm",
+        "https://data.calgary.ca/d/7v8c-cjjm"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "",
+      "datasetMetadataEvidence": [
+        "rights-evidence/kami-qbfh-metadata.json",
+        "rights-evidence/qndb-27qm-metadata.json",
+        "rights-evidence/7v8c-cjjm-metadata.json"
+      ]
+    },
+    {
+      "id": "pm25",
+      "title": "Fine-particle observations",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "pm25.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/g9s5-qhu5"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "Credit source attribution Alberta Environmental Monitoring, Evaluation and Reporting Agency and CRAZ/provincial origin in metadata, as well as City distribution. Dataset supplier is Other; third-party exception remains, but explicit published open-licence pointer provides reuse basis absent contrary notice.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/g9s5-qhu5-metadata.json"
+      ]
+    },
+    {
+      "id": "radon",
+      "title": "Radon reference guidance",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "original UI guidance/source links"
+      ],
+      "sourceUrls": [
+        "https://www.canada.ca/en/health-canada/services/health-risks-safety/radiation/radon/testing-your-home.html"
+      ],
+      "licenceProfileIds": [
+        "canada-site",
+        "facts"
+      ],
+      "status": "keep-noncommercial-factual-reference",
+      "allowedUse": "Express noncommercial reproduction, in whole or part and any format, unless otherwise specified.; Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "requiredAction": [
+        "Use original concise guidance and Health Canada source link; no copied infographic/logo.",
+        "If quoting source content, preserve accuracy, source title and version URL."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "mortgage",
+      "title": "Mortgage planning",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "calculator logic",
+        "ownership-methodology.json"
+      ],
+      "sourceUrls": [
+        "https://itools-ioutils.fcac-acfc.gc.ca/MC-CH/MortgageCalculator.aspx",
+        "https://www.canada.ca/en/financial-consumer-agency/services/mortgages/down-payment.html",
+        "https://www.cmhc-schl.gc.ca/professionals/project-funding-and-mortgage-financing/mortgage-loan-insurance/mortgage-loan-insurance-homeownership-programs/purchase",
+        "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
+      ],
+      "licenceProfileIds": [
+        "canada-site",
+        "cmhc-site",
+        "facts"
+      ],
+      "status": "keep-isolated-facts-and-original-calculation",
+      "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
+      "requiredAction": [
+        "Retain only isolated numeric facts/rules and independently authored formulas, labels and explanations; no copied source prose, graphics, table layout, source spreadsheet or substantial source compilation.",
+        "Attribute factual source and verification date without labelling its entire website open licensed.",
+        "Do not add automated Calgary.ca webpage scraping: its terms expressly prohibit data-mining/robots/extraction. Current app operational APIs use separate licensed Open Calgary datasets.",
+        "CMHC terms also prohibit reproducing/modifying its site content beyond personal use. Review any expanded harvesting or substantial table reproduction separately; preserve official text links."
+      ],
+      "notes": "CIPO expressly says facts are not protected by copyright. Root confirmed the app uses only numeric facts/rules and original calculator code, not copied source text, images or table presentation. This is a fact-based copyright rationale, not an open-licence grant. Whether website terms are contractually binding to a particular access/use depends on context and is not determined here; attribution does not remove contractual restrictions."
+    },
+    {
+      "id": "utilities",
+      "title": "Water and cart rates",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "ownership-methodology.json",
+        "calculator defaults"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/water/water-utility/residential-water-rates-and-billing.html",
+        "https://www.calgary.ca/waste/residential/rates.html",
+        "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
+      ],
+      "licenceProfileIds": [
+        "calgary-site",
+        "facts"
+      ],
+      "status": "keep-isolated-facts-and-original-calculation",
+      "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
+      "requiredAction": [
+        "Retain isolated numeric rate facts and original arithmetic; no copied City prose, chart, PDF, rate-table layout or substantial compilation.",
+        "Show factual source and verification date; do not call the Calgary.ca website open licensed.",
+        "City website terms prohibit data mining, robots and similar extraction tools. Use manually verified facts or licensed API sources for future updates; do not add automated webpage scraping without permission."
+      ],
+      "notes": "CIPO expressly says facts are not protected by copyright. Root confirmed the app uses only numeric facts/rules and original calculator code, not copied source text, images or table presentation. This is a fact-based copyright rationale, not an open-licence grant. Whether website terms are contractually binding to a particular access/use depends on context and is not determined here; attribution does not remove contractual restrictions."
+    },
+    {
+      "id": "registration",
+      "title": "Alberta title-registration fees",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "calculator constants",
+        "ownership-methodology.json"
+      ],
+      "sourceUrls": [
+        "https://www.alberta.ca/system/files/sartr-land-titles-and-surveys-common-documents-fee-schedule.pdf"
+      ],
+      "licenceProfileIds": [
+        "alberta-site",
+        "facts"
+      ],
+      "status": "keep-noncommercial-factual-reference",
+      "allowedUse": "Express noncommercial copying and distribution unless otherwise indicated.; Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "requiredAction": [
+        "Retain accurate fee figures and original arithmetic; source title/date/link.",
+        "No modified official fee schedule or claim estimate is official."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "condo",
+      "title": "Condo reserves and documents",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "original checklist",
+        "ownership-methodology.json"
+      ],
+      "sourceUrls": [
+        "https://www.alberta.ca/reserve-funds",
+        "https://www.alberta.ca/special-levies",
+        "https://www.calgary.ca/property-owners/taxes/local-improvements.html"
+      ],
+      "licenceProfileIds": [
+        "alberta-site",
+        "calgary-site",
+        "facts"
+      ],
+      "status": "keep-original-checklist-link-references",
+      "allowedUse": "Express noncommercial copying and distribution unless otherwise indicated.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "requiredAction": [
+        "Keep independently worded checklist and direct links.",
+        "Do not serve modified Alberta official documents or copied City tax-report/prose content."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "schools-extra",
+      "title": "School-location inventory",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "nearby-points.geojson"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/fd9t-tdn2"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
+      "requiredAction": [
+        "Publish City OGL attribution and licence link in Sources and data-download metadata.",
+        "Retain dataset IDs, dates and transformations."
+      ],
+      "notes": "Location and public institutional fields only; no school crests, private student information or catchment guarantee.",
+      "datasetMetadataEvidence": [
+        "rights-evidence/fd9t-tdn2-metadata.json"
+      ]
+    },
+    {
+      "id": "wards-extra",
+      "title": "Ward geometry and councillor fields",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "wards.geojson",
+        "representatives.json"
+      ],
+      "sourceUrls": [
+        "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/Ward_Boundaries/FeatureServer/0",
+        "https://data.calgary.ca/d/tz8z-hyaz"
+      ],
+      "licenceProfileIds": [
+        "calgary-open",
+        "calgary-site"
+      ],
+      "status": "replace-conflicting-arcgis-with-socrata",
+      "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
+      "requiredAction": [
+        "Use tz8z-hyaz licensed dataset for current 14 wards and councillor names.",
+        "Re-derive property assignments with source geometry and log changes."
+      ],
+      "notes": "ArcGIS service points OGL but item d4c5d57e4327400890bac0e15cc28f53 points Calgary.ca website terms. Exact Socrata replacement avoids conflict.",
+      "replacementAsset": "calgary-ward-boundaries-open.geojson"
+    },
+    {
+      "id": "federal-boundaries-extra",
+      "title": "Federal electoral geometry",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "electoral.geojson (federal)"
+      ],
+      "sourceUrls": [
+        "https://www.elections.ca/content.aspx?dir=cir/mapsCorner/vector&document=index&lang=e&section=res",
+        "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_KMZ.zip"
+      ],
+      "licenceProfileIds": [
+        "elections-ca"
+      ],
+      "status": "keep-noncommercial-with-conditions",
+      "allowedUse": "Express noncommercial reproduction in any format unless otherwise stated.",
+      "requiredAction": [
+        "Preserve title, author, original file link and boundary vintage.",
+        "Retain source geometry for accurate matching; label display transformation, never call generalized lines official parcel determinations."
+      ],
+      "notes": ""
+    },
+    {
+      "id": "provincial-boundaries-extra",
+      "title": "Provincial electoral geometry",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "electoral.geojson (provincial)"
+      ],
+      "sourceUrls": [
+        "https://www.elections.ab.ca/resources/maps/",
+        "https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip"
+      ],
+      "licenceProfileIds": [
+        "elections-ab"
+      ],
+      "status": "replace-modified-geometry",
+      "allowedUse": "Express personal/public noncommercial educational reproduction.",
+      "requiredAction": [
+        "Use source boundaries without simplification, repair or coordinate truncation; projection conversion only and explain format conversion.",
+        "Keep all original source properties; put current district display label in a separate field.",
+        "If strict no-modification interpretation bars conversion, link to official map until permission obtained."
+      ],
+      "notes": "Downloaded ZIP XML has no separate licence. Original source GIS offered for mapping software. Independent source-value-preserving format conversion is a reasonable technical reading; alteration of shape is not covered by express terms.",
+      "replacementAsset": "calgary-electoral-source-faithful.geojson"
+    },
+    {
+      "id": "basemap-extra",
+      "title": "OpenFreeMap/OSM basemap",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "remote tiles,3D-building model"
+      ],
+      "sourceUrls": [
+        "https://openfreemap.org/",
+        "https://tiles.openfreemap.org/planet"
+      ],
+      "licenceProfileIds": [
+        "ofm",
+        "osm",
+        "omt"
+      ],
+      "status": "keep-fix-visible-attribution",
+      "allowedUse": "Express website/app map integration and commercial use; code MIT, underlying data/style licences separate.; Redistribution and adaptation with ODbL conditions.; Code BSD3; design CC BY4.0.",
+      "requiredAction": [
+        "Add persistent on-map linked attribution; source-panel credits alone insufficient.",
+        "Preserve credit in static map outputs and keep City overlays as separate sources."
+      ],
+      "notes": "Source inspection found attributionControl:false and credits only in Sources panel at audit start. Recommended map credit: OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors."
+    },
+    {
+      "id": "map-style-extra",
+      "title": "Positron style, fonts and map sprites",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "remote style,fonts,sprites,Natural Earth"
+      ],
+      "sourceUrls": [
+        "https://github.com/hyperknot/openfreemap-styles/blob/main/LICENSE.md",
+        "https://github.com/openmaptiles/positron-gl-style/blob/master/LICENSE.md"
+      ],
+      "licenceProfileIds": [
+        "ofm",
+        "omt"
+      ],
+      "status": "keep-with-style-notices",
+      "allowedUse": "Express website/app map integration and commercial use; code MIT, underlying data/style licences separate.; Code BSD3; design CC BY4.0.",
+      "requiredAction": [
+        "Credit OpenFreeMap/OpenMapTiles; source credits should also identify Positron design lineage: CARTO, Stamen and Paul Norman; code BSD3, design CC BY4 and upstream CARTO CC BY3.",
+        "Retain notices for modified style and identify modifications. Noto Sans OFL1.1, Maki icons CC0, Natural Earth public domain."
+      ],
+      "notes": "These are provider-supplied map assets; no local font binary in app was found. App body uses system font stack."
+    },
+    {
+      "id": "software-extra",
+      "title": "Imported application code and dependencies",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "browser JS,CSS,MapLibre worker,source checkout"
+      ],
+      "sourceUrls": [
+        "https://github.com/maplibre/maplibre-gl-js/blob/main/LICENSE.txt",
+        "https://github.com/Jakubantalik/Libraries.dev/tree/main/packages/liquid-gooey",
+        "https://github.com/lucide-icons/lucide/blob/main/LICENSE"
+      ],
+      "licenceProfileIds": [],
+      "status": "keep-after-notice-completion",
+      "allowedUse": "Direct imported code licences permit public use, subject to their licence conditions. Complete bundled-transitive notice audit remains a release action.",
+      "requiredAction": [
+        "Preserve all copyright/licence notices for distributed code; a name and MIT label is not the complete notice.",
+        "Publish accessible third-party notices for browser distribution; retain MapLibre LICENSE.txt, shadcn vendor MIT and Sites plugin MIT.",
+        "Review deployed bundle manifest for transitive notices and distinguish optional native/build tools from shipped browser code.",
+        "Do not claim dependency tree entirely permissive: locked optional libvips has LGPL and build tools include MPL. Source obligations depend on what is actually distributed."
+      ],
+      "notes": "Inspected46direct packages and906locked entries. Direct licences MIT/ISC/BSD/Apache; complete machine inventories saved. Current public MapLibre full licence is retained; no complete project-wide notice bundle found.",
+      "inventoryFiles": [
+        "rights-evidence/direct-code-licenses.json",
+        "rights-evidence/lock-code-license-inventory.json"
+      ],
+      "noticeFile": "THIRD-PARTY-NOTICES.txt",
+      "noticeAuditFile": "third-party-notices-audit.json",
+      "noticeStatus": "Prepared scoped full-text notice collection with frontend supplements, exact MapLibre copy and installed-package versions. Root must verify inclusion in distribution and deployed bundle scope."
+    },
+    {
+      "id": "original-interface-extra",
+      "title": "Original app charts, interface and icon",
+      "checkedOn": "2026-09-14",
+      "assets": [
+        "app charts/layout",
+        "favicon.svg",
+        "Lucide UI icons"
+      ],
+      "sourceUrls": [
+        "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
+      ],
+      "licenceProfileIds": [
+        "facts"
+      ],
+      "status": "keep-subject-to-input-and-code-rights",
+      "allowedUse": "Facts themselves are not protected by copyright; original expression or compilation may be.",
+      "requiredAction": [
+        "App-authored layout/charts do not cure restricted underlying dataset rights.",
+        "No official City/CPS/party logos or portraits found in referenced UI; retain neutral original favicon and licensed icons.",
+        "Do not claim third-party source datasets are owned by the app."
+      ],
+      "notes": ""
+    }
+  ],
+  "releaseRules": [
+    "Do not publish unknown/restricted assets merely because they are publicly downloadable.",
+    "Remove restricted bytes from public/data,server routes,bundles,print/export,not only UI.",
+    "Keep source attribution/licence/version/method with every downloadable derivative.",
+    "Official marks,portraits and individual personal information require separate rights.",
+    "Re-audit new sources or changed licences before ingestion."
+  ],
+  "evidenceInventory": [
+    {
+      "file": "rights-evidence/muzh-c9qc-metadata.json",
+      "sha256": "f6b6b3b6a93825221c514c8116739ef9d309a6b2a51ec216223bed861893a8ef"
+    },
+    {
+      "file": "rights-evidence/fd9t-tdn2-metadata.json",
+      "sha256": "c2316959c2292ac13073b09fbb8a1e1047c35ca643e7ac8953712e9c6cd22d48"
+    },
+    {
+      "file": "rights-evidence/communitydata.html",
+      "sha256": "1629a5dc91a1fd8d47de428593ab395ba3201df35e3ff46d9a040066b1f0dbfc"
+    },
+    {
+      "file": "rights-evidence/cps.html",
+      "sha256": "cfeca0be62553981c03d79d32792431569cdb7e9afa7c8be115d18ec313c119c"
+    },
+    {
+      "file": "rights-evidence/city-open-story-meta.txt",
+      "sha256": "f19b5b84a2727b2fb75560dd7c0a1a45aeaefc57d4719eccbaf4aa35350ebe1f"
+    },
+    {
+      "file": "rights-evidence/quad-open-meta.txt",
+      "sha256": "e18181bc067f5c770ce1a0e80b0f456567c0bd9d052484442fad1b4864057dec"
+    },
+    {
+      "file": "rights-evidence/direct-code-licenses.json",
+      "sha256": "773e9054c201e09ce373e58207c211a679b09439eb4044e3777cadb9c0a48357"
+    },
+    {
+      "file": "rights-evidence/flood-service.json",
+      "sha256": "43a92c7c6758352ca52c3eb1225c00e3d7c53a56697d405e82f71ad23da38678"
+    },
+    {
+      "file": "rights-evidence/elections-canada-terms.txt",
+      "sha256": "53da440be14770e661a79e0f44c443cf6235432f0424777b1e2a1b2c52f68727"
+    },
+    {
+      "file": "rights-evidence/cmhc-terms.html",
+      "sha256": "b7d1a11233956613013fdb8eca3eb4f5286bc96a89b6c1490a246dfe32201052"
+    },
+    {
+      "file": "rights-evidence/ta76-7bfx-metadata.json",
+      "sha256": "f181b0f715fac3062163173a0cf21b67a74b33853677bc21a47316f91c7e6076"
+    },
+    {
+      "file": "rights-evidence/flood-portal.txt",
+      "sha256": "f3faac92513d9a7d1b0a5be4e06690962a93f34ff7aa53ac472f96408dc1262f"
+    },
+    {
+      "file": "rights-evidence/lock-code-license-inventory.json",
+      "sha256": "1a8320ee0ecd4309b89d87d85ef6f2b8affba53dbe01e11daf2f1af807865d42"
+    },
+    {
+      "file": "rights-evidence/4ur7-wsgc-metadata.json",
+      "sha256": "1c75c0a9b777c1348d3e4246cc5e27d6c49c564612499355c54d2e72a5092d6f"
+    },
+    {
+      "file": "rights-evidence/cmhc-purchase.txt",
+      "sha256": "5677e6f9786ef36c7fac0e11e34e2899c97c17e51287ece5fdd998aebf8b78fc"
+    },
+    {
+      "file": "rights-evidence/catalog-quadrant.json",
+      "sha256": "ce2d406ebcab92239e94983d24e1d7d46ea25029ea1a3135fc94694404554e3e"
+    },
+    {
+      "file": "rights-evidence/hoc-notices.txt",
+      "sha256": "d998c336c4c06a7a4a600f0101205233bf47921f75b5878e9274bdec8110ef5d"
+    },
+    {
+      "file": "rights-evidence/ward-open-meta.txt",
+      "sha256": "4f4a8994c4f7736b12832793650689fce1f3bc8b6337c67ff7936f514d588979"
+    },
+    {
+      "file": "rights-evidence/surr-xmvs-metadata.json",
+      "sha256": "5c3b2e0fd6213d65c1da6bdff230885783fe53c43b178964b9199367f3bc3881"
+    },
+    {
+      "file": "rights-evidence/4bsw-nn7w-metadata.json",
+      "sha256": "fe500109e1c34934e7b05a2ead7509b9862a009e9acdf796b7e0f6b42e3fda45"
+    },
+    {
+      "file": "rights-evidence/kami-qbfh-metadata.json",
+      "sha256": "a67d56af4a043417e7e51904606aa2cf1c41840e4e3da89a93e1ebbaec2f9d93"
+    },
+    {
+      "file": "rights-evidence/catalog-housing-2021.json",
+      "sha256": "e7a85bf2ec3dabeccb2c60d01b91334601db18c4f0b3292486484e670bfd1362"
+    },
+    {
+      "file": "rights-evidence/ward-open-meta2.txt",
+      "sha256": "adc9aabf58ac192b18ba704beddc647f132d976cfda6f8cee5bc034b3db45dd3"
+    },
+    {
+      "file": "rights-evidence/hoc-members.html",
+      "sha256": "788207897bc482d0ff1b6126d834b0e3478e6e22bb0048c9d8c317668494abb7"
+    },
+    {
+      "file": "rights-evidence/ofm-licences.txt",
+      "sha256": "d1754e5d291e4e8b9b0047ddba0a6ec75e1046ccd61a02c2cea3dac58f3fe355"
+    },
+    {
+      "file": "rights-evidence/ofm-planet.txt",
+      "sha256": "3030217a570803f2ff73b73b1c59948007e31a99bb406841fd71679be8e83b92"
+    },
+    {
+      "file": "rights-evidence/canada-terms.txt",
+      "sha256": "597ea75b108aefd638cc654eb75548ff2c0eead885e6839e1df02b8ad9ad4ee8"
+    },
+    {
+      "file": "rights-evidence/city-open-terms.txt",
+      "sha256": "c0f780addd1c2d1809fee8a3946240b6c11d1af215a044a357370c5f14f3393e"
+    },
+    {
+      "file": "rights-evidence/catalog-2021-income.json",
+      "sha256": "ac7e079ff25b72f496fdefa5d28b9bffe39910e3664293419c726c1aed44c08d"
+    },
+    {
+      "file": "rights-evidence/g9s5-qhu5-metadata.json",
+      "sha256": "cc48d7ba129e4aac87e92db75389454ca329ed6fe69188f986e75bd73b0268af"
+    },
+    {
+      "file": "rights-evidence/aerial-guide.pdf",
+      "sha256": "bbdf129cea4cfc833a54468fa48d9ec9845643b6dbd9eccbe7e223c06d07812d"
+    },
+    {
+      "file": "rights-evidence/ofm-style-licences.txt",
+      "sha256": "d1754e5d291e4e8b9b0047ddba0a6ec75e1046ccd61a02c2cea3dac58f3fe355"
+    },
+    {
+      "file": "rights-evidence/msc-licence.txt",
+      "sha256": "b77b61cda7d2b995f39c6b00467cda27d399a7abd83eea100081e37d8b1abbc9"
+    },
+    {
+      "file": "rights-evidence/7v8c-cjjm-metadata.json",
+      "sha256": "e1aa25ceb2cba765122908e7bdb9e3e36606f5ad09472136807ea5df72fc15b8"
+    },
+    {
+      "file": "rights-evidence/osm-copyright.txt",
+      "sha256": "186453871b1d97aba89d005c32c9c9c59a7b7bf5edafd7b4b2c02874cf83bbd5"
+    },
+    {
+      "file": "rights-evidence/hoc-open-data.txt",
+      "sha256": "b2924ee85ddf4c9cb9fdf73a1bae5e7aa9aa153bdbb2b70c9489b55f78061df2"
+    },
+    {
+      "file": "rights-evidence/6933-unw5-metadata.json",
+      "sha256": "31975e3d30c7edc8e3ffa581351218651b1c749121ef2499278ea4ef52472d6c"
+    },
+    {
+      "file": "rights-evidence/assembly-disclaimer.txt",
+      "sha256": "1a7fff507e516d731eb58dea58179a2d1ef6e28d80c9833689cca53abf469686"
+    },
+    {
+      "file": "rights-evidence/communitydata-agreement.pdf",
+      "sha256": "2186c6567a65ae141bb9fb36b8e6a6dd6c125379f6dd2acc228d2e3d8676547e"
+    },
+    {
+      "file": "rights-evidence/dpcu-jr23-metadata.json",
+      "sha256": "1a465a857d2c9598ac43ea72cdffa4071339dd635257fd4008b84bd5e49fcd98"
+    },
+    {
+      "file": "rights-evidence/census-hh-meta.txt",
+      "sha256": "4e1306d7a642c5d69bc3262ebddad561474df9d76200bca5a6b2e82f5b3601e1"
+    },
+    {
+      "file": "rights-evidence/tp6q-x2v7-metadata.json",
+      "sha256": "b8a0dd7af0c8b86af9e1e6d004d0b63753edddc66c270443f851d956567978d5"
+    },
+    {
+      "file": "rights-evidence/statcan-faq.txt",
+      "sha256": "b541fff0b9dd0bdad3e1eb6f4b162c2b367d9685e6bc7d968b02fcae86b8187c"
+    },
+    {
+      "file": "rights-evidence/w6h9-w33i-metadata.json",
+      "sha256": "fd714db2201cff70a7092b00d42ca94e4adf715c76f9ad457c17da388b7b861d"
+    },
+    {
+      "file": "rights-evidence/city-site-terms.txt",
+      "sha256": "31348d0e424a1d3c04d8c95265d5ea3605126bacaffeebb366359cdb24e7c4b8"
+    },
+    {
+      "file": "rights-evidence/g5qu-w8fb-metadata.json",
+      "sha256": "cbc47e1d7ca586b620011060c60d1ac7be8b68632bbb51f9bd6a22019f62d767"
+    },
+    {
+      "file": "rights-evidence/socrata-rights-summary.json",
+      "sha256": "fa2896028e7e1cffcd899fcaadc062dbcf9d02275d2c42f6f60a063448008d0d"
+    },
+    {
+      "file": "rights-evidence/census-pop-meta.txt",
+      "sha256": "958cb52bb19bbb22f1716b68a669aa0434f765bc67996c16878204de2589ba93"
+    },
+    {
+      "file": "rights-evidence/statcan-licence.txt",
+      "sha256": "464e927c915809ebc996e9b555b5caefaec39dfd64dec14c3a9868600f1d202e"
+    },
+    {
+      "file": "rights-evidence/assessment-meta.txt",
+      "sha256": "fe500109e1c34934e7b05a2ead7509b9862a009e9acdf796b7e0f6b42e3fda45"
+    },
+    {
+      "file": "rights-evidence/elections-alberta-terms.txt",
+      "sha256": "deddbc95b5746c0fb45e337b35fb7aea09a8f0c7e9552ccda46f6ba9a4898983"
+    },
+    {
+      "file": "rights-evidence/flood-item.txt",
+      "sha256": "65915fb331b297e9907690d5a715a75062b6dc04c3bae84bfdae5fc17e705d5c"
+    },
+    {
+      "file": "rights-evidence/openfreemap-style.json",
+      "sha256": "a0f5b8487480a47ba5a5eaf25e165a19789dfa422f9ef9442f04da79c7d216db"
+    },
+    {
+      "file": "rights-evidence/catalog-Ward-Boundaries.json",
+      "sha256": "dd6b094d868c77698decc0056e11f6d9359539993bd905d67cf8313e8dc39b5e"
+    },
+    {
+      "file": "rights-evidence/catalog-tax-rates.json",
+      "sha256": "f248ccb535e11c41b694ad9ef08f1be561ffb18393b3c509b8be54ac3d49f97b"
+    },
+    {
+      "file": "rights-evidence/catalog-councillors.json",
+      "sha256": "6498b734199b21b0daed514e5e5a36b77082a2a176e585701146ab9ced7e0014"
+    },
+    {
+      "file": "rights-evidence/alberta-open-licence.txt",
+      "sha256": "6872fb3e356790849a6c38caa8039757796521b38898af12385b453da32e0545"
+    },
+    {
+      "file": "rights-evidence/openmaptiles-license.txt",
+      "sha256": "6b7862d9537cd3160f10034b8bb0b8d68165da134ea2001080166aa0b624e15c"
+    },
+    {
+      "file": "rights-evidence/flood-layer.json",
+      "sha256": "87a6a971d1b8aa90a21634713dd2b8bf3bc8490be20d347b907162203a44ac02"
+    },
+    {
+      "file": "rights-evidence/census-catalogue.txt",
+      "sha256": "26ec5c7071a2fc5d30a940effee21eef49400473c56fe5551533ad35466b162f"
+    },
+    {
+      "file": "rights-evidence/qndb-27qm-metadata.json",
+      "sha256": "7d6d212a5c1817c97fb2580317de77f4d7e6299ed4fbf3d9a3408ec6eb957217"
+    },
+    {
+      "file": "rights-evidence/alberta-disclaimer.txt",
+      "sha256": "c40aaf16ad5035ccaa4f48090afce80353c6811f24c2836fb5efbbb4dabd5ef4"
+    },
+    {
+      "file": "rights-evidence/openfreemap-tos.txt",
+      "sha256": "3d9b8f0b0e49aebc571089d50679bf6af7ad41fec57ee34385e5861443ffcbd5"
+    },
+    {
+      "file": "rights-evidence/ward-open-data.txt",
+      "sha256": "501de836b88be0a82b9af264bee8fa768a66abb5ac670b802bf7f696171b0e96"
+    },
+    {
+      "file": "rights-evidence/assembly.html",
+      "sha256": "6453863d60d6cb5684903ee4e23db0008cb375032073f101c6032fae570b1ca9"
+    }
+  ],
+  "factsVersusContractNote": "No copyright in isolated facts is a separate rationale from a website licence. City website prohibits automated extraction; CMHC restricts source republication. These contractual notices are recorded rather than silently overridden by a facts rationale; no definitive contract-enforceability opinion is made.",
+  "implementedRemediation": {
+    "crime": "Restricted 2020–Q2 2026 workbook extract replaced with City OGL historical 2018–2019 dataset 848s-4m4z. Current CPS report remains an external link. No current risk inference.",
+    "demographics": "City PDF-derived asset replaced by City OGL f9wk-wej9 and msjx-5ygv; income and tenure are external source links.",
+    "municipal": "Names and ward geometry use tz8z-hyaz. Removed 220 copied website community-list rows; all 313 community fallbacks independently recalculated from open surr-xmvs/tz8z-hyaz polygons. 305 single-ward fallbacks, 8 require address resolution.",
+    "quadrants": "Replaced with expressly open g2n2-qnvh geometry, dated 26 July 2021. 2026 aggregates remain based on address suffixes.",
+    "electoral": "Source vertices preserved; no geometry simplification/repair of provincial source.",
+    "maps": "Linked OpenFreeMap, OpenMapTiles and OSM credits displayed on map; City2025 credit in aerial mode; print reports contain no aerial or map screenshots.",
+    "software": "Full scoped third-party notices provided at /THIRD-PARTY-NOTICES.txt. Native build-only packages are not part of source export.",
+    "amenities": "City open point sources and separate OSM ODbL extracts with exact query/capture metadata and downloadable derived data.",
+    "calculations": "Isolated factual constants and original arithmetic retained with dated source links; source prose and table presentation not copied.",
+    "electionAcknowledgements": "Full original report/table titles, publishers, original-version URLs and unofficial reproduction notices included in data and visible current/history panels; source values unchanged.",
+    "portableAttribution": "City and OSM portable print credits, derivative extract links, Positron change notice and standalone map-asset licence metadata added.",
+    "albertaLicence": "Full Open Government Licence – Alberta v2.2 verified through ordinary Safari on 14 September 2026; exact FAMA metadata confirms the licence applies.",
+    "privacyControls": "Optional browser-local saves/checklists can be cleared in About and /privacy, with open-tab synchronization. The dedicated notice names Abdullah Zubair, az28140@icloud.com, Vercel/City/map/Apple processing and international/retention limitations. Lookups use POST and no-store; explicit shared links may contain addresses. No analytics SDK, lead/account database or custom log drain added. Hobby DPA coverage and applicable-law duties are not certified.",
+    "provincial": "Removed current Assembly-derived roster fields from all 26 provincial entries. District-only stubs and official-directory links remain; historical election results retain independent Elections Alberta provenance."
+  },
+  "addedSources": [
+    {
+      "id": "historical-crime",
+      "url": "https://data.calgary.ca/d/848s-4m4z",
+      "licence": "calgary-open"
+    },
+    {
+      "id": "gtfs",
+      "url": "https://data.calgary.ca/d/npk7-z3bj",
+      "licence": "calgary-open"
+    },
+    {
+      "id": "amenity-extracts",
+      "url": "https://www.openstreetmap.org/copyright",
+      "licence": "ODbL1.0",
+      "downloads": [
+        "/data/access-amenities-osm.geojson",
+        "/data/access-supplement-osm.geojson"
+      ]
+    }
+  ],
+  "publicationReviewAddendum": {
+    "reviewedOn": "2026-09-14",
+    "supersedesEarlierStatus": true,
+    "reportUrl": "/PUBLIC-SHARING-REVIEW.md",
+    "albertaLicenceTextVerified": true,
+    "albertaLicenceVersion": "2.2",
+    "remainingOperationalConditions": [
+      "Keep the project noncommercial or review restricted source permissions before changing its use.",
+      "Keep privacy details current when providers or data handling change; assess which laws apply to the actual operation.",
+      "The descriptive project name has only had a preliminary search, not formal trademark clearance."
+    ],
+    "assemblyElectionPeriodCondition": "materials may not be used in advertising for political party purposes or during general election or by-election periods;",
+    "assemblyConditionNote": "The public demo uses link-only current MLA details. The ambiguous condition is preserved as historical review evidence, not relied upon to reproduce the current roster.",
+    "operatingBase": "Alberta, Canada. Provider locations are described separately in /privacy.",
+    "brandReview": {
+      "name": "Calgary Neighbourhood Analytics",
+      "exactFullNameMatchSurfacedInPreliminaryWebSearch": false,
+      "formalTrademarkClearance": false,
+      "reviewedOn": "2026-09-14",
+      "preliminarySearchScope": "Six public-web queries for exact Canadian/US spelling, plural Neighbourhoods, concatenated variants and indexed CIPO-domain results; selected page reads. No direct registry, corporate-name or domain search.",
+      "relatedDescriptiveUse": "Neighbourhood analytics is used descriptively by Property.ca; no exclusivity established."
+    },
+    "publicDemo": {
+      "host": "Vercel",
+      "deploymentStatus": "See accompanying deployment record; this source document does not certify deployment in advance.",
+      "privacyContact": "mailto:az28140@icloud.com",
+      "providerReferences": [
+        "https://vercel.com/legal/privacy-notice",
+        "https://vercel.com/legal/dpa",
+        "https://security.vercel.com",
+        "https://vercel.com/docs/logs/runtime",
+        "https://openfreemap.org/privacy/",
+        "https://www.esri.com/en-us/privacy/privacy-statements/privacy-statement",
+        "https://www.apple.com/legal/privacy/"
+      ],
+      "privacyPolicy": "/privacy",
+      "privacyReviewedOn": "2026-09-14",
+      "privacyContractLimitation": "Vercel published DPA processor terms specify Pro/Enterprise; confirmed Hobby processor/transfer coverage is not established.",
+      "sourceRepository": "https://github.com/AHZR199/calgary-neighbourhood-analytics"
+    }
+  }
+}

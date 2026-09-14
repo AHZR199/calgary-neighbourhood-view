@@ -1,0 +1,32 @@
+#dependencies
+/node_modules/
+
+#build output
+/.next/
+/.next-vercel/
+/out/
+/dist/
+/coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+#local config
+.env*
+.npmrc
+/.vercel/
+*.pem
+*.key
+.DS_Store
+
+#scratch files
+/work/
+/outputs/
+*.log
+
+#old local tooling
+/.openai/
+/.sites-runtime/
+/.agents/
+/.codex/
+/.wrangler/
+/.vinext/

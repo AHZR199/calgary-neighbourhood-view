@@ -1,0 +1,71 @@
+{
+  "sourceFixture": "final-air-audit-current.xml",
+  "sourceObservedAt": "2026-09-13T21:00:00Z",
+  "cases": [
+    {
+      "name": "normal",
+      "xml": "<?xml version='1.0' encoding='utf-8'?>\n\n<conditionAirQuality productHeader=\"AQ_OBS\">\n\t<region nameEn=\"Calgary\" nameFr=\"Calgary\">IAKID</region>\n\n\t<dateStamp name=\"aqObserved\" zoneEn=\"MDT\" zoneFr=\"HAR\">\n\t\t<year>2026</year>\n\t\t<month nameEn=\"September\" nameFr=\"septembre\">9</month>\n\t\t<day nameEn=\"Sunday\" nameFr=\"dimanche\">13</day>\n\t\t<hour clock=\"12h\" ampm=\"PM\">3</hour>\n\t\t<minute>00</minute>\n\t\t<second/>\n\t\t<UTCStamp>20260913210000</UTCStamp>\n\t\t<textSummary lang=\"EN\">3:00 PM MDT Sunday 13 September 2026</textSummary>\n\t\t<textSummary lang=\"FR\">15h00 HAR dimanche 13 septembre 2026</textSummary>\n\t</dateStamp>\n\n\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\n\t<associatedStations>\n\t\t<station napsid=\"90222\" nameEn=\"Calgary Northwest\" nameFr=\"Calgary - nord-ouest\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90228\" nameEn=\"Calgary Central\" nameFr=\"Calgary - centre\">\n\t\t\t<airQualityHealthIndex>1.9</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90229\" nameEn=\"Calgary Southeast\" nameFr=\"Calgary - sud-est\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\t</associatedStations>\n\n\t<specialNotes/>\n</conditionAirQuality>\n",
+      "expected": {
+        "city": {
+          "aqhi": 1.8,
+          "displayAqhi": 2,
+          "displayLabel": "2",
+          "riskCategory": "Low"
+        },
+        "at": "2026-09-13T21:00:00Z",
+        "stationCount": 3,
+        "stationValues": [1.8, 1.9, 1.8]
+      }
+    },
+    {
+      "name": "boundary-3.4",
+      "xml": "<?xml version='1.0' encoding='utf-8'?>\n\n<conditionAirQuality productHeader=\"AQ_OBS\">\n\t<region nameEn=\"Calgary\" nameFr=\"Calgary\">IAKID</region>\n\n\t<dateStamp name=\"aqObserved\" zoneEn=\"MDT\" zoneFr=\"HAR\">\n\t\t<year>2026</year>\n\t\t<month nameEn=\"September\" nameFr=\"septembre\">9</month>\n\t\t<day nameEn=\"Sunday\" nameFr=\"dimanche\">13</day>\n\t\t<hour clock=\"12h\" ampm=\"PM\">3</hour>\n\t\t<minute>00</minute>\n\t\t<second/>\n\t\t<UTCStamp>20260913210000</UTCStamp>\n\t\t<textSummary lang=\"EN\">3:00 PM MDT Sunday 13 September 2026</textSummary>\n\t\t<textSummary lang=\"FR\">15h00 HAR dimanche 13 septembre 2026</textSummary>\n\t</dateStamp>\n\n\t<airQualityHealthIndex>3.4</airQualityHealthIndex>\n\n\t<associatedStations>\n\t\t<station napsid=\"90222\" nameEn=\"Calgary Northwest\" nameFr=\"Calgary - nord-ouest\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90228\" nameEn=\"Calgary Central\" nameFr=\"Calgary - centre\">\n\t\t\t<airQualityHealthIndex>1.9</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90229\" nameEn=\"Calgary Southeast\" nameFr=\"Calgary - sud-est\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\t</associatedStations>\n\n\t<specialNotes/>\n</conditionAirQuality>\n",
+      "expected": {
+        "city": {
+          "aqhi": 3.4,
+          "displayAqhi": 3,
+          "displayLabel": "3",
+          "riskCategory": "Low"
+        },
+        "at": "2026-09-13T21:00:00Z",
+        "stationCount": 3,
+        "stationValues": [1.8, 1.9, 1.8]
+      }
+    },
+    {
+      "name": "boundary-6.4",
+      "xml": "<?xml version='1.0' encoding='utf-8'?>\n\n<conditionAirQuality productHeader=\"AQ_OBS\">\n\t<region nameEn=\"Calgary\" nameFr=\"Calgary\">IAKID</region>\n\n\t<dateStamp name=\"aqObserved\" zoneEn=\"MDT\" zoneFr=\"HAR\">\n\t\t<year>2026</year>\n\t\t<month nameEn=\"September\" nameFr=\"septembre\">9</month>\n\t\t<day nameEn=\"Sunday\" nameFr=\"dimanche\">13</day>\n\t\t<hour clock=\"12h\" ampm=\"PM\">3</hour>\n\t\t<minute>00</minute>\n\t\t<second/>\n\t\t<UTCStamp>20260913210000</UTCStamp>\n\t\t<textSummary lang=\"EN\">3:00 PM MDT Sunday 13 September 2026</textSummary>\n\t\t<textSummary lang=\"FR\">15h00 HAR dimanche 13 septembre 2026</textSummary>\n\t</dateStamp>\n\n\t<airQualityHealthIndex>6.4</airQualityHealthIndex>\n\n\t<associatedStations>\n\t\t<station napsid=\"90222\" nameEn=\"Calgary Northwest\" nameFr=\"Calgary - nord-ouest\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90228\" nameEn=\"Calgary Central\" nameFr=\"Calgary - centre\">\n\t\t\t<airQualityHealthIndex>1.9</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90229\" nameEn=\"Calgary Southeast\" nameFr=\"Calgary - sud-est\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\t</associatedStations>\n\n\t<specialNotes/>\n</conditionAirQuality>\n",
+      "expected": {
+        "city": {
+          "aqhi": 6.4,
+          "displayAqhi": 6,
+          "displayLabel": "6",
+          "riskCategory": "Moderate"
+        },
+        "at": "2026-09-13T21:00:00Z",
+        "stationCount": 3,
+        "stationValues": [1.8, 1.9, 1.8]
+      }
+    },
+    {
+      "name": "above-10",
+      "xml": "<?xml version='1.0' encoding='utf-8'?>\n\n<conditionAirQuality productHeader=\"AQ_OBS\">\n\t<region nameEn=\"Calgary\" nameFr=\"Calgary\">IAKID</region>\n\n\t<dateStamp name=\"aqObserved\" zoneEn=\"MDT\" zoneFr=\"HAR\">\n\t\t<year>2026</year>\n\t\t<month nameEn=\"September\" nameFr=\"septembre\">9</month>\n\t\t<day nameEn=\"Sunday\" nameFr=\"dimanche\">13</day>\n\t\t<hour clock=\"12h\" ampm=\"PM\">3</hour>\n\t\t<minute>00</minute>\n\t\t<second/>\n\t\t<UTCStamp>20260913210000</UTCStamp>\n\t\t<textSummary lang=\"EN\">3:00 PM MDT Sunday 13 September 2026</textSummary>\n\t\t<textSummary lang=\"FR\">15h00 HAR dimanche 13 septembre 2026</textSummary>\n\t</dateStamp>\n\n\t<airQualityHealthIndex>10.8</airQualityHealthIndex>\n\n\t<associatedStations>\n\t\t<station napsid=\"90222\" nameEn=\"Calgary Northwest\" nameFr=\"Calgary - nord-ouest\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90228\" nameEn=\"Calgary Central\" nameFr=\"Calgary - centre\">\n\t\t\t<airQualityHealthIndex>1.9</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90229\" nameEn=\"Calgary Southeast\" nameFr=\"Calgary - sud-est\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\t</associatedStations>\n\n\t<specialNotes/>\n</conditionAirQuality>\n",
+      "expected": {
+        "city": {
+          "aqhi": 10.8,
+          "displayAqhi": 11,
+          "displayLabel": "10+",
+          "riskCategory": "Very high"
+        },
+        "at": "2026-09-13T21:00:00Z",
+        "stationCount": 3,
+        "stationValues": [1.8, 1.9, 1.8]
+      }
+    },
+    {
+      "name": "missing-city",
+      "xml": "<?xml version='1.0' encoding='utf-8'?>\n\n<conditionAirQuality productHeader=\"AQ_OBS\">\n\t<region nameEn=\"Calgary\" nameFr=\"Calgary\">IAKID</region>\n\n\t<dateStamp name=\"aqObserved\" zoneEn=\"MDT\" zoneFr=\"HAR\">\n\t\t<year>2026</year>\n\t\t<month nameEn=\"September\" nameFr=\"septembre\">9</month>\n\t\t<day nameEn=\"Sunday\" nameFr=\"dimanche\">13</day>\n\t\t<hour clock=\"12h\" ampm=\"PM\">3</hour>\n\t\t<minute>00</minute>\n\t\t<second/>\n\t\t<UTCStamp>20260913210000</UTCStamp>\n\t\t<textSummary lang=\"EN\">3:00 PM MDT Sunday 13 September 2026</textSummary>\n\t\t<textSummary lang=\"FR\">15h00 HAR dimanche 13 septembre 2026</textSummary>\n\t</dateStamp>\n\n\t<airQualityHealthIndex/>\n\n\t<associatedStations>\n\t\t<station napsid=\"90222\" nameEn=\"Calgary Northwest\" nameFr=\"Calgary - nord-ouest\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90228\" nameEn=\"Calgary Central\" nameFr=\"Calgary - centre\">\n\t\t\t<airQualityHealthIndex>1.9</airQualityHealthIndex>\n\t\t</station>\n\n\t\t<station napsid=\"90229\" nameEn=\"Calgary Southeast\" nameFr=\"Calgary - sud-est\">\n\t\t\t<airQualityHealthIndex>1.8</airQualityHealthIndex>\n\t\t</station>\n\t</associatedStations>\n\n\t<specialNotes/>\n</conditionAirQuality>\n",
+      "expectedError": true
+    }
+  ]
+}
