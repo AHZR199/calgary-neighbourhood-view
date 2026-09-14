@@ -36,6 +36,12 @@ npm start
 
 `check` runs TypeScript, lint, tests and data validation. The production build uses the standard `.next` directory; `npm start` serves it at `http://localhost:3000`.
 
+## Checks and deployments
+
+GitHub Actions runs the code checks, tests, data validation and a production build on pushes to `main` and pull requests. Vercel is connected to this repository and runs `npm run check` before its build. Pushes to `main` update the demo once those checks and the build pass.
+
+The daily source check reports changes in the City's assessment metadata or schema. It leaves the bundled data alone so updates can be reviewed first.
+
 ## Working on the data
 
 Bundled snapshots live in `public/data`. Keep a source's observation period separate from the day it was downloaded. Missing values should stay missing, and a new download shouldn't make an old dataset look current.
