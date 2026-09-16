@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { ChevronDown, Layers3 } from 'lucide-react';
 import {
   Dialog,
@@ -12,6 +13,11 @@ import {
 import { LAYERS } from '@/lib/atlas/data';
 import type { Layer } from '@/lib/atlas/data';
 import type { Overlay } from './city-map';
+import type {
+  TransitMapLayers,
+  TransitMapStatus,
+} from '@/lib/atlas/map-overlays';
+import { TransitLayerChoices } from './transit-layers';
 
 const overlays: { id: Overlay; label: string; description: string }[] = [
   {
@@ -19,7 +25,11 @@ const overlays: { id: Overlay; label: string; description: string }[] = [
     label: 'Development',
     description: 'Applications in the four detailed areas',
   },
-  { id: 'transit', label: 'Transit', description: 'Public transit stops' },
+  {
+    id: 'transit',
+    label: 'Transit',
+    description: 'CTrain, bus routes and stops',
+  },
   {
     id: 'parks',
     label: 'Parks & pathways',
@@ -47,14 +57,23 @@ export function MapLayers({
   overlay,
   onLayerChange,
   onOverlayChange,
+  transitLayers,
+  transitStatus,
+  onTransitLayersChange,
+  onShowGreenLine,
 }: {
   layer: Layer;
   overlay: Overlay;
   onLayerChange: (layer: Layer) => void;
   onOverlayChange: (overlay: Overlay) => void;
+  transitLayers: TransitMapLayers;
+  transitStatus: TransitMapStatus;
+  onTransitLayersChange: (layers: TransitMapLayers) => void;
+  onShowGreenLine: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button type="button" className="map-layers-button glass">
           <Layers3 size={19} aria-hidden="true" />
@@ -71,6 +90,15 @@ export function MapLayers({
           </DialogDescription>
         </div>
         <div className="map-layers-options">
+          <TransitLayerChoices
+            layers={transitLayers}
+            status={transitStatus}
+            onChange={onTransitLayersChange}
+            onShowGreenLine={() => {
+              setOpen(false);
+              onShowGreenLine();
+            }}
+          />
           <fieldset className="map-layer-group">
             <legend>Data layers</legend>
             <div className="map-layer-grid">

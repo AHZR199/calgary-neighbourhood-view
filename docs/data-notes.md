@@ -51,3 +51,27 @@ Election comparisons cover the districts relevant to the four study communities:
 Review the upstream data and its reuse terms before replacing a file. Update its period, coverage, source cards and [manifest hashes](data-manifest.json) together, then run the project checks. Live endpoints should return a dated result or an unavailable state, never quietly relabel a saved observation as fresh.
 
 The [source licence register](../public/data/rights-register.json), [public-sharing review](../public/PUBLIC-SHARING-REVIEW.md) and [third-party notices](../public/THIRD-PARTY-NOTICES.txt) explain the source-specific conditions. Keep attribution and limitations attached to copies and exports.
+
+## Radon, construction and sunlight
+
+The 16 September feature review added a small Health Canada open-data extract: 99 Calgary CMA radon readings from 2012–2013, of which 14 strictly exceed 200 Bq/m³. The displayed 14.1% describes this unweighted historical sample only. Tests lasted 61–149 days, with 96 lasting at least 90 days. Small postal-area cells are not republished or used for neighbourhood ratings. The [extract](../public/data/radon.json) includes the source CSV checksum and method. Newer 2024 research is linked, not copied. Current Health Canada testing advice is distinct from the historical survey method.
+
+Construction year uses the existing City `year_of_construction` field, defined as Account AYOC. The lookup groups parcel rows by assessment account, checks agreement, and keeps unit accounts separate. Years 1800 or earlier, non-integer values and years after the roll/current year remain unverified. This plausibility rule is not a documented City sentinel definition. The recorded year does not certify completion or renovation dates. No age is inferred from neighbours, pipe dates or assessment changes.
+
+No free source with established public-redistribution rights for a property's last-sale date and price was found. myTax's signed-in valuation-period search and Alberta's paid land-record services remain external links. Missing sale data is not 'never sold'; an assessment value is not a transaction price.
+
+Solar bearing and elevation are calculated locally from NOAA's general solar equations, using the selected property's map coordinates. Sunrise and sunset use a −0.833° horizon threshold. The chart shows geometric elevation, with both axes labelled. Dates can be explored from 2000 to 2100. These are approximate planning calculations, not a shadow or energy model. Trees, buildings, terrain, weather, roof pitch and window directions are unknown; facing direction is selected by the visitor.
+
+Solar time follows historical America/Edmonton rules and explicitly applies Alberta's published permanent UTC−6 rule from November 2026, including on browsers with outdated timezone databases. Skipped spring hours are unavailable; the first occurrence is used for a repeated autumn hour. No solar service, device-location access or saved preferences are added.
+
+## Source-monitor status
+
+An upstream row-update timestamp is a review warning, not an execution failure. The scheduled workflow writes the old/new timestamps and required review to its job summary and artifact. Source-schema mismatches, malformed metadata and exhausted connection retries still fail. Published snapshots are never replaced automatically, and the reviewed timestamp is not advanced just to clear a warning.
+
+## Transit map overlays
+
+Bus and CTrain can be shown independently over any data layer. Operating routes use the same official GTFS archive as the existing schedule analysis, captured 14 September 2026 with active service dates from 9 September to 20 December. The extract contains 260 routes: 258 bus and CTrain 201/202. Its 702 shape variants come from trips with active calendar dates after service exceptions; no station-to-station lines are invented. Display simplification reduces 350,060 source points to 49,641 vertices. Route variants can overlap or operate on different days; a visible line is not a live service guarantee. `scripts/build-transit-routes.py` rebuilds the extract from the reviewed archive, with source checksum and City licence metadata retained.
+
+The Green Line is a separate dashed, non-operating layer. It uses the current City interactive-map services, updated 10 September 2026, rather than the older Socrata alignment. Phase 1 contains 27 line segments and 11 planned stations, between Shepard and 10 Avenue / 2 Street SW. The southeast segment is under construction; the downtown surface alignment follows the City's 8 September update and remains in planning and design. Future extensions are excluded. The geometry is cartographic, not a parcel or survey determination, and carries no promised opening date or property-value effect. Green Line geometry never enters the current transit score or nearby scheduled-service calculation.
+
+Both datasets carry Open Government Licence – City of Calgary attribution. The Green Line alignment's ArcGIS item and station service explicitly link that licence. Original service field descriptions include older wording, so the selected phase and current station names are checked against the City's dated project update before publishing a snapshot.

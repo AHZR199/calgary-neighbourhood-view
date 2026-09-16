@@ -10,9 +10,12 @@ A side project by Abdullah Zubair for exploring the public records behind Calgar
 - 2026 residential assessment summaries, sample properties and live City address lookups. Assessments aren't sale prices.
 - Mortgage, tax and ownership-cost calculators with editable assumptions and costs left unconfirmed when the data is missing.
 - Census context, transit stops and dated schedules, plus nearby schools, parks, groceries and other amenities.
+- Separate bus and CTrain route overlays, plus a dashed Green Line Phase 1 map. Planned service stays out of the transit score.
 - Historical 2018–2019 crime counts for selected categories, with current CPS reports linked separately. There is no current safety score.
 - Public water-service records and detailed water-main/break extracts for four study communities. Private plumbing still needs inspection.
 - Dated AQHI observations, a live refresh, historical PM2.5 readings and selected flood/noise context.
+- The City's recorded construction year, a sun-direction calculator and seasonal daylight comparisons for a selected address.
+- Historical Calgary-region radon measurements and current testing guidance. Regional data can't establish radon levels in a home.
 - Federal and municipal representatives, links to the current MLA directory, and historical election comparisons for the study areas.
 
 Coverage varies by dataset. [Data notes](docs/data-notes.md) explain the dates, counts and gaps; the app's source cards keep those details beside the results. Saved places and checklists stay in the browser.
@@ -40,7 +43,7 @@ npm start
 
 GitHub Actions runs the code checks, tests, data validation and a production build on pushes to `main` and pull requests. Vercel is connected to this repository and runs `npm run check` before its build. Pushes to `main` update the demo once those checks and the build pass.
 
-The daily source check reports changes in the City's assessment metadata or schema. It leaves the bundled data alone so updates can be reviewed first.
+The daily source check reports changes in the City's assessment metadata or schema. Ordinary updates produce a review warning, with details in the job summary and artifact. Broken schemas and connection failures still fail. It leaves the bundled data alone so updates can be reviewed first.
 
 ## Working on the data
 
@@ -55,3 +58,5 @@ The project is operated from Alberta, Canada. There are no accounts, ads or visi
 Map credits belong with the map: OpenFreeMap, OpenMapTiles and OpenStreetMap contributors. Aerial imagery is credited to © The City of Calgary, 2025 and is viewed through the hosted service; it isn't bundled or included in printable briefs. Source data, map styles and dependencies have separate reuse terms. See the [source licence register](public/data/rights-register.json), [public-sharing review](public/PUBLIC-SHARING-REVIEW.md) and [third-party notices](public/THIRD-PARTY-NOTICES.txt).
 
 This is a research aid. It doesn't provide MLS listings, sale-price history, guaranteed school assignments, insurance quotes or property-specific legal and inspection conclusions.
+
+Sale prices and dates stay unavailable because no suitable free redistributable source was established. Sunlight calculations don't model trees, nearby buildings or window direction. The [data notes](docs/data-notes.md) and [use and limitations page](https://calgary-neighbourhood-analytics.vercel.app/terms) explain what these records and estimates can support.

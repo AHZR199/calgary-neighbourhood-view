@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LookupInputError, readLookupFields } from '@/lib/atlas/request-body';
+import {
+  normalizeAssessmentRoll,
+  summarizeConstruction,
+} from '@/lib/atlas/property-records';
 export const maxDuration = 30;
 export async function GET(request: NextRequest) {
   return lookup(
@@ -45,8 +49,8 @@ async function lookup(query: string, community: string) {
     : `upper(address) like '%${safe}%' AND assessment_class_description = 'Residential'`;
   const params = new URLSearchParams({
     $where: `roll_year = 2026 AND (${where})`,
-    $limit: '40',
-    $order: 'address,roll_number',
+    $limit: '41',
+    $order: 'address,roll_number,unique_key',
   });
   try {
     const response = await fetch(
@@ -55,13 +59,31 @@ async function lookup(query: string, community: string) {
     );
     if (!response.ok) throw new Error('Source unavailable');
     const rows = (await response.json()) as Record<string, unknown>[];
+    // omit the final account if the response may end halfway through its parcels
+    const lastRoll = rows.length === 41 ? rows.at(-1)?.roll_number : null;
+    const completeRows = rows.filter((row) => row.roll_number !== lastRoll);
+    const constructionByRoll = new Map<string, unknown[]>();
+    for (const row of completeRows) {
+      const roll = normalizeAssessmentRoll(row.roll_number);
+      if (!roll || Number(row.roll_year) !== 2026) continue;
+      const years = constructionByRoll.get(roll) || [];
+      years.push(row.year_of_construction);
+      constructionByRoll.set(roll, years);
+    }
     const seen = new Set<string>();
-    const records = rows.flatMap((r) => {
+    const records = completeRows.flatMap((r) => {
+      const roll = normalizeAssessmentRoll(r.roll_number);
       const geometry = r.multipolygon as
         { type: 'MultiPolygon'; coordinates: number[][][][] } | undefined;
       const ring = geometry?.coordinates?.[0]?.[0];
-      if (!ring?.length || seen.has(String(r.roll_number))) return [];
-      seen.add(String(r.roll_number));
+      if (
+        !roll ||
+        Number(r.roll_year) !== 2026 ||
+        !ring?.length ||
+        seen.has(roll)
+      )
+        return [];
+      seen.add(roll);
       const pts = ring.slice(0, -1);
       const longitude = pts.reduce((s, p) => s + p[0], 0) / pts.length;
       const latitude = pts.reduce((s, p) => s + p[1], 0) / pts.length;
@@ -73,6 +95,10 @@ async function lookup(query: string, community: string) {
         latitude > 52
       )
         return [];
+      const construction = summarizeConstruction(
+        constructionByRoll.get(roll) || [],
+        Number(r.roll_year),
+      );
       return [
         {
           recordId: String(r.id || `${r.roll_year}${r.roll_number}`),
@@ -86,9 +112,8 @@ async function lookup(query: string, community: string) {
             r.re_assessed_value || r.assessed_value,
           ),
           nonResidentialAssessedValue: Number(r.nr_assessed_value || 0),
-          yearBuilt: r.year_of_construction
-            ? Number(r.year_of_construction)
-            : null,
+          yearBuilt: construction.year,
+          construction,
           subPropertyUse: String(r.sub_property_use || ''),
           longitude,
           latitude,

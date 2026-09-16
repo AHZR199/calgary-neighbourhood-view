@@ -6,11 +6,37 @@ export function RightsAndAttribution() {
         <h2>Licences & attribution</h2>
       </div>
       <p>
-        Calgary Neighbourhood Analytics is an independent, noncommercial project. Each source
-        keeps its own terms; public access alone does not mean unrestricted
-        reuse.
+        Calgary Neighbourhood Analytics is an independent, noncommercial
+        project. Each source keeps its own terms; public access alone does not
+        mean unrestricted reuse.
       </p>
       <div className="rights-grid">
+        <article>
+          <h3>Radon & sunlight</h3>
+          <p>
+            Radon data: Health Canada, Radon and Thoron Data From Canadian
+            Homes, 2012–2013 Calgary CMA sample. Contains information licensed
+            under the Open Government Licence – Canada. This app calculates the
+            historical sample share; no government endorsement is implied.
+          </p>
+          <a
+            href="https://open.canada.ca/en/open-government-licence-canada"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Canada open licence <ArrowUpRight size={13} />
+          </a>
+          <a href="/data/radon.json" download>
+            Radon extract & method <ArrowUpRight size={13} />
+          </a>
+          <p>
+            Sun position uses original code implementing NOAA’s published
+            astronomical equations. Orientation guidance is paraphrased from
+            Natural Resources Canada. No third-party solar service, copied
+            calculator code, research-report graphics or address-linked radon
+            readings are included.
+          </p>
+        </article>
         <article>
           <h3>City open data</h3>
           <p>
@@ -29,6 +55,12 @@ export function RightsAndAttribution() {
             and the historical crime extract are transformed from identified
             open datasets. Their source dates and limits remain visible.
           </p>
+          <a href="/data/transit-routes.geojson" download>
+            Bus & CTrain routes <ArrowUpRight size={13} />
+          </a>
+          <a href="/data/green-line.geojson" download>
+            Planned Green Line & source notes <ArrowUpRight size={13} />
+          </a>
         </article>
         <article>
           <h3>Maps & nearby places</h3>
@@ -75,10 +107,10 @@ export function RightsAndAttribution() {
           </a>
           <p>
             MP fields use the House of Commons designated open XML. Historical
-            election information follows the election authorities’
-            noncommercial reproduction terms. Full titles, publishers,
-            election dates and original links are retained with the records.
-            Reproductions are unofficial and unendorsed.
+            election information follows the election authorities’ noncommercial
+            reproduction terms. Full titles, publishers, election dates and
+            original links are retained with the records. Reproductions are
+            unofficial and unendorsed.
           </p>
           <p>
             Current MLA names, parties and vacancy status are linked to the
@@ -115,11 +147,11 @@ export function RightsAndAttribution() {
         <article>
           <h3>Calculations & linked material</h3>
           <p>
-            Neighbourhood Analytics’s calculations use individually sourced numeric facts and
-            original formulas. Estimates are not official valuations or tax
-            bills. Current CPS workbook figures and unconfirmed City profile-PDF
-            extracts are linked at their original source rather than
-            redistributed.
+            Neighbourhood Analytics’s calculations use individually sourced
+            numeric facts and original formulas. Estimates are not official
+            valuations or tax bills. Current CPS workbook figures and
+            unconfirmed City profile-PDF extracts are linked at their original
+            source rather than redistributed.
           </p>
           <p>
             Walkability and transit figures are original proximity estimates. No
@@ -154,7 +186,7 @@ export function RightsAndAttribution() {
         </a>
       </div>
       <p className="quiet-note">
-        Reviewed 14 September 2026 for the current noncommercial use. This is a
+        Reviewed 16 September 2026 for the current noncommercial use. This is a
         source and rights review, not a legal clearance or a promise that every
         later use is permitted. Commercial services, advertising, brokerage
         promotion or redistribution of source archives need a fresh review.

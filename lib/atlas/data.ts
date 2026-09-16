@@ -1,4 +1,8 @@
 import type { FeatureCollection, MultiPolygon, Polygon } from 'geojson';
+import {
+  summarizeConstruction,
+  type ConstructionRecord,
+} from './property-records';
 export type Layer =
   'overview' | 'property' | 'crime' | 'water' | 'air' | 'politics' | 'nearby';
 export type View = 'explore' | 'saved' | 'sources' | 'about';
@@ -23,6 +27,7 @@ export interface Property {
   residentialAssessedValue: number;
   nonResidentialAssessedValue: number;
   yearBuilt: number | null;
+  construction?: ConstructionRecord;
   longitude: number;
   latitude: number;
   geometry?: MultiPolygon | Polygon;
@@ -140,7 +145,7 @@ export const LAYERS: { id: Layer; label: string; description: string }[] = [
   {
     id: 'property',
     label: 'Property',
-    description: 'Assessments & property tax',
+    description: 'Home records, sunlight & ownership costs',
   },
   {
     id: 'crime',
@@ -148,7 +153,11 @@ export const LAYERS: { id: Layer; label: string; description: string }[] = [
     description: 'Historical records & current CPS source',
   },
   { id: 'water', label: 'Water', description: 'Public water infrastructure' },
-  { id: 'air', label: 'Air', description: 'Calgary air quality' },
+  {
+    id: 'air',
+    label: 'Air & radon',
+    description: 'Outdoor air & indoor radon context',
+  },
   {
     id: 'politics',
     label: 'Civic',
@@ -242,7 +251,13 @@ export async function loadAtlas(): Promise<AtlasData> {
       ...communities,
       features: [...communities.features, ...quadrants.features],
     },
-    properties,
+    properties: properties.map((property) => {
+      const construction = summarizeConstruction(
+        [property.yearBuilt],
+        property.rollYear,
+      );
+      return { ...property, yearBuilt: construction.year, construction };
+    }),
     communityWards: Object.fromEntries(
       reps.communities.map((c) => [
         c.communityCode,
@@ -262,6 +277,61 @@ export async function loadAtlas(): Promise<AtlasData> {
   };
 }
 export const SOURCES = [
+  {
+    id: 'construction',
+    category: 'Property',
+    name: 'Recorded construction year',
+    publisher: 'City of Calgary',
+    url: 'https://data.calgary.ca/d/4bsw-nn7w',
+    date: '2026 assessment roll · schema reviewed 16 Sep 2026',
+    scope: 'Exact assessment account · City year_of_construction field',
+    detail:
+      'The source defines this as Account AYOC (Actual year of construction). It is not a completion certificate or renovation date. Duplicate parcel rows for the same account are checked for agreement; conflicting years, non-integer values, years 1800 or earlier and future dates remain unconfirmed. The lower bound is an app plausibility rule, not a City-documented sentinel. Unit accounts are kept separate. Bundled examples retain their original snapshot dates; address searches query the current source.',
+  },
+  {
+    id: 'sales',
+    category: 'Property',
+    name: 'Sale-history availability',
+    publisher: 'City of Calgary · Alberta Land Titles',
+    url: 'https://www.calgary.ca/property-owners/assessment/mytax.html',
+    date: 'Access and reuse checked 16 Sep 2026',
+    scope: 'Individual sale dates and prices · unavailable in this app',
+    detail:
+      'The reviewed open assessment datasets do not include transaction dates or prices. myTax provides a signed-in, valuation-period sales search with restrictions on automated extraction and republication. Alberta title and transfer documents involve paid access and are not a free public-reuse feed. These services are linked, not scraped. An unavailable sale record does not mean never sold; assessment changes and title-registration dates are not substituted for sale prices or sale dates.',
+  },
+  {
+    id: 'solar',
+    category: 'Environment',
+    name: 'Sun position & seasonal daylight',
+    publisher: 'App calculations from NOAA published equations',
+    url: 'https://gml.noaa.gov/grad/solcalc/solareqns.PDF',
+    date: 'Method reviewed 16 Sep 2026 · date chosen by visitor',
+    scope: 'Selected property coordinates · unobstructed horizon',
+    detail:
+      'Approximate solar bearing clockwise from true north and geometric elevation are calculated in the browser. Sunrise and sunset use the conventional −0.833° horizon threshold. Daylight duration is not direct-sun exposure at the home. Trees, buildings, terrain, weather, facade orientation, glazing and roof pitch are not modelled. No solar API, device-location access or tracking is used. NOAA no longer maintains its online calculator; the app uses an independently implemented approximation with reference checks, not a certified design tool.',
+  },
+  {
+    id: 'solar-orientation',
+    category: 'Environment',
+    name: 'Window orientation & comfort',
+    publisher: 'Natural Resources Canada',
+    url: 'https://prod-natural-resources.azure.cloud.nrcan-rncan.gc.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors',
+    date: 'Guidance checked 16 Sep 2026',
+    scope: 'General orientation trade-offs · visitor-selected facing direction',
+    detail:
+      'South-facing windows can support winter solar gains; summer shading and glazing still matter. East and west exposure change the timing of sun, glare and heat. The app paraphrases general guidance and does not identify a universally ideal orientation, infer window direction from an address or estimate energy performance. Verify the actual rooms and obstructions on site.',
+  },
+  {
+    id: 'solar-time',
+    category: 'Environment',
+    name: 'Calgary solar-display time',
+    publisher: 'Government of Alberta',
+    url: 'https://www.alberta.ca/albertas-new-time-system-abt',
+    date: 'Time rule checked 16 Sep 2026',
+    scope: 'Calgary local time · historical DST and permanent Alberta Time',
+    detail:
+      'Alberta says clocks will not return to Mountain Standard Time in November 2026 and will remain UTC−6 year-round. Solar controls apply that rule explicitly because some browser time-zone databases still contain the previous autumn clock change. Earlier dates use historical America/Edmonton time. A skipped spring hour is unavailable; a repeated autumn hour uses its first occurrence.',
+  },
   {
     id: 'essentials',
     category: 'Nearby',
@@ -295,7 +365,18 @@ export const SOURCES = [
     date: 'Feed 9 Sep–20 Dec 2026 · captured 14 Sep 2026',
     scope: '6,214 citywide stops, 260 routes and CTrain platform groups',
     detail:
-      'Official GTFS. Train platforms are identified by their served rail routes. Nearby routes use published stops within 800 m of the selected point. Weekday, Saturday and Sunday sample dates are shown separately; schedules are not live arrivals. An original transit access estimate combines straight-line proximity, distance-weighted midday service and distinct route choice. No proprietary Transit Score data is used.',
+      'Official GTFS. Train platforms are identified by their served rail routes. Independent bus and CTrain map controls show source route shapes and stops; the lines are scheduled paths, not live vehicles or walking connections. Nearby routes use published stops within 800 m of the selected point. Weekday, Saturday and Sunday sample dates are shown separately; schedules are not live arrivals. An original transit access estimate combines straight-line proximity, distance-weighted midday service and distinct route choice. Planned Green Line service is excluded. No proprietary Transit Score data is used.',
+  },
+  {
+    id: 'green-line',
+    category: 'Nearby',
+    name: 'Green Line Phase 1 · planned route & stations',
+    publisher: 'City of Calgary',
+    url: 'https://www.calgary.ca/green-line/downtown-segment.html',
+    date: 'Map data updated 10 Sep 2026 · checked 16 Sep 2026',
+    scope: 'Shepard to 10 Avenue / 2 Street SW · not operating',
+    detail:
+      'The dashed overlay uses the City’s current interactive-map geometry: 27 Phase 1 line segments and 11 planned stations. The southeast section is under construction; the downtown surface route was selected on 8 September 2026 and remains in planning and design. The older open-data alignment was not used because it retains superseded downtown geometry. Cartographic positions are approximate. Future extensions are not shown; opening dates, station access and service frequency are not guaranteed. Planned service does not contribute to transit-access estimates. Downloadable geometry retains City Open Government Licence attribution and exact service provenance.',
   },
   {
     id: 'assessments',
@@ -531,13 +612,24 @@ export const SOURCES = [
   {
     id: 'radon',
     category: 'Environment',
-    name: 'Residential radon measurement',
+    name: 'Calgary-region indoor radon survey',
     publisher: 'Health Canada',
-    url: 'https://www.canada.ca/en/health-canada/services/health-risks-safety/radiation/radon/testing-your-home.html',
-    date: 'Guidance checked 13 Sep 2026',
-    scope: 'Individual dwelling · testing evidence',
+    url: 'https://open.canada.ca/data/dataset/744d8a3b-b9e0-41b8-be5f-5f869a36a221',
+    date: 'Survey 2012–2013 · retrieved 16 Sep 2026',
+    scope: 'Calgary census metropolitan area · 99 historical measurements',
     detail:
-      'Radon levels in one home cannot be established from neighbourhood, regional or postal-code averages. Health Canada recommends a long-term test of at least three months during the fall or winter heating season. The app directs buyers to test and mitigation records rather than inventing a property-level risk score.',
+      'Derived from the federal open CSV: 14 of 99 readings strictly exceed 200 Bq/m³, or 14.1% of this unweighted historical sample. One reading equals 200. Tests lasted 61–149 days; 96 lasted at least 90 days. This is not a current prevalence estimate or an address-level prediction. Very small postal-area cells do not support neighbourhood rankings. Postal identifiers are omitted from the app extract. Contains information licensed under the Open Government Licence – Canada; app calculations are unofficial and unendorsed. Newer 2024 research is linked separately, not redistributed.',
+  },
+  {
+    id: 'radon-testing',
+    category: 'Environment',
+    name: 'Radon testing & action guidance',
+    publisher: 'Health Canada',
+    url: 'https://www.canada.ca/en/health-canada/services/publications/health-risks-safety/guide-radon-measurements-residential-dwellings.html',
+    date: 'Guidance checked 16 Sep 2026',
+    scope: 'Individual home · long-term measurement',
+    detail:
+      'Testing is needed for the specific dwelling: neighbouring homes can differ. Current guidance calls for a long-term test with at least 91 days during the heating season, on the lowest normally occupied level. Health Canada recommends corrective action within one year when the average annual result exceeds 200 Bq/m³, sooner at higher levels. Below the guideline does not mean zero risk. The app does not collect or interpret visitors’ own measurements.',
   },
   {
     id: 'mortgage',

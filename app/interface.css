@@ -1,4 +1,69 @@
 /* light panels and blue accents around the map */
+.sun-overview-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #d6e2eb;
+  border-radius: 8px;
+  background: #edf5fa;
+  text-align: left;
+  color: #315d7a;
+}
+.sun-overview-link strong,
+.sun-overview-link small {
+  display: block;
+}
+.sun-overview-link small {
+  margin-top: 5px;
+  color: #526a7c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sun-overview-link > svg {
+  flex-shrink: 0;
+}
+.property-records > .quiet-note {
+  margin: 12px 0 6px;
+}
+.sale-history {
+  margin-top: 14px;
+}
+.sale-history summary {
+  line-height: 1.7;
+}
+.sale-history summary > span {
+  margin-left: 8px;
+  color: #657b8a;
+  font-size: 11px;
+  font-weight: 400;
+}
+.sale-history-option {
+  margin-top: 14px;
+}
+.sale-history-option a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.sale-history-option p {
+  margin-top: 0;
+}
+.radon-section .data-attribution {
+  line-height: 1.6;
+}
+.radon-section .access-method > a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+}
+.radon-section .radon-sample > div {
+  min-width: 0;
+}
 :root {
   --background: #f3f7fa;
   --foreground: #243c4e;
@@ -868,6 +933,9 @@ button:active {
 /* keep the privacy link visible on mobile */
 .inspector-footer .privacy-link {
   display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  min-width: 44px;
   align-items: center;
   min-height: 44px;
   padding-inline: 6px;

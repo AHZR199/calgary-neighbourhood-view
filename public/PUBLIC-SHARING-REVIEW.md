@@ -1,6 +1,6 @@
 # Data reuse and source rights
 
-Calgary Neighbourhood Analytics is an independent, noncommercial research project. These notes describe the permissions and limits used for the current public release, reviewed on 14 September 2026. They are not blanket legal clearance. Permission to reuse data is separate from its accuracy, privacy implications and suitability for a particular decision.
+Calgary Neighbourhood Analytics is an independent, noncommercial research project. These notes describe the permissions and limits used for the current public release, reviewed on 14 September 2026, with feature additions reviewed on 16 September 2026. They are not blanket legal clearance. Permission to reuse data is separate from its accuracy, privacy implications and suitability for a particular decision.
 
 The current scope excludes paid access, advertising, brokerage promotion, affiliate commissions and lead collection. Some sources allow commercial reuse; others do not. Recheck those terms before changing how the project is used. A free website can still serve a commercial purpose.
 
@@ -61,3 +61,34 @@ Keep the complete software notices, the copied MapLibre worker/shared modules' [
 The live site's `/privacy` page and the [privacy operations guide](../docs/privacy-operations.md) explain browser storage, requests, provider processing and manual duties. Data reuse permission does not replace those duties. Hosting/map providers can process technical information outside Canada, and Vercel Hobby processor-contract coverage remains unverified where such coverage is required.
 
 Before releasing a new snapshot, review its source terms, dates, coverage, attribution and sensitive fields together. Keep the data manifest and visible explanations aligned with the actual files. New commercial uses, sources or imagery exports need a fresh permission assessment. Neither these notes nor the project name assert official endorsement, trademark clearance or universal legal compliance.
+
+## Property-context additions, 16 September 2026
+
+Health Canada's 2012–2013 Calgary CMA radon data is explicitly licensed under the Open Government Licence – Canada. The app republishes only a small regional derivative with source, checksum, method, attribution and licence link. Postal identifiers are omitted. Its 14/99 share above 200 Bq/m³ describes an old sample, not current city prevalence or a home-level risk score. The newer 2024 Evict Radon report is linked only; restricted raw records and graphics were not copied. Current testing guidance is paraphrased and linked to Health Canada.
+
+The construction-year field is already part of the licensed City assessment source. Validation now rejects implausible, future, non-integer and conflicting values without assigning a speculative age. Units are matched by account, not merged by building address. Neither reviewed assessment schema contains sale dates/prices. City myTax's extraction/republication restrictions and Alberta's paid title access do not establish a suitable free redistributable sales feed, so individual last-sale records remain unavailable.
+
+Sun direction is original local code implementing NOAA's published mathematical equations. No third-party calculator code, commercial API or imagery is copied. General window-orientation trade-offs are paraphrased from NRCan; Alberta's time rule is linked to its official announcement. The interface identifies true-north bearings, approximate horizon calculations and missing shadow/facade information.
+
+The updated privacy policy and dedicated use/limitations page disclose these features. There are no new processors, cookies, accounts or saved input categories. These additions do not resolve the existing hosting-contract and jurisdictional limitations documented above.
+
+Sources checked:
+
+- [Health Canada survey and explicit open licence](https://open.canada.ca/data/dataset/744d8a3b-b9e0-41b8-be5f-5f869a36a221)
+- [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada)
+- [Health Canada home measurement guide](https://www.canada.ca/en/health-canada/services/publications/health-risks-safety/guide-radon-measurements-residential-dwellings.html)
+- [2024 Evict Radon survey](https://www.evictradon.org/survey/)
+- [City assessment metadata](https://data.calgary.ca/api/views/4bsw-nn7w.json)
+- [City myTax guidance](https://www.calgary.ca/property-owners/assessment/mytax.html) and [terms](https://mytax.calgary.ca/TermsUse.aspx?target=SearchProperty.aspx)
+- [Alberta land records](https://landregistry.alberta.ca/)
+- [NOAA solar equations](https://gml.noaa.gov/grad/solcalc/solareqns.PDF)
+- [NRCan window guidance](https://prod-natural-resources.azure.cloud.nrcan-rncan.gc.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors)
+- [Alberta Time](https://www.alberta.ca/albertas-new-time-system-abt)
+
+## Transit overlay review — 16 September 2026
+
+Operating bus and CTrain paths are derived from the existing official GTFS archive under the City Open Government Licence. The new extract retains its source checksum, retrieval date, active service period, transformation method and attribution. Route shapes are simplified for display; no routes are inferred by joining station points. Transit branding and official map artwork are not reproduced.
+
+Green Line Phase 1 uses the current City interactive-map alignment and station services. The alignment item's `licenseInfo` and the station service's `copyrightText` expressly link City open-data terms. The data last-edit dates are 10 September 2026; the downtown portion was checked against the City's 8 September surface-route update. The older Socrata alignment retains superseded downtown geometry and is excluded. Only Phase 1 is shown; future extensions are omitted. Dated project status is paraphrased, with official source links, not copied from City map images or page prose.
+
+The dashed overlay is explicitly non-operating and approximate. It promises no opening date, walking access, frequency or property-value effect, and does not enter transit-access calculations. Public geometry is served by the existing host; overlay selections remain in page memory. The privacy notice, terms, source cards and licence register describe these additions. No new provider, device-location permission or storage key is introduced.

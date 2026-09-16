@@ -56,7 +56,9 @@ export function AboutView({
             <p>
               Explore neighbourhoods, quadrants and public property accounts on
               a 3D map. Save a shortlist on your device, compare places and
-              create a printable research brief.
+              create a printable research brief. Check the City’s recorded
+              construction year, explore seasonal sun direction and read the
+              available regional radon evidence.
             </p>
           </article>
           <article>
@@ -95,6 +97,10 @@ export function AboutView({
             <p>
               <Link href="/privacy" prefetch={false}>
                 Read the privacy policy
+              </Link>
+              {' · '}
+              <Link href="/terms" prefetch={false}>
+                Use & limitations
               </Link>
               {' · '}
               <a href="mailto:az28140@icloud.com">az28140@icloud.com</a>

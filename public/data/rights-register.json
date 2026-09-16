@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-09-14",
-  "scope": "Current Calgary Neighbourhood Analytics public-demo source, datasets, calculations, map services and software notices; reviewed 14 September 2026.",
+  "reviewedOn": "2026-09-16",
+  "scope": "Current Calgary Neighbourhood Analytics public-demo source, datasets, calculations, map services and software notices; feature additions reviewed 16 September 2026.",
   "publicReleaseDecision": "The noncommercial demo uses the reviewed sources and link-only current MLA records. The /privacy page describes the operator, data handling and provider limitations. These notes record source permissions and remaining limits; they are not legal clearance.",
   "noncommercialAssumption": "Personal project without payments, advertising, brokerage lead generation or client-marketing use. A later commercial purpose triggers fresh review; no-fee access alone may be insufficient.",
   "notLegalOpinion": true,
@@ -175,6 +175,17 @@
         "OpenMapTiles credit linked in a corner of browsable maps.",
         "Preserve applicable notices and indicate style modifications."
       ]
+    },
+    "canada-open": {
+      "title": "Open Government Licence – Canada v2.0",
+      "url": "https://open.canada.ca/en/open-government-licence-canada",
+      "permission": "Express permission to copy, modify, publish and redistribute licensed information, including commercially, subject to attribution and exclusions.",
+      "conditions": [
+        "Acknowledge the source and link the licence.",
+        "No publisher endorsement or rights to official symbols are implied.",
+        "Respect exclusions for personal information and third-party rights."
+      ],
+      "attribution": "Contains information licensed under the Open Government Licence – Canada."
     }
   },
   "entries": [
@@ -1076,6 +1087,113 @@
         "Do not claim third-party source datasets are owned by the app."
       ],
       "notes": ""
+    },
+    {
+      "id": "radon-open",
+      "title": "Historical Calgary CMA indoor radon survey",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "radon.json"
+      ],
+      "sourceUrls": [
+        "https://open.canada.ca/data/dataset/744d8a3b-b9e0-41b8-be5f-5f869a36a221"
+      ],
+      "licenceProfileIds": [
+        "canada-open"
+      ],
+      "status": "keep-with-attribution",
+      "requiredAction": [
+        "Keep Health Canada, survey period, CMA scope, original CSV checksum, method and OGL attribution with the derivative.",
+        "Do not represent the sample share as current prevalence or property-level risk."
+      ],
+      "notes": "99 historical 2012–2013 Calgary CMA readings; 14 strictly above 200 Bq/m³. Postal identifiers omitted. Newer Evict Radon 2024 research remains link-only; restricted raw data and graphics were not copied."
+    },
+    {
+      "id": "construction-year",
+      "title": "City-recorded year of construction",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "properties.json",
+        "/api/assessments"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/4bsw-nn7w"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "notes": "Existing City Account AYOC field. Exact account rows only, reject implausible/malformed/future values and preserve conflicts. No completion-certificate, renovation-age or neighbour-based inference."
+    },
+    {
+      "id": "sale-history-access",
+      "title": "Individual last-sale information",
+      "checkedOn": "2026-09-16",
+      "assets": [],
+      "sourceUrls": [
+        "https://www.calgary.ca/property-owners/assessment/mytax.html",
+        "https://mytax.calgary.ca/TermsUse.aspx?target=SearchProperty.aspx",
+        "https://landregistry.alberta.ca/"
+      ],
+      "licenceProfileIds": [
+        "calgary-site"
+      ],
+      "status": "link-only-no-sale-records",
+      "notes": "No suitable free public-redistribution source established. City myTax access is restricted and prohibits automated extraction/unauthorized republication; Alberta title/document access is paid. Last-sold date/price remain null. No personal account access, scraping or purchased records."
+    },
+    {
+      "id": "solar-model",
+      "title": "Local approximate solar calculations and orientation guidance",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/solar.ts"
+      ],
+      "sourceUrls": [
+        "https://gml.noaa.gov/grad/solcalc/solareqns.PDF",
+        "https://prod-natural-resources.azure.cloud.nrcan-rncan.gc.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
+        "https://www.alberta.ca/albertas-new-time-system-abt"
+      ],
+      "licenceProfileIds": [
+        "facts"
+      ],
+      "status": "original-calculations-and-linked-guidance",
+      "notes": "Original code implements published mathematical equations; no copied NOAA calculator code, external solar API, proprietary imagery or shadow model. General NRCan orientation advice paraphrased and linked. Time rule reflects Alberta permanent UTC−6 from November 2026; historical dates use America/Edmonton. Source attribution and limitations retained."
+    },
+    {
+      "id": "gtfs-route-geometry",
+      "title": "Calgary Transit bus and CTrain map routes",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "transit-routes.geojson",
+        "transit-points.geojson",
+        "transit-citywide.json"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/npk7-z3bj"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "notes": "Official GTFS captured 14 September 2026; 260 routes with 702 shape variants from active-service trips. Display geometry is simplified, not inferred from station points. Source checksum, date range, transformations and City OGL attribution retained. Scheduled service is not live service. No transit logos or third-party route maps copied."
+    },
+    {
+      "id": "green-line-phase-one",
+      "title": "Green Line Phase 1 planned alignment and stations",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "green-line.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/green-line/downtown-segment.html",
+        "https://www.arcgis.com/sharing/rest/content/items/ea67fac93f054502a8dbdbb21a657513?f=pjson",
+        "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Green_Line_Stations_for_CSC_Green_Line_Embedded_Web_Map/FeatureServer?f=pjson"
+      ],
+      "licenceProfileIds": [
+        "calgary-open"
+      ],
+      "status": "keep-with-attribution",
+      "notes": "The alignment ArcGIS item licenceInfo and station service copyrightText explicitly link City open-data terms. Current map rows updated 10 September 2026, checked against the 8 September downtown surface-route update. Only 27 Phase 1 line segments and 11 planned stations are retained; future extensions and superseded downtown geometry excluded. Cartographic geometry, non-operating, no opening-date guarantee or score contribution. Dated status is independently paraphrased; no official map image, logos or webpage prose copied."
     }
   ],
   "releaseRules": [
@@ -1425,5 +1543,17 @@
       "privacyContractLimitation": "Vercel published DPA processor terms specify Pro/Enterprise; confirmed Hobby processor/transfer coverage is not established.",
       "sourceRepository": "https://github.com/AHZR199/calgary-neighbourhood-analytics"
     }
+  },
+  "featureReviewAddendum": {
+    "reviewedOn": "2026-09-16",
+    "features": [
+      "Historical regional radon context",
+      "Local sun-direction calculator",
+      "Construction-year validation",
+      "Sale-history availability disclosure"
+    ],
+    "privacyChanges": "No new third-party processor, storage, account or visitor measurement collection. Solar choices stay in page memory; radon aggregate ships with the app; construction uses the existing public City lookup.",
+    "termsUrl": "/terms",
+    "sourceMonitor": "Ordinary upstream timestamp changes create warnings and a review report; actual schema/network errors fail. No automatic snapshot replacement."
   }
 }

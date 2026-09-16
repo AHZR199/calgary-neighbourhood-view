@@ -14,6 +14,11 @@ import { EnvironmentalChecklist, LocationOverlayDetails } from './location';
 import type { Community, Property } from '@/lib/atlas/data';
 import { CORE, titleCase } from '@/lib/atlas/data';
 import { BuyerChecklist, EmptyState, SourceLink } from './panels';
+import type {
+  TransitMapLayers,
+  TransitMapStatus,
+} from '@/lib/atlas/map-overlays';
+import { TransitLayerChoices } from './transit-layers';
 interface Permit {
   id: string;
   communityCode: string;
@@ -30,12 +35,20 @@ export function NearbyPanel({
   onSource,
   overlay,
   onOverlay,
+  transitLayers,
+  transitStatus,
+  onTransitLayersChange,
+  onShowGreenLine,
 }: {
   community: Community;
   property: Property | null;
   onSource: (id: string) => void;
   overlay: Overlay;
   onOverlay: (value: Overlay) => void;
+  transitLayers: TransitMapLayers;
+  transitStatus: TransitMapStatus;
+  onTransitLayersChange: (layers: TransitMapLayers) => void;
+  onShowGreenLine: () => void;
 }) {
   const [permits, setPermits] = useState<Permit[]>([]),
     [loaded, setLoaded] = useState(false),
@@ -90,6 +103,21 @@ export function NearbyPanel({
           </button>
         ))}
       </div>
+      {overlay === 'transit' && (
+        <section>
+          <TransitLayerChoices
+            layers={transitLayers}
+            status={transitStatus}
+            onChange={onTransitLayersChange}
+            onShowGreenLine={onShowGreenLine}
+          />
+          <SourceLink
+            id="transit"
+            label="Transit data & dates"
+            onSource={onSource}
+          />
+        </section>
+      )}
       {['parks', 'flood', 'hazard', 'noise'].includes(overlay) && (
         <LocationOverlayDetails
           community={community}

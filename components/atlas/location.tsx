@@ -175,8 +175,8 @@ export function EnvironmentalChecklist() {
         <p>
           Neighbourhood or regional averages cannot establish radon in one home.
           Ask for a valid long-term test and any mitigation records. Health
-          Canada recommends testing for at least three months during the fall or
-          winter heating season.
+          Canada recommends a long-term test with at least 91 days during the
+          heating season.
         </p>
         <a
           className="source-link"

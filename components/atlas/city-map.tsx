@@ -4,6 +4,12 @@ import * as ml from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { RefreshCw } from 'lucide-react';
 import type { AtlasData, Community, Layer, Property } from '@/lib/atlas/data';
+import {
+  TRANSIT_COLOURS,
+  GREEN_LINE_MAP_AVAILABLE,
+  type TransitMapLayers,
+  type TransitMapStatus,
+} from '@/lib/atlas/map-overlays';
 import 'maplibre-gl/dist/maplibre-gl.css';
 ml.setWorkerUrl('/vendor/maplibre/maplibre-gl-worker.mjs');
 export type Overlay =
@@ -11,6 +17,9 @@ export type Overlay =
 interface Props {
   basemap: 'atlas' | 'aerial';
   overlay: Overlay;
+  transitLayers: TransitMapLayers;
+  onTransitStatus: (status: TransitMapStatus) => void;
+  mapFocused: boolean;
   data: AtlasData | null;
   community: Community | undefined;
   property: Property | null;
@@ -36,14 +45,59 @@ const onlyQuadrants = (communities: AtlasData['communities'] | undefined) => ({
     [],
 });
 const empty: FeatureCollection = { type: 'FeatureCollection', features: [] };
+const cityTransitAttribution =
+  'Calgary Transit / City of Calgary · <a href="https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa/">Open Government Licence – City of Calgary</a>';
+
+function fitGreenLineRoute(
+  map: ml.Map,
+  data: FeatureCollection,
+  mapFocused: boolean,
+) {
+  const bounds = new ml.LngLatBounds();
+  for (const feature of data.features) {
+    const geometry = feature.geometry;
+    const points =
+      geometry.type === 'Point'
+        ? [geometry.coordinates]
+        : geometry.type === 'LineString'
+          ? geometry.coordinates
+          : [];
+    for (const point of points) {
+      if (Number.isFinite(point[0]) && Number.isFinite(point[1]))
+        bounds.extend([point[0], point[1]]);
+    }
+  }
+  if (bounds.isEmpty()) return;
+  const desktop = map.getContainer().clientWidth > 760;
+  map.fitBounds(bounds, {
+    padding: {
+      top: 100,
+      bottom: desktop
+        ? 140
+        : Math.min(
+            mapFocused ? 330 : 450,
+            Math.max(0, map.getContainer().clientHeight - 220),
+          ),
+      left: 35,
+      right: desktop ? 410 : 35,
+    },
+    bearing: 0,
+    maxZoom: 13,
+    duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900,
+  });
+}
+
 export default function CityMap(props: Props) {
+  const { transitLayers, onTransitStatus } = props;
   const communities = props.data?.communities;
   const properties = props.data?.properties;
   const crime = props.data?.crime;
   const container = useRef<HTMLDivElement>(null),
     map = useRef<ml.Map | null>(null),
     cameraInitialized = useRef(false),
-    current = useRef(props);
+    current = useRef(props),
+    activePopup = useRef<ml.Popup | null>(null),
+    transitCache = useRef(new Map<string, FeatureCollection>());
   useEffect(() => {
     current.current = props;
   });
@@ -402,18 +456,242 @@ export default function CityMap(props: Props) {
               'circle-stroke-color': '#fff',
             },
           });
-          m.addSource('transit-citywide', { type: 'geojson', data: empty });
+          m.addSource('transit-citywide', {
+            type: 'geojson',
+            data: empty,
+            attribution: cityTransitAttribution,
+          });
+          m.addSource('transit-routes', {
+            type: 'geojson',
+            data: empty,
+            attribution: cityTransitAttribution,
+          });
+          m.addSource('green-line', {
+            type: 'geojson',
+            data: empty,
+            attribution: cityTransitAttribution,
+          });
+          m.addLayer(
+            {
+              id: 'bus-routes',
+              source: 'transit-routes',
+              type: 'line',
+              filter: ['==', ['get', 'mode'], 'bus'],
+              layout: {
+                visibility: 'none',
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
+              paint: {
+                'line-color': TRANSIT_COLOURS.bus,
+                'line-width': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  9,
+                  0.65,
+                  13,
+                  1.5,
+                  17,
+                  2.4,
+                ],
+                'line-opacity': 0.8,
+              },
+            },
+            firstSymbol,
+          );
+          m.addLayer(
+            {
+              id: 'train-route-casing',
+              source: 'transit-routes',
+              type: 'line',
+              filter: ['==', ['get', 'mode'], 'train'],
+              layout: {
+                visibility: 'none',
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
+              paint: {
+                'line-color': '#fff',
+                'line-width': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  9,
+                  5,
+                  15,
+                  8,
+                ],
+                'line-opacity': 0.85,
+              },
+            },
+            firstSymbol,
+          );
+          m.addLayer(
+            {
+              id: 'train-routes',
+              source: 'transit-routes',
+              type: 'line',
+              filter: ['==', ['get', 'mode'], 'train'],
+              layout: {
+                visibility: 'none',
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
+              paint: {
+                'line-color': [
+                  'match',
+                  ['get', 'routeNumber'],
+                  '201',
+                  TRANSIT_COLOURS.redLine,
+                  '202',
+                  TRANSIT_COLOURS.blueLine,
+                  TRANSIT_COLOURS.blueLine,
+                ],
+                'line-width': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  9,
+                  2.5,
+                  15,
+                  4.5,
+                ],
+                'line-opacity': 0.9,
+                'line-offset': [
+                  'match',
+                  ['get', 'routeNumber'],
+                  '201',
+                  -1.1,
+                  '202',
+                  1.1,
+                  0,
+                ],
+              },
+            },
+            firstSymbol,
+          );
+          m.addLayer(
+            {
+              id: 'green-line-route',
+              source: 'green-line',
+              type: 'line',
+              filter: ['==', ['geometry-type'], 'LineString'],
+              layout: {
+                visibility: 'none',
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
+              paint: {
+                'line-color': TRANSIT_COLOURS.greenLine,
+                'line-width': 3.5,
+                'line-dasharray': [2, 2],
+              },
+            },
+            firstSymbol,
+          );
           m.addLayer({
-            id: 'transit-points',
+            id: 'bus-points',
             source: 'transit-citywide',
             type: 'circle',
-            filter: ['==', ['get', 'kind'], 'transit'],
+            minzoom: 11,
+            filter: [
+              'in',
+              ['get', 'transitMode'],
+              ['literal', ['bus', 'mixed']],
+            ],
             layout: { visibility: 'none' },
             paint: {
-              'circle-radius': 5,
-              'circle-color': '#6086a3',
-              'circle-stroke-width': 2,
+              'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                11,
+                2,
+                14,
+                4,
+                17,
+                5,
+              ],
+              'circle-color': TRANSIT_COLOURS.bus,
+              'circle-stroke-width': 1.2,
               'circle-stroke-color': '#fff',
+            },
+          });
+          m.addLayer({
+            id: 'train-points',
+            source: 'transit-citywide',
+            type: 'circle',
+            filter: [
+              'in',
+              ['get', 'transitMode'],
+              ['literal', ['train', 'mixed']],
+            ],
+            layout: { visibility: 'none' },
+            paint: {
+              'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                9,
+                4,
+                13,
+                6,
+                17,
+                8,
+              ],
+              'circle-color': '#fff',
+              'circle-stroke-width': 2.5,
+              'circle-stroke-color': [
+                'case',
+                [
+                  'all',
+                  ['in', '201', ['get', 'routeNumbers']],
+                  ['in', '202', ['get', 'routeNumbers']],
+                ],
+                '#64798a',
+                ['in', '201', ['get', 'routeNumbers']],
+                TRANSIT_COLOURS.redLine,
+                TRANSIT_COLOURS.blueLine,
+              ],
+            },
+          });
+          m.addLayer({
+            id: 'train-labels',
+            source: 'transit-citywide',
+            type: 'symbol',
+            minzoom: 13,
+            filter: [
+              'in',
+              ['get', 'transitMode'],
+              ['literal', ['train', 'mixed']],
+            ],
+            layout: {
+              visibility: 'none',
+              'text-field': ['get', 'name'],
+              'text-size': 11,
+              'text-font': ['Noto Sans Regular'],
+              'text-anchor': 'top',
+              'text-offset': [0, 1.1],
+              'text-max-width': 14,
+            },
+            paint: {
+              'text-color': '#31516a',
+              'text-halo-color': '#fff',
+              'text-halo-width': 1.4,
+            },
+          });
+          m.addLayer({
+            id: 'green-line-stations',
+            source: 'green-line',
+            type: 'circle',
+            filter: ['==', ['geometry-type'], 'Point'],
+            layout: { visibility: 'none' },
+            paint: {
+              'circle-radius': 6,
+              'circle-color': '#f7fbf9',
+              'circle-stroke-width': 2,
+              'circle-stroke-color': TRANSIT_COLOURS.greenLine,
             },
           });
           m.addSource('amenities', { type: 'geojson', data: empty });
@@ -495,17 +773,32 @@ export default function CityMap(props: Props) {
           );
           m.on('click', (e) => {
             if (!m) return;
-            if (current.current.layer === 'nearby') {
+            const clickableLayers: string[] = [];
+            if (current.current.transitLayers.train)
+              clickableLayers.push(
+                'train-points',
+                'train-labels',
+                'train-routes',
+              );
+            if (current.current.transitLayers.bus)
+              clickableLayers.push('bus-points', 'bus-routes');
+            if (
+              current.current.transitLayers.greenLine &&
+              GREEN_LINE_MAP_AVAILABLE
+            )
+              clickableLayers.push('green-line-stations', 'green-line-route');
+            if (current.current.layer === 'nearby')
+              clickableLayers.push(
+                'development-points',
+                'park-areas',
+                'pathways',
+                'flood-regulatory',
+                'flood-hazard',
+                'noise-fill',
+              );
+            if (clickableLayers.length) {
               const results = m.queryRenderedFeatures(e.point, {
-                layers: [
-                  'development-points',
-                  'transit-points',
-                  'park-areas',
-                  'pathways',
-                  'flood-regulatory',
-                  'flood-hazard',
-                  'noise-fill',
-                ],
+                layers: clickableLayers,
               });
               if (results.length) {
                 const p = results[0].properties;
@@ -537,7 +830,8 @@ export default function CityMap(props: Props) {
                     String(p.status) + (p.date ? ' · ' + p.date : '');
                   card.appendChild(status);
                 }
-                new ml.Popup({
+                activePopup.current?.remove();
+                activePopup.current = new ml.Popup({
                   closeButton: true,
                   offset: 12,
                   maxWidth: '280px',
@@ -563,7 +857,17 @@ export default function CityMap(props: Props) {
                 String(areas[0].properties.comm_code),
               );
           });
-          for (const id of ['property-dots', 'community-wash']) {
+          for (const id of [
+            'property-dots',
+            'community-wash',
+            'bus-points',
+            'bus-routes',
+            'train-points',
+            'train-labels',
+            'train-routes',
+            'green-line-stations',
+            'green-line-route',
+          ]) {
             m.on('mouseenter', id, () => {
               if (m) m.getCanvas().style.cursor = 'pointer';
             });
@@ -819,7 +1123,7 @@ export default function CityMap(props: Props) {
     if (!m || !ready) return;
     const groups: Record<Overlay, string[]> = {
       development: ['development-points'],
-      transit: ['transit-points'],
+      transit: [],
       parks: ['park-areas', 'pathways'],
       flood: ['flood-regulatory'],
       hazard: ['flood-hazard'],
@@ -834,7 +1138,7 @@ export default function CityMap(props: Props) {
             ? 'visible'
             : 'none',
         );
-    if (props.layer !== 'nearby') return;
+    if (props.layer !== 'nearby' || props.overlay === 'transit') return;
     const sources: Record<Overlay, [string, string]> = {
       development: ['nearby', 'nearby-points.geojson'],
       transit: ['transit-citywide', 'transit-points.geojson'],
@@ -865,6 +1169,84 @@ export default function CityMap(props: Props) {
       });
   }, [props.layer, props.overlay, ready]);
   useEffect(() => {
+    const m = map.current;
+    if (!m || !ready) return;
+    activePopup.current?.remove();
+    const groups: Record<keyof TransitMapLayers, string[]> = {
+      train: [
+        'train-route-casing',
+        'train-routes',
+        'train-points',
+        'train-labels',
+      ],
+      bus: ['bus-routes', 'bus-points'],
+      greenLine: ['green-line-route', 'green-line-stations'],
+    };
+    for (const [key, ids] of Object.entries(groups)) {
+      const visible =
+        transitLayers[key as keyof TransitMapLayers] &&
+        (key !== 'greenLine' || GREEN_LINE_MAP_AVAILABLE);
+      for (const id of ids)
+        m.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+    }
+    const sources: [string, string][] = [];
+    if (transitLayers.train || transitLayers.bus) {
+      sources.push(
+        ['transit-citywide', 'transit-points.geojson'],
+        ['transit-routes', 'transit-routes.geojson'],
+      );
+    }
+    if (transitLayers.greenLine && GREEN_LINE_MAP_AVAILABLE)
+      sources.push(['green-line', 'green-line.geojson']);
+    if (!sources.length) {
+      onTransitStatus('idle');
+      return;
+    }
+    const pending = sources.filter(
+      ([source]) => !loadedSources.current.has(source),
+    );
+    if (!pending.length) {
+      onTransitStatus('ready');
+      return;
+    }
+    const controller = new AbortController();
+    onTransitStatus('loading');
+    void Promise.all(
+      pending.map(async ([source, file]) => {
+        let data = transitCache.current.get(source);
+        if (!data) {
+          const response = await fetch(`/data/${file}`, {
+            signal: controller.signal,
+          });
+          if (!response.ok) throw new Error('Transit layer unavailable');
+          data = (await response.json()) as FeatureCollection;
+          if (
+            data.type !== 'FeatureCollection' ||
+            !Array.isArray(data.features)
+          )
+            throw new Error('Transit layer unavailable');
+          transitCache.current.set(source, data);
+        }
+        if (controller.signal.aborted) return;
+        (m.getSource(source) as ml.GeoJSONSource).setData(data);
+        loadedSources.current.add(source);
+        if (
+          source === 'green-line' &&
+          current.current.action.type === 'greenLine' &&
+          current.current.transitLayers.greenLine
+        )
+          fitGreenLineRoute(m, data, current.current.mapFocused);
+      }),
+    )
+      .then(() => {
+        if (!controller.signal.aborted) onTransitStatus('ready');
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) onTransitStatus('error');
+      });
+    return () => controller.abort();
+  }, [transitLayers, onTransitStatus, ready]);
+  useEffect(() => {
     map.current?.easeTo({
       pitch: props.is3d ? 57 : 0,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -878,6 +1260,14 @@ export default function CityMap(props: Props) {
     const type = props.action.type;
     if (type === 'in') m.zoomIn();
     if (type === 'out') m.zoomOut();
+    if (
+      type === 'greenLine' &&
+      GREEN_LINE_MAP_AVAILABLE &&
+      current.current.transitLayers.greenLine
+    ) {
+      const data = transitCache.current.get('green-line');
+      if (data) fitGreenLineRoute(m, data, current.current.mapFocused);
+    }
     if (type === 'home')
       m.flyTo({
         center: [-114.073, 51.049],

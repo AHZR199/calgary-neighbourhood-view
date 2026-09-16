@@ -67,9 +67,16 @@ import {
 } from '@/lib/atlas/privacy-storage';
 import { AboutView } from '@/components/atlas/about';
 import { MapLayers } from '@/components/atlas/map-layers';
+import { TransitLegend } from '@/components/atlas/transit-layers';
+import {
+  DEFAULT_TRANSIT_LAYERS,
+  type TransitMapLayers,
+  type TransitMapStatus,
+} from '@/lib/atlas/map-overlays';
 import { NearbyPanel } from '@/components/atlas/nearby';
 import { resolveRepresentatives } from '@/lib/atlas/geography';
 import { getPublicPropertyDetails } from '@/lib/atlas/property-details';
+import { HomeResearchNotes } from '@/components/atlas/property-facts';
 import {
   CORE,
   LAYERS,
@@ -109,6 +116,10 @@ export default function Home() {
     [view, setView] = useState<View>('explore');
   const [basemap, setBasemap] = useState<'atlas' | 'aerial'>('atlas'),
     [overlay, setOverlay] = useState<Overlay>('development');
+  const [transitLayers, setTransitLayers] = useState<TransitMapLayers>(
+      DEFAULT_TRANSIT_LAYERS,
+    ),
+    [transitStatus, setTransitStatus] = useState<TransitMapStatus>('idle');
   const [is3d, setIs3d] = useState(true),
     [action, setAction] = useState({ type: 'start', id: 0 });
   const [searchOpen, setSearchOpen] = useState(false),
@@ -121,6 +132,7 @@ export default function Home() {
     [compareOpen, setCompareOpen] = useState(false),
     [reportOpen, setReportOpen] = useState(false),
     [expanded, setExpanded] = useState(false);
+  const [mapFocused, setMapFocused] = useState(false);
   const [sourceFocus, setSourceFocus] = useState(''),
     [toast, setToast] = useState(''),
     [refreshing, setRefreshing] = useState(false),
@@ -368,6 +380,7 @@ export default function Home() {
     };
   }, [query, searchOpen]);
   function chooseCommunity(next: string) {
+    setMapFocused(false);
     setCode(next);
     setProperty(null);
     setView('explore');
@@ -375,6 +388,7 @@ export default function Home() {
     setQuery('');
   }
   function chooseProperty(p: Property) {
+    setMapFocused(false);
     setData((d) =>
       d && !d.properties.some((x) => x.rollNumber === p.rollNumber)
         ? { ...d, properties: [...d.properties, p] }
@@ -429,6 +443,7 @@ export default function Home() {
     };
   }, [property, data]);
   function chooseLayer(l: Layer) {
+    setMapFocused(false);
     setLayer(l);
     setView('explore');
   }
@@ -739,7 +754,10 @@ export default function Home() {
         href={view === 'explore' ? '#place-details' : '#workspace-content'}
         onClick={(event) => {
           event.preventDefault();
-          if (view === 'explore') setExpanded(true);
+          if (view === 'explore') {
+            setMapFocused(false);
+            setExpanded(true);
+          }
           requestAnimationFrame(() => {
             document
               .getElementById(
@@ -754,6 +772,9 @@ export default function Home() {
       <CityMap
         basemap={basemap}
         overlay={overlay}
+        transitLayers={transitLayers}
+        onTransitStatus={setTransitStatus}
+        mapFocused={mapFocused}
         data={data}
         community={community}
         property={property}
@@ -865,9 +886,23 @@ export default function Home() {
           <MapLayers
             layer={layer}
             overlay={overlay}
+            transitLayers={transitLayers}
+            transitStatus={transitStatus}
+            onTransitLayersChange={setTransitLayers}
+            onShowGreenLine={() => {
+              setExpanded(false);
+              setMapFocused(true);
+              setAction({ type: 'greenLine', id: Date.now() });
+            }}
             onLayerChange={chooseLayer}
             onOverlayChange={(value) => {
               setOverlay(value);
+              if (value === 'transit')
+                setTransitLayers((current) =>
+                  Object.values(current).some(Boolean)
+                    ? current
+                    : { ...current, train: true },
+                );
               chooseLayer('nearby');
             }}
           />
@@ -904,7 +939,7 @@ export default function Home() {
             </button>
           </div>
           <aside
-            className={`inspector ${expanded ? 'expanded' : ''}`}
+            className={`inspector ${expanded ? 'expanded' : ''} ${mapFocused ? 'map-focused' : ''}`}
             aria-label="Place details"
           >
             <button
@@ -975,6 +1010,23 @@ export default function Home() {
               >
                 {name}
               </h1>
+              <button
+                className="map-details-open"
+                type="button"
+                aria-controls="place-details-body"
+                aria-expanded={false}
+                onClick={() => {
+                  setMapFocused(false);
+                  setExpanded(false);
+                  requestAnimationFrame(() =>
+                    document
+                      .getElementById('place-details')
+                      ?.focus({ preventScroll: true }),
+                  );
+                }}
+              >
+                Show details <ChevronUp size={16} aria-hidden="true" />
+              </button>
               <p className="area-subtitle">
                 {property ? communityLabel(community) : 'Calgary'}
                 <span>·</span>
@@ -1003,7 +1055,11 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="inspector-scroll" ref={panelScroll}>
+            <div
+              id="place-details-body"
+              className="inspector-scroll"
+              ref={panelScroll}
+            >
               {data && community ? (
                 <>
                   {layer === 'overview' && (
@@ -1069,7 +1125,23 @@ export default function Home() {
                       property={property}
                       onSource={showSource}
                       overlay={overlay}
-                      onOverlay={setOverlay}
+                      onOverlay={(value) => {
+                        setOverlay(value);
+                        if (value === 'transit')
+                          setTransitLayers((current) =>
+                            Object.values(current).some(Boolean)
+                              ? current
+                              : { ...current, train: true },
+                          );
+                      }}
+                      transitLayers={transitLayers}
+                      transitStatus={transitStatus}
+                      onTransitLayersChange={setTransitLayers}
+                      onShowGreenLine={() => {
+                        setExpanded(false);
+                        setMapFocused(true);
+                        setAction({ type: 'greenLine', id: Date.now() });
+                      }}
                     />
                   )}
                 </>
@@ -1114,37 +1186,50 @@ export default function Home() {
                   )
                 }
               >
-                Sources, dates & coverage
+                Sources & coverage
               </button>
               <Link className="privacy-link" href="/privacy" prefetch={false}>
                 Privacy
               </Link>
+              <Link className="privacy-link" href="/terms" prefetch={false}>
+                Terms
+              </Link>
             </div>
           </aside>
-          <div className="map-legend glass">
-            <span className={`legend-dot ${layer}`} />
-            <span>
-              {layer === 'water'
-                ? 'Public mains · material'
-                : layer === 'crime'
-                  ? 'Historical crime counts · 2019'
-                  : layer === 'air'
-                    ? 'Regional AQHI · city observation'
-                    : layer === 'politics'
-                      ? 'Electoral boundaries'
-                      : layer === 'nearby'
-                        ? {
-                            development: 'Development applications',
-                            transit: 'Active transit stops',
-                            parks: 'Parks & pathways',
-                            flood: 'City regulatory flood map',
-                            hazard: 'Alberta design-flood hazard',
-                            noise: 'Airport noise forecasts · NEF',
-                          }[overlay]
-                        : property
-                          ? 'Selected assessment account'
-                          : 'Official community boundaries'}
-            </span>
+          <div
+            className={`map-legend glass ${Object.values(transitLayers).some(Boolean) ? 'has-transit-legend' : ''}`}
+          >
+            {!(layer === 'nearby' && overlay === 'transit') && (
+              <div className="primary-map-legend">
+                <span className={`legend-dot ${layer}`} />
+                <span>
+                  {layer === 'water'
+                    ? 'Public mains · material'
+                    : layer === 'crime'
+                      ? 'Historical crime counts · 2019'
+                      : layer === 'air'
+                        ? 'Regional AQHI · city observation'
+                        : layer === 'politics'
+                          ? 'Electoral boundaries'
+                          : layer === 'nearby'
+                            ? {
+                                development: 'Development applications',
+                                transit: 'Published transit network',
+                                parks: 'Parks & pathways',
+                                flood: 'City regulatory flood map',
+                                hazard: 'Alberta design-flood hazard',
+                                noise: 'Airport noise forecasts · NEF',
+                              }[overlay]
+                            : property
+                              ? 'Selected assessment account'
+                              : 'Official community boundaries'}
+                </span>
+              </div>
+            )}
+            {(Object.values(transitLayers).some(Boolean) ||
+              (layer === 'nearby' && overlay === 'transit')) && (
+              <TransitLegend layers={transitLayers} status={transitStatus} />
+            )}
           </div>
           <nav className="layer-dock glass" aria-label="Explore data layers">
             <SegmentedControl
@@ -1639,6 +1724,7 @@ export default function Home() {
                 community={community ?? null}
                 property={property}
               />
+              <HomeResearchNotes property={property} />
               <section className="report-context">
                 <h3>Place & ownership context</h3>
                 <p>
@@ -1710,10 +1796,10 @@ export default function Home() {
                   City of Calgary assessment roll and 2026 residential tax
                   rates; Open Calgary historical crime dataset 848s-4m4z,
                   covering 2018–2019; City public water service lines. Sources
-                  retrieved 13–14 September 2026. Assessments are not sale
-                  prices. Tax values are estimates. Crime records are historical
-                  and do not describe current conditions. Public service records
-                  do not verify private or interior plumbing.
+                  retrieved or reviewed 13–16 September 2026. Assessments are
+                  not sale prices. Tax values are estimates. Crime records are
+                  historical and do not describe current conditions. Public
+                  service records do not verify private or interior plumbing.
                 </p>
                 <a href="https://data.calgary.ca/d/4bsw-nn7w">
                   City assessment records

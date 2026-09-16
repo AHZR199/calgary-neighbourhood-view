@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LookupInputError, readLookupFields } from '@/lib/atlas/request-body';
+import {
+  normalizeAssessmentRoll,
+  saleHistoryAvailability,
+} from '@/lib/atlas/property-records';
 export const maxDuration = 30;
 const normalize = (value: string) =>
   value.trim().replace(/^#/, '').replace(/\s+/g, ' ').toUpperCase();
@@ -139,9 +143,16 @@ async function lookup(rawAddress: string, roll: string) {
   ).then((rows) => {
     const years = new Map<number, Set<number>>();
     for (const r of rows) {
+      if (normalizeAssessmentRoll(r.roll_number) !== historicalRoll) continue;
       const year = Number(r.roll_year),
         value = Number(String(r.assessed_value || '').replaceAll(',', ''));
-      if (!Number.isFinite(year) || !Number.isFinite(value) || value <= 0)
+      if (
+        !Number.isInteger(year) ||
+        year < 2017 ||
+        year > 2025 ||
+        !Number.isFinite(value) ||
+        value <= 0
+      )
         continue;
       if (!years.has(year)) years.set(year, new Set());
       years.get(year)!.add(value);
@@ -157,6 +168,7 @@ async function lookup(rawAddress: string, roll: string) {
     {
       pipe: results[0].status === 'fulfilled' ? results[0].value : null,
       history: results[1].status === 'fulfilled' ? results[1].value : null,
+      saleHistory: saleHistoryAvailability,
       sourceStatus: { water: results[0].status, history: results[1].status },
       fetchedAt: new Date().toISOString(),
     },

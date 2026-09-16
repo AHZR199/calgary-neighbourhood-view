@@ -122,7 +122,13 @@ test('POST property lookups return public records, omit visitor headers, and dis
             installed_date: '1980-01-01',
           },
         ]);
-      return Response.json([{ roll_year: '2025', assessed_value: '800000' }]);
+      return Response.json([
+        {
+          roll_number: '200256139',
+          roll_year: '2025',
+          assessed_value: '800000',
+        },
+      ]);
     },
   );
   const searched = await assessmentsPOST(request('{"q":"1768 7 AV"}'));
@@ -134,10 +140,14 @@ test('POST property lookups return public records, omit visitor headers, and dis
   );
   assert.equal(detail.status, 200);
   assert.equal(detail.headers.get('cache-control'), 'no-store');
-  assert.deepEqual((await detail.json()).sourceStatus, {
+  const body = await detail.json();
+  assert.deepEqual(body.sourceStatus, {
     water: 'fulfilled',
     history: 'fulfilled',
   });
+  assert.deepEqual(body.history, [
+    { year: 2025, assessedValue: 800000, status: 'recorded' },
+  ]);
   assert.equal(calls.length, 3);
   for (const call of calls) {
     assert.equal(new URL(call.url).hostname, 'data.calgary.ca');

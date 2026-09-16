@@ -1,4 +1,5 @@
 import type { Pipe, Property } from './data';
+import type { SaleHistoryAvailability } from './property-records';
 export interface DetailHistory {
   year: number;
   assessedValue: number | null;
@@ -7,6 +8,7 @@ export interface DetailHistory {
 export interface PublicPropertyDetails {
   pipe: Pipe | null;
   history: DetailHistory[] | null;
+  saleHistory: SaleHistoryAvailability;
   sourceStatus: { water: string; history: string };
   fetchedAt: string;
 }

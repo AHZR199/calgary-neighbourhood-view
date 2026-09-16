@@ -48,7 +48,7 @@ export default function PrivacyPage() {
             page explains both.
           </p>
           <p className="privacy-date">
-            Effective <time dateTime="2026-09-14">14 September 2026</time>
+            Effective <time dateTime="2026-09-16">16 September 2026</time>
           </p>
           <div className="privacy-operator">
             <p>
@@ -90,6 +90,19 @@ export default function PrivacyPage() {
                 clear this site’s data in your browser.
               </p>
               <p>
+                Sun-direction calculations use the selected property’s public
+                coordinates in your browser. The date, time and facing direction
+                you choose stay in page memory and are not saved or sent to a
+                solar service. The tool does not request your device location,
+                camera, compass or photographs of the home.
+              </p>
+              <p>
+                Transit overlay choices also stay in page memory. Bus, CTrain
+                and planned-route geometry are bundled public datasets served by
+                this website; switching them on does not request your location
+                or send your selected home to a transit planner.
+              </p>
+              <p>
                 In compatible browsers, assistant tools can read the selected
                 property address or identifier and comparison selections, or
                 change the map selection, when invoked. Use those tools only
@@ -119,6 +132,15 @@ export default function PrivacyPage() {
                 enter private details. The site displays public civic and
                 property fields, not property-owner profiles. Neighbourhood
                 statistics describe areas, not individual residents.
+              </p>
+              <p>
+                Construction years come from the City’s public assessment
+                records. Radon information is a bundled regional survey summary,
+                not a test result for an identifiable home. This site does not
+                collect radon measurements or access private inspection reports,
+                MLS accounts, property-owner accounts or land-title purchases.
+                Sale dates and prices are not displayed without a verified,
+                freely reusable source.
               </p>
               <p>
                 Public officials’ names, offices and party affiliations, where
@@ -344,6 +366,9 @@ export default function PrivacyPage() {
         <p>Calgary Neighbourhood Analytics</p>
         <div>
           <Link href="/">Return to the app</Link>
+          <Link href="/terms" prefetch={false}>
+            Use & limitations
+          </Link>
           <a href="mailto:az28140@icloud.com">Privacy contact</a>
           <a href="https://github.com/AHZR199/calgary-neighbourhood-analytics">
             Source on GitHub

@@ -6,6 +6,9 @@ import { ChartAxes, chartScale } from './charts';
 import { MobilityContext } from './mobility';
 import { AreaContext } from './overview-context';
 import { RightsAndAttribution } from './rights';
+import { PropertyFacts } from './property-facts';
+import { RadonPanel } from './radon';
+import { SolarPanel } from './solar';
 import {
   ArrowUpRight,
   ArrowRight,
@@ -345,6 +348,21 @@ export function Overview({
         compact
         onMore={() => onLayer('nearby')}
       />
+      {property && (
+        <button
+          className="sun-overview-link"
+          onClick={() => onLayer('property')}
+        >
+          <span>
+            <strong>Sunlight at this home</strong>
+            <small>
+              Sun direction, seasonal daylight and which way to face
+            </small>
+          </span>
+          <ArrowUpRight size={19} />
+        </button>
+      )}
+      <RadonPanel compact onSource={onSource} />
       <section className="overview-topic">
         <div className="section-line">
           <h3>Infrastructure & the home</h3>
@@ -647,16 +665,7 @@ export function PropertyPanel({
             <strong>{money(property.assessedValue)}</strong>
             <p>Annual assessed value</p>
           </div>
-          <div className="record-facts">
-            <div>
-              <span>Year built</span>
-              <strong>{property.yearBuilt || 'Unreported'}</strong>
-            </div>
-            <div>
-              <span>Assessment account</span>
-              <strong>{property.rollNumber}</strong>
-            </div>
-          </div>
+          <PropertyFacts property={property} onSource={onSource} />
         </>
       ) : (
         stats && (
@@ -668,6 +677,13 @@ export function PropertyPanel({
             </small>
           </div>
         )
+      )}
+      {property && (
+        <SolarPanel
+          latitude={property.latitude}
+          longitude={property.longitude}
+          locationLabel={titleCase(property.address)}
+        />
       )}
       {property && (
         <AssessmentHistory key={property.rollNumber} property={property} />
@@ -1057,6 +1073,7 @@ export function AirPanel({
     .join(' ');
   return (
     <div className="panel-flow">
+      <RadonPanel onSource={onSource} />
       <div className="air-hero">
         <span className="metric-label">Calgary air quality health index</span>
         <div className="air-orbit">
@@ -1407,6 +1424,16 @@ export function CivicPanel({
 }
 const buyerChecks = [
   {
+    id: 'radon',
+    title: 'Ask for a long-term radon test',
+    text: 'Review dated results and mitigation records; plan a test if the home has none.',
+  },
+  {
+    id: 'sunlight',
+    title: 'Check daylight in the rooms you will use',
+    text: 'Confirm window direction and shade from trees or buildings, including in winter.',
+  },
+  {
     id: 'inspection',
     title: 'Inspect the home and private plumbing',
     text: 'Confirm actual materials, roof and foundation condition with inspection records.',
@@ -1563,7 +1590,7 @@ export function SourcesView({
             Beltline. Address search connects to the City’s current assessment
             roll.
           </p>
-          <span>Sources reviewed 13–14 September 2026</span>
+          <span>Sources reviewed 13–16 September 2026</span>
         </div>
       </div>
       <nav className="source-filters" aria-label="Source categories">
@@ -1649,6 +1676,9 @@ export function SourcesView({
           </a>
           <Link href="/privacy" prefetch={false}>
             Privacy policy <ArrowUpRight size={13} />
+          </Link>
+          <Link href="/terms" prefetch={false}>
+            Use & limitations <ArrowUpRight size={13} />
           </Link>
           <a href="https://maplibre.org/" target="_blank" rel="noreferrer">
             MapLibre GL <ArrowUpRight size={13} />
