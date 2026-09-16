@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: neighbourhood-analytics-${{ github.ref }}
+  group: neighbourhood-view-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   validate:

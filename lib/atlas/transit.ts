@@ -89,7 +89,7 @@ export const TRANSIT_ACCESS_METHOD = {
   serviceSaturationDeparturesPerHour: 12,
   choiceSaturationRoutes: 4,
   caveat:
-    'A transparent Calgary Neighbourhood Analytics estimate from scheduled service and straight-line distance. Not an official or branded Transit Score, a walking-time estimate, live service, or a measure of reachable jobs.',
+    'A transparent Calgary Neighbourhood View estimate from scheduled service and straight-line distance. Not an official or branded Transit Score, a walking-time estimate, live service, or a measure of reachable jobs.',
 } as const;
 export function distanceMetres(
   lat1: number,

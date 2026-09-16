@@ -446,7 +446,7 @@ export function MobilityContext({
           its stronger direction.
         </p>
         <p>
-          These are independent Neighbourhood Analytics estimates, not official ratings or
+          These are independent Neighbourhood View estimates, not official ratings or
           licensed Walk Score® or Transit Score® results. A neighbourhood
           reference point does not describe every home in that area.
         </p>

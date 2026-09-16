@@ -5,7 +5,7 @@ import {
 } from './property-records';
 export type Layer =
   'overview' | 'property' | 'crime' | 'water' | 'air' | 'politics' | 'nearby';
-export type View = 'explore' | 'saved' | 'sources' | 'about';
+export type View = 'explore' | 'finder' | 'saved' | 'sources' | 'about';
 export interface Community {
   comm_code: string;
   name: string;
@@ -163,7 +163,11 @@ export const LAYERS: { id: Layer; label: string; description: string }[] = [
     label: 'Civic',
     description: 'Your elected representatives',
   },
-  { id: 'nearby', label: 'Nearby', description: 'Development & everyday life' },
+  {
+    id: 'nearby',
+    label: 'Nearby',
+    description: 'Schools, transport & everyday life',
+  },
 ];
 export const TAX_RATE = 0.0066499;
 export const MUNICIPAL_RATE = 0.0038906;
@@ -278,6 +282,140 @@ export async function loadAtlas(): Promise<AtlasData> {
 }
 export const SOURCES = [
   {
+    id: 'neighbourhood-finder',
+    category: 'Nearby',
+    name: 'Find a neighbourhood: profiles and ranking',
+    publisher:
+      'App calculations · City of Calgary · OpenStreetMap contributors',
+    url: '/data/neighbourhood-finder.json',
+    date: 'Built 16 Sep 2026 · individual input dates retained in the download',
+    scope:
+      '223 City Residential-class communities · 219 with assessment summaries',
+    detail:
+      'Recommendations use the priorities and limits you choose, calculated in your browser. Assessment quartiles summarize eligible 2026 residential accounts across mixed property types; they are not asking prices, sales, affordability advice or an inventory of available homes. The optional budget limit checks the community median. Location, amenity, transit and school distances use a labelled area reference point and straight-line geometry; they are not route times or school assignments. Weighted scores are original comparison heuristics, not probabilities or official ratings. Scores are weighted means of available selected measures. Missing evidence is disclosed with weighted coverage; an overall score is shown only when at least 70% of selected weight has data. Hard limits are not silently relaxed. No demographic, political, historic-crime or radon data enters the ranking. The download includes formulas, input hashes, source dates and attribution. Contains information licensed under the Open Government Licence – City of Calgary and OpenStreetMap data available under ODbL; source extracts remain available from the data download.',
+  },
+  {
+    id: 'calgary-tower',
+    category: 'Map',
+    name: 'Calgary Tower landmark illustration',
+    publisher: 'Original app geometry · height reference: Calgary Tower',
+    url: 'https://www.calgarytower.com/architecture',
+    date: 'Model and references reviewed 16 Sep 2026',
+    scope: 'Approximate 3D landmark · published overall height 190.8 m',
+    detail:
+      'Original Three.js geometry depicts the tapered concrete shaft, red apron, glazed decks, pale roof, rooflights and mast. Its overall height follows the operator’s published figure; placement follows the mapped OpenStreetMap footprint centroid. Smaller dimensions and colours are illustrative, not survey or architectural measurements. No third-party model, photograph, texture or logo is bundled. The illustration does not imply the owner’s endorsement or establish rights in the underlying architecture. Three.js licence terms appear in the third-party notices.',
+  },
+  {
+    id: 'bow-landmark',
+    category: 'Map',
+    name: 'The Bow: crescent and facade',
+    publisher: 'Original app geometry · references: Zeidler / Otis',
+    url: 'https://zeidler.com/projects/the-bow/',
+    date: 'References reviewed 16 Sep 2026',
+    scope: 'Illustrative model · 237.5 m published height',
+    detail:
+      'The mapped crescent footprint, blue glazing, six-storey diagonal frame and stepped roof inform the original model. Zeidler describes the facade and sky gardens; the Otis project page gives a height of 237.5 m. Footprint and placement derive from OpenStreetMap. Individual glazing, frame sizes and roof equipment are approximate. No commercial model, photograph, sculpture, drawing asset or logo is copied.',
+  },
+  {
+    id: 'saddledome-landmark',
+    category: 'Map',
+    name: 'Saddledome: roof and structure',
+    publisher: 'Original app geometry · operator and engineering references',
+    url: 'https://www.scotiabanksaddledome.com/building-design/',
+    date: 'References reviewed 16 Sep 2026',
+    scope: 'Illustrative saddle roof · external height approximate',
+    detail:
+      'The original model depicts the curved saddle roof, edge beam, supports, red enclosure and concourse. Published engineering research describes east–west sagging and north–south hogging cables, informing the roof orientation. The 41 m model peak and fine dimensions are illustrative; the operator’s 89-foot interior clearance is not used as the building’s external height. Location follows the City community-services point checked against the mapped outline. No venue branding or third-party model is bundled.',
+  },
+  {
+    id: 'peace-bridge-landmark',
+    category: 'Map',
+    name: 'Peace Bridge: helical structure and railings',
+    publisher: 'Original app geometry · Santiago Calatrava / City of Calgary',
+    url: 'https://calatrava.com/projects/peace-bridge-calgary.html',
+    date: 'References reviewed 16 Sep 2026 · railing update Nov 2023',
+    scope: '126 m span · 8 m overall width · 5.85 m structural height',
+    detail:
+      'Published architect dimensions inform an original oval helical steel structure with a glazed canopy and separated walking/cycle surfaces. The City’s November 2023 repair notice confirms that steel tension cables replaced the side glass railings. Map alignment follows the OpenStreetMap footprint. Member sizes, helix details and height above the flat river map are approximate. No reference photograph, architectural drawing or third-party model is bundled.',
+  },
+  {
+    id: 'telus-sky-landmark',
+    category: 'Map',
+    name: 'TELUS Sky: stepped tower',
+    publisher: 'Original app geometry · BIG / Custom Metal',
+    url: 'https://big.dk/projects/telus-sky-4861',
+    date: 'References reviewed 16 Sep 2026',
+    scope: '222.3 m published height · illustrative facade',
+    detail:
+      'Original floor plates, stepped terraces and pale frames follow the tower’s transition from broad office floors to a diagonal residential slab. BIG describes its form; facade contractor Custom Metal publishes the 222.3 m height. Location follows OpenStreetMap. Fine details are approximate; the model does not reproduce the Northern Lights artwork, a logo, a photograph or an external mesh.',
+  },
+  {
+    id: 'wonderland-landmark',
+    category: 'Map',
+    name: 'Wonderland: public-art context',
+    publisher: 'Jaume Plensa · independent map illustration',
+    url: 'https://jaumeplensa.com/works-and-projects/public-space/wonderland-2012',
+    date: 'References reviewed 16 Sep 2026',
+    scope: '12 m published height · simplified wire portrait',
+    detail:
+      'Wonderland (2012) is a sculpture by Jaume Plensa. The artist publishes painted stainless steel and dimensions of 12 × 7.8 × 10.7 m. This independently constructed map-scale approximation uses generic head profiles and an open wire structure; it is not an exact reproduction or an artist-supplied model. No copied mesh or photograph is bundled. Attribution and original code do not establish permission for all uses of the underlying artwork; see the public-sharing review before republishing or adapting it.',
+  },
+  {
+    id: 'central-library-landmark',
+    category: 'Map',
+    name: 'Central Library: facade and raised entrance',
+    publisher: 'Original app geometry · Snøhetta',
+    url: 'https://www.snohetta.com/projects/calgary-central-library',
+    date: 'References reviewed 16 Sep 2026',
+    scope: 'Illustrative model · height and panel layout approximate',
+    detail:
+      'The architect describes a glass and aluminium hexagonal facade and a western-red-cedar entrance lifted above the train route. The original model uses the mapped curved footprint, a patterned skin and an open, wood-lined arch. Its 28.5 m height and fine dimensions are illustrative. One unrelated building sharing the Library’s coarse map identifier is restored from the attributed public context extract before that identifier is suppressed.',
+  },
+  {
+    id: 'city-hall-landmark',
+    category: 'Map',
+    name: 'Historic City Hall and municipal context',
+    publisher: 'Original app geometry · City of Calgary',
+    url: 'https://www.calgary.ca/arts-culture/heritage-sites/city-hall-character.html',
+    date: 'References reviewed 16 Sep 2026',
+    scope: 'Sandstone, clock tower and civic campus · approximate details',
+    detail:
+      'City heritage records describe the Richardsonian Romanesque sandstone building, round arches and clock tower. The original geometry follows the mapped footprint with illustrative windows, roof and clock details. The City describes the tower as more than 32 m tall; model dimensions are approximate. Modern Municipal Building context follows separately attributed map geometry. No City crest, logo, reference photograph or architectural drawing is bundled.',
+  },
+  {
+    id: 'olympic-park-landmark',
+    category: 'Map',
+    name: 'Canada Olympic Park: ski-jump heritage',
+    publisher: 'Original app geometry · Heritage Calgary / WinSport',
+    url: 'https://www.heritagecalgary.ca/heritage-calgary-blog/inventory1000',
+    date: 'References reviewed 16 Sep 2026',
+    scope: '58 m main tower · former ski jumps',
+    detail:
+      'Heritage Calgary identifies a physical main-tower height of 58 m: the common “90 m jump” name is not the tower height. Original geometry follows mapped towers, inruns and landing-strip alignment. The flat map does not represent the site’s full hillside terrain; landing-ground treatment and fine details are approximate. WinSport decommissioned the jumps in 2018; these are shown as heritage landmarks, not operating facilities.',
+  },
+  {
+    id: 'library-building-context',
+    category: 'Map',
+    name: 'Preserved building beside the landmark area',
+    publisher: 'OpenStreetMap contributors · OpenFreeMap',
+    url: '/data/library-building-restore.geojson',
+    date: 'References reviewed 16 Sep 2026',
+    scope: 'Single companion polygon · 21 m mapped height',
+    detail:
+      'This minimal ODbL extract restores the unrelated polygon that shares the Central Library’s merged basemap feature identifier. Its original render height and base are preserved, so replacing the Library model does not remove another building. The file records the tile snapshot and method; it is map geometry, not a survey.',
+  },
+  {
+    id: 'landmark-footprints',
+    category: 'Map',
+    name: 'Landmark footprint alignment',
+    publisher: 'OpenStreetMap contributors · OpenFreeMap',
+    url: '/data/landmark-footprints.geojson',
+    date: 'Retrieved 16 Sep 2026 · map snapshot 13 Sep',
+    scope: 'Published alignment and placement geometry for Calgary landmarks',
+    detail:
+      'This small downloadable extract retains the footprint geometries, source identities and attribution used to align the detailed Calgary landmarks and cross-check source location points. The database is available under ODbL 1.0, with a direct licence link in its metadata. Source geometry is cartographic and can change. The nearby amenities and downtown-distance calculations retain their own documented reference points; adding landmark models does not silently change those measurements.',
+  },
+  {
     id: 'construction',
     category: 'Property',
     name: 'Recorded construction year',
@@ -331,6 +469,29 @@ export const SOURCES = [
     scope: 'Calgary local time · historical DST and permanent Alberta Time',
     detail:
       'Alberta says clocks will not return to Mountain Standard Time in November 2026 and will remain UTC−6 year-round. Solar controls apply that rule explicitly because some browser time-zone databases still contain the previous autumn clock change. Earlier dates use historical America/Edmonton time. A skipped spring hour is unavailable; a repeated autumn hour uses its first occurrence.',
+  },
+  {
+    id: 'schools',
+    category: 'Nearby',
+    name: 'Schools by grade group and distance',
+    publisher: 'City of Calgary / Government of Alberta',
+    url: 'https://data.calgary.ca/d/fd9t-tdn2',
+    date: 'City updated 1 Sep 2026 · Alberta directory 14 Sep · retrieved 16 Sep',
+    scope: '499 school locations · citywide directory',
+    detail:
+      'The City inventory has 506 points; seven post-secondary sites are excluded from this directory. Published flags identify 385 elementary, 202 junior-high and 111 high-school records, with overlap between levels; 31 records have no reported level. Grade labels are broad groups, not exact grade ranges. All institutions on a shared campus remain separate. Area filters use civic polygons, not attendance zones. Distances are straight-line from the labelled home or area reference point, not walking routes. Private Early Childhood Services operators are outside the source coverage. Check current grades, programs, capacity and designated-school eligibility with the school board. Contains information licensed under the Open Government Licence – City of Calgary and the Open Government Licence – Alberta.',
+  },
+  {
+    id: 'school-websites',
+    category: 'Nearby',
+    name: 'Official school website links',
+    publisher: 'Government of Alberta, Education',
+    url: 'https://open.canada.ca/data/en/dataset/3542f7c1-fe9b-4203-aa01-8c859a871bd3',
+    date: 'Directory extract 14 Sep 2026 · retrieved 16 Sep',
+    scope:
+      'Source-published links matched by school name, address and authority',
+    detail:
+      'The Alberta school and authority workbook is explicitly covered by the Open Government Licence – Alberta. Website links are attached only after a unique exact normalized name, address and authority match to a City school. No guessed domains, fuzzy matches, staff contacts or school logos are used. Missing, invalid and unmatched links stay unavailable. Individual destinations have not all been checked for uptime. The downloadable school file retains both publishers’ attribution, source hashes and the joining method.',
   },
   {
     id: 'essentials',

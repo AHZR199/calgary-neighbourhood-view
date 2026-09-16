@@ -1,15 +1,18 @@
-# Calgary Neighbourhood Analytics
+# Calgary Neighbourhood View
 
 A side project by Abdullah Zubair for exploring the public records behind Calgary homes and neighbourhoods. Pick a place on the map, compare a few areas, work through ownership costs and print a research brief with its sources attached.
 
-[Open the demo](https://calgary-neighbourhood-analytics.vercel.app)
+[Open the demo](https://calgary-neighbourhood-view.vercel.app)
 
 ## What's here
 
-- A 3D map of Calgary's communities and quadrants, with optional 2025 aerial imagery.
+- A 3D map of Calgary's communities and quadrants, with optional 2025 aerial imagery and nine custom landmark illustrations: Calgary Tower, the Saddledome, the Bow, Peace Bridge, Wonderland, TELUS Sky, Central Library, Historic City Hall and Canada Olympic Park.
+- A neighbourhood finder with assessment-budget context, quadrant and distance limits, and adjustable priorities for everyday amenities, transit, parks and schools. Its shortlist explains the fit, compromises and missing data.
 - 2026 residential assessment summaries, sample properties and live City address lookups. Assessments aren't sale prices.
+- Click a home when zoomed in to look up its residential parcel. Buildings with several accounts show an address and unit chooser.
 - Mortgage, tax and ownership-cost calculators with editable assumptions and costs left unconfirmed when the data is missing.
 - Census context, transit stops and dated schedules, plus nearby schools, parks, groceries and other amenities.
+- A school directory with elementary, junior high and high school filters, school-board search and straight-line distances. Browse inside an area or include schools across its boundary; designated schools still need checking with the board.
 - Separate bus and CTrain route overlays, plus a dashed Green Line Phase 1 map. Planned service stays out of the transit score.
 - Historical 2018–2019 crime counts for selected categories, with current CPS reports linked separately. There is no current safety score.
 - Public water-service records and detailed water-main/break extracts for four study communities. Private plumbing still needs inspection.
@@ -22,7 +25,7 @@ Coverage varies by dataset. [Data notes](docs/data-notes.md) explain the dates, 
 
 ## Run it locally
 
-Built with Next.js, React, TypeScript and MapLibre. Use Node 24.
+Built with Next.js, React, TypeScript and MapLibre, with one shared Three.js renderer for the landmarks. Use Node 24.
 
 ```sh
 npm ci
@@ -53,10 +56,16 @@ When updating a snapshot, review its source terms, update the source cards and r
 
 ## Privacy and reuse
 
-The project is operated from Alberta, Canada. There are no accounts, ads or visitor analytics. Browser saves are local, but hosting, searches and map requests still involve service providers. The [privacy policy](https://calgary-neighbourhood-analytics.vercel.app/privacy), also available at `/privacy` locally, explains the data flows and deletion controls. [Privacy operations](docs/privacy-operations.md) records the maintenance duties and provider limitations. Questions or corrections: [az28140@icloud.com](mailto:az28140@icloud.com).
+The project is operated from Alberta, Canada. There are no accounts, ads or visitor analytics. Browser saves are local, but hosting, searches and map requests still involve service providers. The [privacy policy](https://calgary-neighbourhood-view.vercel.app/privacy), also available at `/privacy` locally, explains the data flows and deletion controls. [Privacy operations](docs/privacy-operations.md) records the maintenance duties and provider limitations. Questions or corrections: [az28140@icloud.com](mailto:az28140@icloud.com).
+
+The finder ranks 223 City Residential-class neighbourhood profiles; 219 have eligible assessment summaries. Matching runs in the browser over a bundled [profile dataset](public/data/neighbourhood-finder.json). Preferences are temporary page state, with no AI service, preference upload or new tracking. Assessment medians mix residential property types and are not listing prices. Hard limits stay separate from weighted preferences; demographics, crime, politics and radon are not ranking inputs.
 
 Map credits belong with the map: OpenFreeMap, OpenMapTiles and OpenStreetMap contributors. Aerial imagery is credited to © The City of Calgary, 2025 and is viewed through the hosted service; it isn't bundled or included in printable briefs. Source data, map styles and dependencies have separate reuse terms. See the [source licence register](public/data/rights-register.json), [public-sharing review](public/PUBLIC-SHARING-REVIEW.md) and [third-party notices](public/THIRD-PARTY-NOTICES.txt).
 
+The finder download and [landmark footprint extract](public/data/landmark-footprints.geojson) include OSM-derived information under the [Open Database License](https://opendatacommons.org/licenses/odbl/1-0/), with City inputs separately attributed under their open-government licence. Landmark geometry is original procedural code with published dimensions where verified. Other dimensions, materials and placement are approximate; the ski jumps are a heritage depiction with compressed landing relief on the flat map. No external model, texture, blueprint, logo or photographic asset is included.
+
+Wonderland (2012) is by [Jaume Plensa](https://jaumeplensa.com/works-and-projects/public-space/wonderland-2012); its simplified map illustration is independently made, not an artist-supplied mesh. Original code and attribution do not establish rights in the underlying architecture or artwork. The [public-sharing review](public/PUBLIC-SHARING-REVIEW.md) records the limits of the review, including why Canada's pictorial-reproduction exception is not treated as blanket permission for distributing 3D meshes.
+
 This is a research aid. It doesn't provide MLS listings, sale-price history, guaranteed school assignments, insurance quotes or property-specific legal and inspection conclusions.
 
-Sale prices and dates stay unavailable because no suitable free redistributable source was established. Sunlight calculations don't model trees, nearby buildings or window direction. The [data notes](docs/data-notes.md) and [use and limitations page](https://calgary-neighbourhood-analytics.vercel.app/terms) explain what these records and estimates can support.
+Sale prices and dates stay unavailable because no suitable free redistributable source was established. Sunlight calculations don't model trees, nearby buildings or window direction. The [data notes](docs/data-notes.md) and [use and limitations page](https://calgary-neighbourhood-view.vercel.app/terms) explain what these records and estimates can support.

@@ -24,7 +24,6 @@ import {
   ChevronLeft,
   Check,
   X,
-  Share2,
   Columns3,
   Printer,
   Trash2,
@@ -73,10 +72,11 @@ import {
   type TransitMapLayers,
   type TransitMapStatus,
 } from '@/lib/atlas/map-overlays';
-import { NearbyPanel } from '@/components/atlas/nearby';
+import { NearbyPanel, type NearbySection } from '@/components/atlas/nearby';
 import { resolveRepresentatives } from '@/lib/atlas/geography';
 import { getPublicPropertyDetails } from '@/lib/atlas/property-details';
 import { HomeResearchNotes } from '@/components/atlas/property-facts';
+import { PlaceActions } from '@/components/atlas/place-actions';
 import {
   CORE,
   LAYERS,
@@ -87,10 +87,16 @@ import {
   TAX_RATE,
   titleCase,
 } from '@/lib/atlas/data';
+import { LANDMARK_DETAILS as landmarkDetails } from '@/lib/atlas/landmarks';
 import type { AtlasData, Layer, Property, View } from '@/lib/atlas/data';
 const CityMap = dynamic(() => import('@/components/atlas/city-map'), {
   ssr: false,
 });
+const NeighbourhoodFinder = dynamic(() =>
+  import('@/components/atlas/neighbourhood-finder').then(
+    (module) => module.NeighbourhoodFinder,
+  ),
+);
 const layerIcons = {
   overview: Layers3,
   property: House,
@@ -106,6 +112,7 @@ interface SavedPlace {
   title: string;
   property?: Property;
 }
+
 export default function Home() {
   const [data, setData] = useState<AtlasData | null>(null),
     [dataError, setDataError] = useState(''),
@@ -115,7 +122,8 @@ export default function Home() {
     [layer, setLayer] = useState<Layer>('overview'),
     [view, setView] = useState<View>('explore');
   const [basemap, setBasemap] = useState<'atlas' | 'aerial'>('atlas'),
-    [overlay, setOverlay] = useState<Overlay>('development');
+    [overlay, setOverlay] = useState<Overlay>('none');
+  const [nearbySection, setNearbySection] = useState<NearbySection>('schools');
   const [transitLayers, setTransitLayers] = useState<TransitMapLayers>(
       DEFAULT_TRANSIT_LAYERS,
     ),
@@ -133,6 +141,10 @@ export default function Home() {
     [reportOpen, setReportOpen] = useState(false),
     [expanded, setExpanded] = useState(false);
   const [mapFocused, setMapFocused] = useState(false);
+  const [finderVisited, setFinderVisited] = useState(false);
+  const [landmarkView, setLandmarkView] = useState<
+    keyof typeof landmarkDetails | null
+  >(null);
   const [sourceFocus, setSourceFocus] = useState(''),
     [toast, setToast] = useState(''),
     [refreshing, setRefreshing] = useState(false),
@@ -380,6 +392,7 @@ export default function Home() {
     };
   }, [query, searchOpen]);
   function chooseCommunity(next: string) {
+    setLandmarkView(null);
     setMapFocused(false);
     setCode(next);
     setProperty(null);
@@ -388,6 +401,7 @@ export default function Home() {
     setQuery('');
   }
   function chooseProperty(p: Property) {
+    setLandmarkView(null);
     setMapFocused(false);
     setData((d) =>
       d && !d.properties.some((x) => x.rollNumber === p.rollNumber)
@@ -443,6 +457,8 @@ export default function Home() {
     };
   }, [property, data]);
   function chooseLayer(l: Layer) {
+    if (landmarkView) setAction({ type: 'returnToPlace', id: Date.now() });
+    setLandmarkView(null);
     setMapFocused(false);
     setLayer(l);
     setView('explore');
@@ -570,7 +586,7 @@ export default function Home() {
     const entries = [
       {
         name: 'get_atlas_state',
-        title: 'Read Calgary Neighbourhood Analytics state',
+        title: 'Read Calgary Neighbourhood View state',
         description:
           'Read the selected community, property, layer and comparison list. Does not change anything.',
         inputSchema: {
@@ -644,7 +660,7 @@ export default function Home() {
         name: 'set_map_layer',
         title: 'Change map layer',
         description:
-          'Display a Calgary Neighbourhood Analytics data layer and its matching details panel.',
+          'Display a Calgary Neighbourhood View data layer and its matching details panel.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -770,11 +786,13 @@ export default function Home() {
         {view === 'explore' ? 'Skip to place details' : 'Skip to page content'}
       </a>
       <CityMap
+        active={view === 'explore'}
         basemap={basemap}
         overlay={overlay}
         transitLayers={transitLayers}
         onTransitStatus={setTransitStatus}
         mapFocused={mapFocused}
+        landmark={landmarkView}
         data={data}
         community={community}
         property={property}
@@ -782,6 +800,8 @@ export default function Home() {
         is3d={is3d}
         action={action}
         onCommunity={chooseCommunity}
+        onPropertyRecord={chooseProperty}
+        onSearch={() => setSearchOpen(true)}
         onProperty={(roll) => {
           const p = data?.properties.find((p) => p.rollNumber === roll);
           if (p) chooseProperty(p);
@@ -793,12 +813,12 @@ export default function Home() {
         <Link
           className="brand"
           href="/"
-          aria-label="Calgary Neighbourhood Analytics home"
+          aria-label="Calgary Neighbourhood View home"
           data-dialog-focus-fallback
         >
           <span className="brand-copy">
             <small>CALGARY</small>
-            <span className="brand-name">Neighbourhood Analytics</span>
+            <span className="brand-name">Neighbourhood View</span>
           </span>
         </Link>
         <SegmentedControl
@@ -806,6 +826,7 @@ export default function Home() {
           value={view}
           onValueChange={(v) => {
             setView(v as View);
+            if (v === 'finder') setFinderVisited(true);
             if (v === 'sources') setSourceFocus('');
           }}
           className="header-tabs"
@@ -814,6 +835,10 @@ export default function Home() {
             <Segment value="explore" aria-label="Explore">
               <MapIcon size={16} />
               <span>Explore</span>
+            </Segment>
+            <Segment value="finder" aria-label="Find a neighbourhood">
+              <Compass size={16} />
+              <span>Find</span>
             </Segment>
             <Segment value="saved" aria-label="Saved places">
               <Bookmark size={16} />
@@ -845,23 +870,6 @@ export default function Home() {
               <span>Address, neighbourhood or quadrant</span>
               <kbd>⌘ K</kbd>
             </button>
-            <div className="quick-areas">
-              {CORE.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => chooseCommunity(c)}
-                  className={code === c && !property ? 'active' : ''}
-                >
-                  {c === 'HIL'
-                    ? 'Hillhurst'
-                    : c === 'SSD'
-                      ? 'Sunnyside'
-                      : c === 'BRD'
-                        ? 'Bridgeland'
-                        : 'Beltline'}
-                </button>
-              ))}
-            </div>
           </section>
           <div
             className="basemap-switch glass"
@@ -884,12 +892,20 @@ export default function Home() {
             </button>
           </div>
           <MapLayers
+            onShowLandmark={(landmark) => {
+              setLandmarkView(landmark);
+              setExpanded(false);
+              setMapFocused(true);
+              setIs3d(true);
+              setAction({ type: landmark, id: Date.now() });
+            }}
             layer={layer}
             overlay={overlay}
             transitLayers={transitLayers}
             transitStatus={transitStatus}
             onTransitLayersChange={setTransitLayers}
             onShowGreenLine={() => {
+              setLandmarkView(null);
               setExpanded(false);
               setMapFocused(true);
               setAction({ type: 'greenLine', id: Date.now() });
@@ -897,6 +913,15 @@ export default function Home() {
             onLayerChange={chooseLayer}
             onOverlayChange={(value) => {
               setOverlay(value);
+              setNearbySection(
+                value === 'none'
+                  ? 'schools'
+                  : value === 'transit'
+                    ? 'gettingAround'
+                    : value === 'development'
+                      ? 'development'
+                      : 'checks',
+              );
               if (value === 'transit')
                 setTransitLayers((current) =>
                   Object.values(current).some(Boolean)
@@ -938,299 +963,364 @@ export default function Home() {
               {is3d ? '3D' : '2D'}
             </button>
           </div>
-          <aside
-            className={`inspector ${expanded ? 'expanded' : ''} ${mapFocused ? 'map-focused' : ''}`}
-            aria-label="Place details"
-          >
-            <button
-              className="drawer-handle"
-              onClick={() => setExpanded((x) => !x)}
-              aria-label={expanded ? 'Collapse details' : 'Expand details'}
-            >
-              <span />
-            </button>
-            <div className="inspector-heading">
-              {property && (
-                <button
-                  className="back-to-community"
-                  onClick={() => {
-                    setProperty(null);
-                    setLayer('overview');
-                  }}
-                >
-                  <ChevronLeft size={14} />
-                  {communityLabel(community)}
-                </button>
-              )}
-              <div className="panel-topline">
-                <span className="eyebrow">
-                  {property
-                    ? 'PROPERTY RECORD'
-                    : community?.class === 'Quadrant'
-                      ? 'QUADRANT PROFILE'
-                      : LAYERS.find((l) => l.id === layer)?.description ||
-                        'NEIGHBOURHOOD PROFILE'}
-                </span>
-                <div className="heading-actions">
-                  <button
-                    className={`icon-button ${selectedSaved ? 'is-saved' : ''}`}
-                    onClick={() => toggleSaved()}
-                    aria-label={
-                      selectedSaved ? 'Unsave place' : 'Save on this device'
-                    }
-                    title={
-                      selectedSaved ? 'Unsave place' : 'Save on this device'
-                    }
-                  >
-                    {selectedSaved ? (
-                      <Bookmark size={18} fill="currentColor" />
-                    ) : (
-                      <Bookmark size={18} />
-                    )}
-                  </button>
-                  <button
-                    className="icon-button mobile-expand"
-                    onClick={() => setExpanded((x) => !x)}
-                    aria-label={
-                      expanded ? 'Collapse details' : 'Expand details'
-                    }
-                  >
-                    {expanded ? (
-                      <ChevronDown size={18} />
-                    ) : (
-                      <ChevronUp size={18} />
-                    )}
-                  </button>
-                </div>
-              </div>
-              <h1
-                id="place-details"
-                tabIndex={-1}
-                className={property ? 'address-heading' : ''}
-              >
-                {name}
-              </h1>
+          {landmarkView && (
+            <aside className="landmark-card" aria-label="Landmark details">
               <button
-                className="map-details-open"
-                type="button"
-                aria-controls="place-details-body"
-                aria-expanded={false}
+                className="landmark-back"
                 onClick={() => {
+                  setLandmarkView(null);
                   setMapFocused(false);
-                  setExpanded(false);
-                  requestAnimationFrame(() =>
-                    document
-                      .getElementById('place-details')
-                      ?.focus({ preventScroll: true }),
-                  );
+                  setAction({ type: 'returnToPlace', id: Date.now() });
                 }}
               >
-                Show details <ChevronUp size={16} aria-hidden="true" />
+                <ChevronLeft size={14} /> Return to {name}
               </button>
-              <p className="area-subtitle">
-                {property ? communityLabel(community) : 'Calgary'}
-                <span>·</span>
-                {community ? titleCase(community.sector) : 'Centre'}{' '}
-                <small>
-                  {community?.class === 'Quadrant'
-                    ? 'quadrant'
-                    : 'planning sector'}
-                </small>
+              <span className="landmark-eyebrow">CALGARY LANDMARK</span>
+              <h1 id="place-details" tabIndex={-1}>
+                {landmarkDetails[landmarkView].name}
+              </h1>
+              <p className="landmark-fact">
+                {landmarkDetails[landmarkView].fact}
               </p>
-              <div className="record-actions">
-                <button
-                  className={compare.includes(placeId) ? 'active' : ''}
-                  onClick={() => toggleCompare()}
-                >
-                  <Columns3 size={14} />
-                  {compare.includes(placeId) ? 'Added' : 'Compare'}
-                </button>
-                <button onClick={sharePlace}>
-                  <Share2 size={14} />
-                  Share
-                </button>
-                <button onClick={() => setReportOpen(true)}>
-                  <Printer size={14} />
-                  Brief
-                </button>
-              </div>
-            </div>
-            <div
-              id="place-details-body"
-              className="inspector-scroll"
-              ref={panelScroll}
+              <p>{landmarkDetails[landmarkView].description}</p>
+              <small>
+                Original 3D illustration. Fine dimensions and materials are
+                approximate.
+              </small>
+              <button
+                className="landmark-source"
+                onClick={() => showSource(landmarkDetails[landmarkView].source)}
+              >
+                Model references <ArrowUpRight size={13} />
+              </button>
+            </aside>
+          )}
+          {!landmarkView && (
+            <aside
+              className={`inspector ${expanded ? 'expanded' : ''} ${mapFocused ? 'map-focused' : ''}`}
+              aria-label="Place details"
             >
-              {data && community ? (
-                <>
-                  {layer === 'overview' && (
-                    <Overview
-                      property={property}
-                      data={data}
-                      community={community}
-                      onLayer={chooseLayer}
-                      onProperty={chooseProperty}
-                      onSource={showSource}
-                    />
-                  )}{' '}
-                  {layer === 'property' && (
-                    <PropertyPanel
-                      key={`${code}:${property?.rollNumber ?? 'area'}`}
-                      data={data}
-                      community={community}
-                      property={property}
-                      onProperty={chooseProperty}
-                      onSource={showSource}
-                      onSearch={() => setSearchOpen(true)}
-                    />
-                  )}{' '}
-                  {layer === 'crime' && (
-                    <CrimePanel
-                      quadrant={community.class === 'Quadrant'}
-                      crime={data.crime[code]}
-                      onSource={showSource}
-                    />
-                  )}{' '}
-                  {layer === 'water' && (
-                    <WaterPanel
-                      key={`${code}:${property?.rollNumber ?? 'area'}`}
-                      data={data}
-                      community={community}
-                      property={property}
-                      onSource={showSource}
-                      onSearch={() => setSearchOpen(true)}
-                    />
-                  )}{' '}
-                  {layer === 'air' && (
-                    <AirPanel
-                      air={data.air}
-                      onRefresh={refreshAir}
-                      refreshing={refreshing}
-                      refreshError={refreshError}
-                      onSource={showSource}
-                    />
-                  )}{' '}
-                  {layer === 'politics' && (
-                    <CivicPanel
-                      data={data}
-                      community={community}
-                      property={property}
-                      onProperty={chooseProperty}
-                      onSource={showSource}
-                    />
-                  )}{' '}
-                  {layer === 'nearby' && (
-                    <NearbyPanel
-                      key={code}
-                      community={community}
-                      property={property}
-                      onSource={showSource}
-                      overlay={overlay}
-                      onOverlay={(value) => {
-                        setOverlay(value);
-                        if (value === 'transit')
-                          setTransitLayers((current) =>
-                            Object.values(current).some(Boolean)
-                              ? current
-                              : { ...current, train: true },
-                          );
-                      }}
-                      transitLayers={transitLayers}
-                      transitStatus={transitStatus}
-                      onTransitLayersChange={setTransitLayers}
-                      onShowGreenLine={() => {
-                        setExpanded(false);
-                        setMapFocused(true);
-                        setAction({ type: 'greenLine', id: Date.now() });
-                      }}
-                    />
-                  )}
-                </>
-              ) : dataError ? (
-                <div className="inline-empty">
-                  <strong>Records unavailable</strong>
-                  <p>{dataError}</p>
+              <button
+                className="drawer-handle"
+                onClick={() => setExpanded((x) => !x)}
+                aria-label={expanded ? 'Collapse details' : 'Expand details'}
+              >
+                <span />
+              </button>
+              <div className="inspector-heading">
+                {property && (
                   <button
-                    className="secondary-button"
+                    className="back-to-community"
                     onClick={() => {
-                      setDataError('');
-                      setLoadAttempt((n) => n + 1);
+                      setProperty(null);
+                      setLayer('overview');
                     }}
                   >
-                    <RefreshCw size={16} />
-                    Try again
+                    <ChevronLeft size={14} />
+                    {communityLabel(community)}
                   </button>
+                )}
+                <div className="panel-topline">
+                  <span className="eyebrow">
+                    {property
+                      ? 'PROPERTY RECORD'
+                      : community?.class === 'Quadrant'
+                        ? 'QUADRANT PROFILE'
+                        : LAYERS.find((l) => l.id === layer)?.description ||
+                          'NEIGHBOURHOOD PROFILE'}
+                  </span>
+                  <div className="heading-actions">
+                    <PlaceActions
+                      compared={compare.includes(placeId)}
+                      onCompare={() => toggleCompare()}
+                      onShare={sharePlace}
+                      onBrief={() => setReportOpen(true)}
+                    />
+                    <button
+                      className={`icon-button ${selectedSaved ? 'is-saved' : ''}`}
+                      onClick={() => toggleSaved()}
+                      aria-label={
+                        selectedSaved ? 'Unsave place' : 'Save on this device'
+                      }
+                      title={
+                        selectedSaved ? 'Unsave place' : 'Save on this device'
+                      }
+                    >
+                      {selectedSaved ? (
+                        <Bookmark size={18} fill="currentColor" />
+                      ) : (
+                        <Bookmark size={18} />
+                      )}
+                    </button>
+                    <button
+                      className="icon-button mobile-expand"
+                      onClick={() => setExpanded((x) => !x)}
+                      aria-label={
+                        expanded ? 'Collapse details' : 'Expand details'
+                      }
+                    >
+                      {expanded ? (
+                        <ChevronDown size={18} />
+                      ) : (
+                        <ChevronUp size={18} />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              ) : (
-                <div className="records-loading">
-                  <div />
-                  <span>Opening Calgary’s public records…</span>
+                <h1
+                  id="place-details"
+                  tabIndex={-1}
+                  className={property ? 'address-heading' : ''}
+                >
+                  {name}
+                </h1>
+                <button
+                  className="map-details-open"
+                  type="button"
+                  aria-controls="place-details-body"
+                  aria-expanded={false}
+                  onClick={() => {
+                    setMapFocused(false);
+                    setExpanded(false);
+                    requestAnimationFrame(() =>
+                      document
+                        .getElementById('place-details')
+                        ?.focus({ preventScroll: true }),
+                    );
+                  }}
+                >
+                  Show details <ChevronUp size={16} aria-hidden="true" />
+                </button>
+                <p className="area-subtitle">
+                  {property ? communityLabel(community) : 'Calgary'}
+                  <span>·</span>
+                  {community ? titleCase(community.sector) : 'Centre'}{' '}
+                  <small>
+                    {community?.class === 'Quadrant'
+                      ? 'quadrant'
+                      : 'planning sector'}
+                  </small>
+                </p>
+              </div>
+              <div
+                id="place-details-body"
+                className="inspector-scroll"
+                ref={panelScroll}
+              >
+                {data && community ? (
+                  <>
+                    {layer === 'overview' && (
+                      <Overview
+                        property={property}
+                        data={data}
+                        community={community}
+                        onLayer={chooseLayer}
+                        onSun={() => {
+                          chooseLayer('property');
+                          requestAnimationFrame(() => {
+                            const tool =
+                              document.querySelector<HTMLDetailsElement>(
+                                '[data-solar-details]',
+                              );
+                            if (!tool) return;
+                            tool.open = true;
+                            tool
+                              .querySelector('summary')
+                              ?.focus({ preventScroll: true });
+                            tool.scrollIntoView({
+                              block: 'start',
+                              behavior: matchMedia(
+                                '(prefers-reduced-motion: reduce)',
+                              ).matches
+                                ? 'instant'
+                                : 'smooth',
+                            });
+                          });
+                        }}
+                        onNearby={(section) => {
+                          setNearbySection(section);
+                          setOverlay('none');
+                          chooseLayer('nearby');
+                        }}
+                        onProperty={chooseProperty}
+                        onSource={showSource}
+                      />
+                    )}{' '}
+                    {layer === 'property' && (
+                      <PropertyPanel
+                        key={`${code}:${property?.rollNumber ?? 'area'}`}
+                        data={data}
+                        community={community}
+                        property={property}
+                        onProperty={chooseProperty}
+                        onSource={showSource}
+                        onSearch={() => setSearchOpen(true)}
+                      />
+                    )}{' '}
+                    {layer === 'crime' && (
+                      <CrimePanel
+                        quadrant={community.class === 'Quadrant'}
+                        crime={data.crime[code]}
+                        onSource={showSource}
+                      />
+                    )}{' '}
+                    {layer === 'water' && (
+                      <WaterPanel
+                        key={`${code}:${property?.rollNumber ?? 'area'}`}
+                        data={data}
+                        community={community}
+                        property={property}
+                        onSource={showSource}
+                        onSearch={() => setSearchOpen(true)}
+                      />
+                    )}{' '}
+                    {layer === 'air' && (
+                      <AirPanel
+                        air={data.air}
+                        onRefresh={refreshAir}
+                        refreshing={refreshing}
+                        refreshError={refreshError}
+                        onSource={showSource}
+                      />
+                    )}{' '}
+                    {layer === 'politics' && (
+                      <CivicPanel
+                        data={data}
+                        community={community}
+                        property={property}
+                        onProperty={chooseProperty}
+                        onSource={showSource}
+                      />
+                    )}{' '}
+                    {layer === 'nearby' && (
+                      <NearbyPanel
+                        key={code}
+                        section={nearbySection}
+                        onSectionChange={(section) => {
+                          setNearbySection(section);
+                          setOverlay(
+                            section === 'development'
+                              ? 'development'
+                              : section === 'checks'
+                                ? 'parks'
+                                : 'none',
+                          );
+                        }}
+                        community={community}
+                        property={property}
+                        onSource={showSource}
+                        overlay={overlay}
+                        onOverlay={(value) => {
+                          setOverlay(value);
+                          if (value === 'transit')
+                            setTransitLayers((current) =>
+                              Object.values(current).some(Boolean)
+                                ? current
+                                : { ...current, train: true },
+                            );
+                        }}
+                        transitLayers={transitLayers}
+                        transitStatus={transitStatus}
+                        onTransitLayersChange={setTransitLayers}
+                        onShowGreenLine={() => {
+                          setLandmarkView(null);
+                          setExpanded(false);
+                          setMapFocused(true);
+                          setAction({ type: 'greenLine', id: Date.now() });
+                        }}
+                      />
+                    )}
+                  </>
+                ) : dataError ? (
+                  <div className="inline-empty">
+                    <strong>Records unavailable</strong>
+                    <p>{dataError}</p>
+                    <button
+                      className="secondary-button"
+                      onClick={() => {
+                        setDataError('');
+                        setLoadAttempt((n) => n + 1);
+                      }}
+                    >
+                      <RefreshCw size={16} />
+                      Try again
+                    </button>
+                  </div>
+                ) : (
+                  <div className="records-loading">
+                    <div />
+                    <span>Opening Calgary’s public records…</span>
+                  </div>
+                )}
+              </div>
+              <div className="inspector-footer">
+                <BookOpen size={13} />
+                <button
+                  onClick={() =>
+                    showSource(
+                      layer === 'property'
+                        ? 'assessments'
+                        : layer === 'overview'
+                          ? 'boundaries'
+                          : layer === 'water'
+                            ? 'services'
+                            : layer === 'politics'
+                              ? 'federal'
+                              : layer === 'nearby'
+                                ? 'development'
+                                : layer,
+                    )
+                  }
+                >
+                  Sources & coverage
+                </button>
+                <Link className="privacy-link" href="/privacy" prefetch={false}>
+                  Privacy
+                </Link>
+                <Link className="privacy-link" href="/terms" prefetch={false}>
+                  Terms
+                </Link>
+              </div>
+            </aside>
+          )}
+          {!landmarkView && (
+            <div
+              className={`map-legend glass ${Object.values(transitLayers).some(Boolean) ? 'has-transit-legend' : ''}`}
+            >
+              {!(layer === 'nearby' && overlay === 'transit') && (
+                <div className="primary-map-legend">
+                  <span className={`legend-dot ${layer}`} />
+                  <span>
+                    {layer === 'water'
+                      ? 'Public mains · material'
+                      : layer === 'crime'
+                        ? 'Historical crime counts · 2019'
+                        : layer === 'air'
+                          ? 'Regional AQHI · city observation'
+                          : layer === 'politics'
+                            ? 'Electoral boundaries'
+                            : layer === 'nearby'
+                              ? {
+                                  none: 'Zoom in to select a home',
+                                  development: 'Development applications',
+                                  transit: 'Published transit network',
+                                  parks: 'Parks & pathways',
+                                  flood: 'City regulatory flood map',
+                                  hazard: 'Alberta design-flood hazard',
+                                  noise: 'Airport noise forecasts · NEF',
+                                }[overlay]
+                              : property
+                                ? 'Click a home to select its assessment'
+                                : 'Zoom in to select a home'}
+                  </span>
                 </div>
               )}
+              {(Object.values(transitLayers).some(Boolean) ||
+                (layer === 'nearby' && overlay === 'transit')) && (
+                <TransitLegend layers={transitLayers} status={transitStatus} />
+              )}
             </div>
-            <div className="inspector-footer">
-              <BookOpen size={13} />
-              <button
-                onClick={() =>
-                  showSource(
-                    layer === 'property'
-                      ? 'assessments'
-                      : layer === 'overview'
-                        ? 'boundaries'
-                        : layer === 'water'
-                          ? 'services'
-                          : layer === 'politics'
-                            ? 'federal'
-                            : layer === 'nearby'
-                              ? 'development'
-                              : layer,
-                  )
-                }
-              >
-                Sources & coverage
-              </button>
-              <Link className="privacy-link" href="/privacy" prefetch={false}>
-                Privacy
-              </Link>
-              <Link className="privacy-link" href="/terms" prefetch={false}>
-                Terms
-              </Link>
-            </div>
-          </aside>
-          <div
-            className={`map-legend glass ${Object.values(transitLayers).some(Boolean) ? 'has-transit-legend' : ''}`}
-          >
-            {!(layer === 'nearby' && overlay === 'transit') && (
-              <div className="primary-map-legend">
-                <span className={`legend-dot ${layer}`} />
-                <span>
-                  {layer === 'water'
-                    ? 'Public mains · material'
-                    : layer === 'crime'
-                      ? 'Historical crime counts · 2019'
-                      : layer === 'air'
-                        ? 'Regional AQHI · city observation'
-                        : layer === 'politics'
-                          ? 'Electoral boundaries'
-                          : layer === 'nearby'
-                            ? {
-                                development: 'Development applications',
-                                transit: 'Published transit network',
-                                parks: 'Parks & pathways',
-                                flood: 'City regulatory flood map',
-                                hazard: 'Alberta design-flood hazard',
-                                noise: 'Airport noise forecasts · NEF',
-                              }[overlay]
-                            : property
-                              ? 'Selected assessment account'
-                              : 'Official community boundaries'}
-                </span>
-              </div>
-            )}
-            {(Object.values(transitLayers).some(Boolean) ||
-              (layer === 'nearby' && overlay === 'transit')) && (
-              <TransitLegend layers={transitLayers} status={transitStatus} />
-            )}
-          </div>
+          )}
           <nav className="layer-dock glass" aria-label="Explore data layers">
             <SegmentedControl
               aria-label="Data layers"
@@ -1264,6 +1354,22 @@ export default function Home() {
             </button>
           )}
         </>
+      )}
+      {finderVisited && (
+        <div hidden={view !== 'finder'}>
+          <NeighbourhoodFinder
+            active={view === 'finder'}
+            onExplore={(nextCode) => {
+              chooseCommunity(nextCode);
+              setLayer('overview');
+            }}
+            onCompare={(codes) => {
+              setCompare(codes.map((nextCode) => `c:${nextCode}`));
+              setCompareOpen(true);
+            }}
+            onSource={showSource}
+          />
+        </div>
       )}
       {view === 'sources' && (
         <SourcesView focus={sourceFocus} onBack={() => setView('explore')} />
@@ -1668,7 +1774,7 @@ export default function Home() {
         <DialogContent className="report-dialog">
           <div className="report-brand">
             <strong>
-              Calgary <span>Neighbourhood Analytics</span>
+              Calgary <span>Neighbourhood View</span>
             </strong>
             <span>PROPERTY & NEIGHBOURHOOD BRIEF</span>
           </div>

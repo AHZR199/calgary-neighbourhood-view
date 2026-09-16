@@ -18,7 +18,7 @@ export function AboutView({
     >
       <div className="workspace-heading">
         <div>
-          <span className="eyebrow">CALGARY NEIGHBOURHOOD ANALYTICS</span>
+          <span className="eyebrow">CALGARY NEIGHBOURHOOD VIEW</span>
           <h1>About the project</h1>
           <p>
             Public records for people researching a home or neighbourhood in
@@ -42,7 +42,7 @@ export function AboutView({
               Connect on LinkedIn <ArrowUpRight size={15} />
             </a>
             <a
-              href="https://github.com/AHZR199/calgary-neighbourhood-analytics"
+              href="https://github.com/AHZR199/calgary-neighbourhood-view"
               target="_blank"
               rel="noreferrer"
             >
@@ -77,7 +77,7 @@ export function AboutView({
             <h2>Independence and privacy</h2>
             <p>Made by Abdullah Zubair. Operated from Alberta, Canada.</p>
             <p>
-              Calgary Neighbourhood Analytics is not affiliated with or endorsed
+              Calgary Neighbourhood View is not affiliated with or endorsed
               by the City of Calgary, Calgary Police Service, a political party
               or a real estate brokerage. It is a research aid, not a valuation,
               inspection, insurance decision or professional advice.

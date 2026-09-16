@@ -6,7 +6,7 @@ export function RightsAndAttribution() {
         <h2>Licences & attribution</h2>
       </div>
       <p>
-        Calgary Neighbourhood Analytics is an independent, noncommercial
+        Calgary Neighbourhood View is an independent, noncommercial
         project. Each source keeps its own terms; public access alone does not
         mean unrestricted reuse.
       </p>
@@ -147,7 +147,7 @@ export function RightsAndAttribution() {
         <article>
           <h3>Calculations & linked material</h3>
           <p>
-            Neighbourhood Analytics’s calculations use individually sourced
+            Neighbourhood View’s calculations use individually sourced
             numeric facts and original formulas. Estimates are not official
             valuations or tax bills. Current CPS workbook figures and
             unconfirmed City profile-PDF extracts are linked at their original

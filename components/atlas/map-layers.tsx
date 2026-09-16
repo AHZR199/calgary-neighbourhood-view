@@ -11,6 +11,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { LAYERS } from '@/lib/atlas/data';
+import {
+  LANDMARK_DETAILS,
+  LANDMARK_KEYS,
+  type LandmarkKey,
+} from '@/lib/atlas/landmarks';
 import type { Layer } from '@/lib/atlas/data';
 import type { Overlay } from './city-map';
 import type {
@@ -20,15 +25,11 @@ import type {
 import { TransitLayerChoices } from './transit-layers';
 
 const overlays: { id: Overlay; label: string; description: string }[] = [
+  { id: 'none', label: 'None', description: 'Base map and selected place' },
   {
     id: 'development',
     label: 'Development',
     description: 'Applications in the four detailed areas',
-  },
-  {
-    id: 'transit',
-    label: 'Transit',
-    description: 'CTrain, bus routes and stops',
   },
   {
     id: 'parks',
@@ -61,6 +62,7 @@ export function MapLayers({
   transitStatus,
   onTransitLayersChange,
   onShowGreenLine,
+  onShowLandmark,
 }: {
   layer: Layer;
   overlay: Overlay;
@@ -70,6 +72,7 @@ export function MapLayers({
   transitStatus: TransitMapStatus;
   onTransitLayersChange: (layers: TransitMapLayers) => void;
   onShowGreenLine: () => void;
+  onShowLandmark: (landmark: LandmarkKey) => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -86,10 +89,26 @@ export function MapLayers({
         <div className="map-layers-heading">
           <DialogTitle>Map layers</DialogTitle>
           <DialogDescription>
-            Choose the information to show on the map and in place details.
+            Add transport routes or an area overlay to the map.
           </DialogDescription>
         </div>
         <div className="map-layers-options">
+          <label className="mobile-details-picker">
+            <span>Place details</span>
+            <select
+              value={layer}
+              onChange={(event) => {
+                onLayerChange(event.target.value as Layer);
+                setOpen(false);
+              }}
+            >
+              {LAYERS.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <TransitLayerChoices
             layers={transitLayers}
             status={transitStatus}
@@ -100,31 +119,7 @@ export function MapLayers({
             }}
           />
           <fieldset className="map-layer-group">
-            <legend>Data layers</legend>
-            <div className="map-layer-grid">
-              {LAYERS.map((item) => (
-                <label className="map-layer-choice" key={item.id}>
-                  <input
-                    type="radio"
-                    name="map-data-layer"
-                    value={item.id}
-                    checked={layer === item.id}
-                    onChange={() => onLayerChange(item.id)}
-                    aria-describedby={`map-layer-${item.id}-description`}
-                  />
-                  <span>
-                    <strong>{item.label}</strong>
-                    <small id={`map-layer-${item.id}-description`}>
-                      {item.description}
-                    </small>
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <fieldset className="map-layer-group">
-            <legend>Nearby overlays</legend>
-            <p>Selecting an overlay opens the Nearby layer.</p>
+            <legend>Area overlay</legend>
             <div className="map-layer-grid">
               {overlays.map((item) => (
                 <label className="map-layer-choice" key={item.id}>
@@ -132,7 +127,11 @@ export function MapLayers({
                     type="radio"
                     name="map-nearby-overlay"
                     value={item.id}
-                    checked={layer === 'nearby' && overlay === item.id}
+                    checked={
+                      item.id === 'none'
+                        ? layer !== 'nearby' || overlay === 'none'
+                        : layer === 'nearby' && overlay === item.id
+                    }
                     onChange={() => onOverlayChange(item.id)}
                     aria-describedby={`map-overlay-${item.id}-description`}
                   />
@@ -146,6 +145,25 @@ export function MapLayers({
               ))}
             </div>
           </fieldset>
+          <details className="map-landmarks-picker">
+            <summary>
+              Calgary landmarks <span>Explore the city in 3D</span>
+            </summary>
+            <div>
+              {LANDMARK_KEYS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    onShowLandmark(key);
+                  }}
+                >
+                  {LANDMARK_DETAILS[key].name}
+                </button>
+              ))}
+            </div>
+          </details>
         </div>
         <div className="map-layers-footer">
           <DialogClose asChild>

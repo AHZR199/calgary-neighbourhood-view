@@ -1,6 +1,6 @@
-# Privacy operations — Calgary Neighbourhood Analytics
+# Privacy operations — Calgary Neighbourhood View
 
-Reviewed 14 September 2026. Operator: Abdullah Zubair, Alberta, Canada. Public contact: az28140@icloud.com. This guide accompanies the live site's `/privacy` page. It describes how the app handles information and what the operator needs to do. It is not a certification of worldwide compliance.
+Reviewed 14 September 2026; feature-processing inventory updated 16 September 2026. Operator: Abdullah Zubair, Alberta, Canada. Public contact: az28140@icloud.com. This guide accompanies the live site's `/privacy` page. It describes how the app handles information and what the operator needs to do. It is not a certification of worldwide compliance.
 
 ## How the app handles information
 
@@ -73,3 +73,9 @@ Sun calculations run on the visitor's device using the selected property's publi
 The public privacy notice and /terms describe these distinctions. Keep them in sync if adding solar imagery, shading services, saved solar preferences, radon submissions or a licensed sales-data provider later. Existing provider-contract and international-processing limitations remain unchanged.
 
 Bus, CTrain and planned-route overlay choices stay in browser memory. Their geometry is bundled with the app and served by the existing host. No device location, trip-planner API, live-vehicle service or new processor is introduced. External official transit links remain governed by those services when clicked.
+
+School filters, query text and distances also stay in browser memory. The City/Alberta school derivative is served by the existing host; school links do not prefill the selected home or submit student data. Map clicks send the selected public point to `/api/map-property` in a POST body, with no-store responses. The server queries the same public City assessment service as address search; its upstream Socrata URL contains the spatial filter. No app logging, persistent search database, geolocation permission or new processor is added. These are selected research locations, not device-location readings. The privacy notice distinguishes these flows.
+
+The neighbourhood finder fetches one bundled public profile file from the existing host and calculates matches locally. Budget amounts, quadrant selections, distance limits, selected school group, priorities and results are temporary page state. They are not written to localStorage, appended to URLs, uploaded to a recommendation endpoint or sent to an AI service. There is no visitor-preference database, new processor or new tracking. Opening a matched neighbourhood or comparing its code uses the existing app features; separately saving a place still follows the existing explicit browser-save action. The model uses public location/service and assessment context, not demographic, crime, political or resident-profile criteria.
+
+The nine landmark illustrations—Calgary Tower, Saddledome, Bow, Peace Bridge, Wonderland, TELUS Sky, Central Library, Historic City Hall with Municipal Building context, and Canada Olympic Park—are generated locally from bundled original Three.js code in one shared renderer. Their minimal public footprint and companion-building extracts are served by the existing host. They fetch no external model, image texture or model-viewer service and collect no extra information. Selecting a landmark only changes the local map view and details. Existing hosting and basemap requests still occur; there is no new processor or tracking. Review these statements before adding saved finder preferences, shared preference URLs, recommendation telemetry, external models or server-side recommendation services.

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { LOCAL_DATA_CHANGED } from '@/lib/atlas/privacy-storage';
 import { ChartAxes, chartScale } from './charts';
 import { MobilityContext } from './mobility';
+import { SchoolsContext } from './schools';
 import { AreaContext } from './overview-context';
 import { RightsAndAttribution } from './rights';
 import { PropertyFacts } from './property-facts';
@@ -16,6 +17,7 @@ import {
   BookOpen,
   Check,
   ChevronRight,
+  ChevronDown,
   Droplets,
   House,
   Wind,
@@ -229,6 +231,8 @@ export function Overview({
   community,
   property,
   onLayer,
+  onNearby,
+  onSun,
   onProperty,
   onSource,
 }: {
@@ -236,6 +240,8 @@ export function Overview({
   community: Community;
   property: Property | null;
   onLayer: (layer: Layer) => void;
+  onNearby: (section: 'schools' | 'gettingAround') => void;
+  onSun: () => void;
   onProperty: (p: Property) => void;
   onSource: (id: string) => void;
 }) {
@@ -346,13 +352,17 @@ export function Overview({
         community={community}
         property={property}
         compact
-        onMore={() => onLayer('nearby')}
+        onMore={() => onNearby('gettingAround')}
+      />
+      <SchoolsContext
+        community={community}
+        property={property}
+        compact
+        onMore={() => onNearby('schools')}
+        onSource={onSource}
       />
       {property && (
-        <button
-          className="sun-overview-link"
-          onClick={() => onLayer('property')}
-        >
+        <button className="sun-overview-link" onClick={onSun}>
           <span>
             <strong>Sunlight at this home</strong>
             <small>
@@ -576,7 +586,7 @@ export function TaxCalculator({
           Provincial <strong>{money(value * PROVINCIAL_RATE)}</strong>
         </span>
       </div>
-      <details className="scenario" open>
+      <details className="scenario">
         <summary>
           <SlidersHorizontal size={16} />
           Explore a future scenario <ChevronRight size={15} />
@@ -679,13 +689,6 @@ export function PropertyPanel({
         )
       )}
       {property && (
-        <SolarPanel
-          latitude={property.latitude}
-          longitude={property.longitude}
-          locationLabel={titleCase(property.address)}
-        />
-      )}
-      {property && (
         <AssessmentHistory key={property.rollNumber} property={property} />
       )}
       {property || stats ? (
@@ -700,6 +703,22 @@ export function PropertyPanel({
           property={property}
           assessment={property?.assessedValue ?? stats!.median}
         />
+      )}
+      {property && (
+        <details className="property-sun-tool" data-solar-details>
+          <summary>
+            <span>
+              <strong>Sun & orientation</strong>
+              <small>Direction, seasonal daylight and window exposure</small>
+            </span>
+            <ChevronDown size={17} aria-hidden="true" />
+          </summary>
+          <SolarPanel
+            latitude={property.latitude}
+            longitude={property.longitude}
+            locationLabel={titleCase(property.address)}
+          />
+        </details>
       )}
       {!property && (
         <section>
@@ -1630,7 +1649,10 @@ export function SourcesView({
                 <dd>{s.scope}</dd>
               </div>
             </dl>
-            <p>{s.detail}</p>
+            <details className="source-method" open={focus === s.id}>
+              <summary>Method & limitations</summary>
+              <p>{s.detail}</p>
+            </details>
             <a href={s.url} target="_blank" rel="noreferrer">
               Open official source <ArrowUpRight size={15} />
             </a>
@@ -1642,9 +1664,8 @@ export function SourcesView({
         <h2>Map & interface credits</h2>
         <p>
           Map style adapted from Positron (CARTO, Stamen and Paul Norman, via
-          OpenMapTiles/OpenFreeMap). Neighbourhood Analytics adjusts colours and
-          adds data layers. Original design and software terms are retained in
-          the{' '}
+          OpenMapTiles/OpenFreeMap). Neighbourhood View adjusts colours and adds
+          data layers. Original design and software terms are retained in the{' '}
           <a
             href="https://github.com/openmaptiles/positron-gl-style/blob/master/LICENSE.md"
             target="_blank"
@@ -1685,7 +1706,7 @@ export function SourcesView({
           </a>
         </div>
         <p>
-          Calgary Neighbourhood Analytics is an independent project. It is not
+          Calgary Neighbourhood View is an independent project. It is not
           affiliated with the City of Calgary, Calgary Police Service or a real
           estate brokerage.
         </p>

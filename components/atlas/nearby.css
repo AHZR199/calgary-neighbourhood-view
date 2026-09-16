@@ -1,0 +1,113 @@
+.nearby-panel {
+  min-width: 0;
+}
+.nearby-section-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 22px;
+  background: #edf3f8;
+  border: 1px solid #dbe5ee;
+  border-radius: 8px;
+}
+.nearby-section-tabs button {
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: #526a7c;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: normal;
+}
+.nearby-section-tabs button[aria-selected='true'] {
+  color: #254d68;
+  background: #fff;
+  border-color: #c7d9e6;
+  box-shadow: 0 1px 3px #243c4e0a;
+}
+.nearby-section-tabs button:hover {
+  color: #254d68;
+  background: #f9fcfe;
+}
+.nearby-section-content {
+  min-width: 0;
+}
+.nearby-section-tabs button:focus-visible,
+.nearby-section-content:focus-visible,
+.nearby-area-choices button:focus-visible {
+  outline: 2px solid #315d7a;
+  outline-offset: 3px;
+}
+.nearby-single-metric {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 15px 0 20px;
+  padding: 14px 12px;
+  border: 1px solid #d8e5ef;
+  border-radius: 7px;
+  background: #f6f9fc;
+  color: #355770;
+}
+.nearby-single-metric > svg {
+  flex-shrink: 0;
+}
+.nearby-single-metric > strong {
+  font-size: 25px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.nearby-single-metric > div {
+  min-width: 0;
+}
+.nearby-single-metric span,
+.nearby-single-metric small {
+  display: block;
+  white-space: normal;
+  line-height: 1.5;
+}
+.nearby-single-metric span {
+  font-size: 12px;
+}
+.nearby-single-metric small {
+  margin-top: 3px;
+  color: #526a7c;
+  font-size: 11px;
+}
+.nearby-area-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.nearby-area-choices button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #d4e1eb;
+  border-radius: 6px;
+  color: #476174;
+  background: #f8fbfd;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: normal;
+}
+.nearby-area-choices button[aria-pressed='true'] {
+  background: #e5f0f8;
+  border-color: #88aac3;
+  color: #244e6b;
+}
+.nearby-load-error {
+  margin: 12px 0;
+  color: #526a7c;
+  font-size: 12px;
+}
+@media print {
+  .nearby-section-tabs,
+  .nearby-area-choices {
+    display: none;
+  }
+}

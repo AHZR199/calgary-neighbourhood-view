@@ -1,4 +1,4 @@
-CALGARY NEIGHBOURHOOD ANALYTICS — THIRD-PARTY SOFTWARE AND MAP-STYLE NOTICES
+CALGARY NEIGHBOURHOOD VIEW — THIRD-PARTY SOFTWARE AND MAP-STYLE NOTICES
 Prepared: 2026-09-14
 
 Scope: Copyright and licence notices copied from the installed package versions
@@ -6,7 +6,7 @@ identified below, with version-tagged or commit-pinned upstream supplements
 where a package omitted its notice. This inventory includes development and
 optional dependencies as well as browser code; inclusion does not mean that a
 component is loaded in a browser. The notices apply to their named components,
-not to all Calgary Neighbourhood Analytics code or to government/third-party datasets.
+not to all Calgary Neighbourhood View code or to government/third-party datasets.
 
 Some repository supplements are identified as current upstream notices where
 the published package declares a licence but omitted the notice. No authorship,
@@ -26966,7 +26966,7 @@ SOFTWARE.
 ========================================================================
 Positron GL style retrieved 2026-09-14
 Source: https://github.com/openmaptiles/positron-gl-style/blob/master/LICENSE.md
-Includes upstream CARTO/Stamen/Paul Norman design credits. Calgary Neighbourhood Analytics adapts Positron via OpenMapTiles/OpenFreeMap, adjusts background, water, land-cover and text colours, and adds thematic data layers.
+Includes upstream CARTO/Stamen/Paul Norman design credits. Calgary Neighbourhood View adapts Positron via OpenMapTiles/OpenFreeMap, adjusts background, water, land-cover and text colours, and adds thematic data layers.
 
 Copyright (c) 2024, MapTiler.com & OpenMapTiles contributors.  
 Copyright (c) 2015, CartoDB Inc.  
@@ -27061,3 +27061,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+
+Three.js 0.186.0
+https://threejs.org/
+
+The MIT License
+
+Copyright © 2010-2026 three.js authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

@@ -4,6 +4,13 @@ import * as ml from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { RefreshCw } from 'lucide-react';
 import type { AtlasData, Community, Layer, Property } from '@/lib/atlas/data';
+import { isLandmarkKey, type LandmarkKey } from '@/lib/atlas/landmarks';
+import { buildingLookupPoint } from '@/lib/atlas/map-selection';
+import './map-property.css';
+import {
+  MapPropertyDialog,
+  type MapPropertyChoices,
+} from './map-property-dialog';
 import {
   TRANSIT_COLOURS,
   GREEN_LINE_MAP_AVAILABLE,
@@ -13,13 +20,15 @@ import {
 import 'maplibre-gl/dist/maplibre-gl.css';
 ml.setWorkerUrl('/vendor/maplibre/maplibre-gl-worker.mjs');
 export type Overlay =
-  'development' | 'transit' | 'parks' | 'flood' | 'hazard' | 'noise';
+  'none' | 'development' | 'transit' | 'parks' | 'flood' | 'hazard' | 'noise';
 interface Props {
+  active: boolean;
   basemap: 'atlas' | 'aerial';
   overlay: Overlay;
   transitLayers: TransitMapLayers;
   onTransitStatus: (status: TransitMapStatus) => void;
   mapFocused: boolean;
+  landmark: LandmarkKey | null;
   data: AtlasData | null;
   community: Community | undefined;
   property: Property | null;
@@ -28,6 +37,8 @@ interface Props {
   action: { type: string; id: number };
   onCommunity: (code: string) => void;
   onProperty: (roll: string) => void;
+  onPropertyRecord: (property: Property) => void;
+  onSearch: () => void;
   onReady: () => void;
 }
 const withoutQuadrants = (
@@ -47,6 +58,94 @@ const onlyQuadrants = (communities: AtlasData['communities'] | undefined) => ({
 const empty: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const cityTransitAttribution =
   'Calgary Transit / City of Calgary · <a href="https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa/">Open Government Licence – City of Calgary</a>';
+
+function cameraPadding(map: ml.Map, desired: Required<ml.PaddingOptions>) {
+  const { clientWidth: width, clientHeight: height } = map.getContainer();
+  const horizontal = desired.left + desired.right;
+  const vertical = desired.top + desired.bottom;
+  const xScale = Math.min(
+    1,
+    Math.max(0, width - Math.min(240, width / 2)) / Math.max(1, horizontal),
+  );
+  const yScale = Math.min(
+    1,
+    Math.max(0, height - Math.min(200, height / 2)) / Math.max(1, vertical),
+  );
+  return {
+    left: desired.left * xScale,
+    right: desired.right * xScale,
+    top: desired.top * yScale,
+    bottom: desired.bottom * yScale,
+  };
+}
+
+function focusSelectedPlace(
+  map: ml.Map,
+  selection: Pick<Props, 'community' | 'property' | 'is3d'>,
+  resetOrientation = false,
+) {
+  const mobile = map.getContainer().clientWidth < 760;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const orientation = resetOrientation
+    ? { bearing: -24, pitch: selection.is3d ? 57 : 0 }
+    : {};
+  if (selection.property)
+    map.flyTo({
+      ...orientation,
+      center: [selection.property.longitude, selection.property.latitude],
+      zoom: 16.8,
+      padding: cameraPadding(
+        map,
+        mobile
+          ? { top: 150, bottom: 320, left: 20, right: 20 }
+          : { top: 90, bottom: 90, left: 40, right: 420 },
+      ),
+      duration: reduced ? 0 : 1400,
+    });
+  else if (selection.community)
+    map.fitBounds(selection.community.bounds, {
+      ...orientation,
+      padding: cameraPadding(
+        map,
+        mobile
+          ? { top: 160, bottom: 315, left: 50, right: 40 }
+          : { top: 140, bottom: 130, left: 110, right: 460 },
+      ),
+      maxZoom: 14.7,
+      duration: reduced ? 0 : 1300,
+    });
+}
+
+function focusLandmark(
+  map: ml.Map,
+  key: LandmarkKey,
+  landmark: {
+    coordinates: [number, number];
+    zoom: number;
+    pitch: number;
+    bearing: number;
+  },
+  animate = true,
+) {
+  const mobile = map.getContainer().clientWidth < 760;
+  const tall = key === 'tower' || key === 'bow' || key === 'sky';
+  map.easeTo({
+    center: landmark.coordinates,
+    zoom: landmark.zoom - (mobile ? 0.6 : 0),
+    pitch: landmark.pitch,
+    bearing: landmark.bearing,
+    padding: cameraPadding(
+      map,
+      mobile
+        ? { top: 230, bottom: 260, left: 25, right: 25 }
+        : { top: tall ? 340 : 180, bottom: 40, left: 40, right: 430 },
+    ),
+    duration:
+      !animate || matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 0
+        : 1100,
+  });
+}
 
 function fitGreenLineRoute(
   map: ml.Map,
@@ -97,10 +196,13 @@ export default function CityMap(props: Props) {
     cameraInitialized = useRef(false),
     current = useRef(props),
     activePopup = useRef<ml.Popup | null>(null),
+    propertyRequest = useRef<AbortController | null>(null),
     transitCache = useRef(new Map<string, FeatureCollection>());
   useEffect(() => {
     current.current = props;
   });
+  const [propertyChoices, setPropertyChoices] =
+    useState<MapPropertyChoices | null>(null);
   const [ready, setReady] = useState(false),
     [failed, setFailed] = useState(false),
     [attempt, setAttempt] = useState(0);
@@ -137,6 +239,14 @@ export default function CityMap(props: Props) {
               'text-halo-color': '#f6f9fc',
               'text-halo-width': 1.4,
             };
+          if (l.type === 'symbol' && l.id.startsWith('highway-name'))
+            l.layout = {
+              ...l.layout,
+              'symbol-spacing': 400,
+              'text-allow-overlap': false,
+              'text-ignore-placement': false,
+              'text-pitch-alignment': 'map',
+            };
           return l;
         });
         if (disposed) return;
@@ -147,9 +257,11 @@ export default function CityMap(props: Props) {
           zoom: 14.15,
           pitch: 57,
           bearing: -24,
-          maxZoom: 19,
+          maxZoom: 20,
           minZoom: 9,
           attributionControl: false,
+          canvasContextAttributes: { antialias: true },
+          pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
           maxBounds: [
             [-114.7, 50.6],
             [-113.4, 51.5],
@@ -275,31 +387,86 @@ export default function CityMap(props: Props) {
             },
             firstSymbol,
           );
-          m.addLayer(
-            {
-              id: 'atlas-buildings',
-              source: 'openmaptiles',
-              'source-layer': 'building',
-              type: 'fill-extrusion',
-              minzoom: 12,
-              paint: {
-                'fill-extrusion-color': '#f1f6fa',
-                'fill-extrusion-height': [
-                  'coalesce',
-                  ['get', 'render_height'],
-                  6,
-                ],
-                'fill-extrusion-base': [
-                  'coalesce',
-                  ['get', 'render_min_height'],
-                  0,
-                ],
-                'fill-extrusion-opacity': 0.98,
-              },
+          m.addLayer({
+            id: 'atlas-buildings',
+            source: 'openmaptiles',
+            'source-layer': 'building',
+            type: 'fill-extrusion',
+            minzoom: 12,
+            paint: {
+              'fill-extrusion-color': '#f1f6fa',
+              'fill-extrusion-height': [
+                'coalesce',
+                ['get', 'render_height'],
+                6,
+              ],
+              'fill-extrusion-base': [
+                'coalesce',
+                ['get', 'render_min_height'],
+                0,
+              ],
+              'fill-extrusion-opacity': 1,
             },
-            firstSymbol,
-          );
+          });
           m.addSource('properties', { type: 'geojson', data: empty });
+          void import('./calgary-landmarks')
+            .then(
+              async ({
+                createCalgaryLandmarksLayer,
+                LANDMARK_LAYER_ID,
+                REPLACED_BUILDING_IDS,
+              }) => {
+                if (!m || disposed) return;
+                try {
+                  const response = await fetch(
+                    '/data/library-building-restore.geojson',
+                    {
+                      signal: AbortSignal.timeout(10000),
+                    },
+                  );
+                  if (!response.ok) throw Error('Building context unavailable');
+                  const context = (await response.json()) as FeatureCollection;
+                  if (disposed || !m) return;
+                  //the library shares a tile id with another building; restore it first.
+                  m.addSource('landmark-building-context', {
+                    type: 'geojson',
+                    data: context,
+                  });
+                  m.addLayer({
+                    id: 'landmark-building-context',
+                    source: 'landmark-building-context',
+                    type: 'fill-extrusion',
+                    minzoom: 12,
+                    paint: {
+                      'fill-extrusion-color':
+                        current.current.basemap === 'aerial'
+                          ? '#e8e8db'
+                          : '#f1f6fa',
+                      'fill-extrusion-height': ['get', 'render_height'],
+                      'fill-extrusion-base': ['get', 'render_min_height'],
+                      'fill-extrusion-opacity': 1,
+                    },
+                  });
+                  m.moveLayer('landmark-building-context', 'property-dots');
+                  m.addLayer(createCalgaryLandmarksLayer(), 'property-dots');
+                  m.setFilter('atlas-buildings', [
+                    '!',
+                    ['in', ['id'], ['literal', REPLACED_BUILDING_IDS]],
+                  ]);
+                  m.triggerRepaint();
+                } catch {
+                  if (disposed || !m) return;
+                  if (m.getLayer('landmark-building-context'))
+                    m.removeLayer('landmark-building-context');
+                  if (m.getSource('landmark-building-context'))
+                    m.removeSource('landmark-building-context');
+                  if (m.getLayer(LANDMARK_LAYER_ID))
+                    m.removeLayer(LANDMARK_LAYER_ID);
+                  m.setFilter('atlas-buildings', null);
+                }
+              },
+            )
+            .catch(() => {});
           m.addLayer({
             id: 'property-parcels',
             source: 'properties',
@@ -772,7 +939,9 @@ export default function CityMap(props: Props) {
             firstSymbol,
           );
           m.on('click', (e) => {
-            if (!m) return;
+            if (!m || !current.current.active) return;
+            propertyRequest.current?.abort();
+            activePopup.current?.remove();
             const clickableLayers: string[] = [];
             if (current.current.transitLayers.train)
               clickableLayers.push(
@@ -849,6 +1018,110 @@ export default function CityMap(props: Props) {
               current.current.onProperty(String(pins[0].properties.rollNumber));
               return;
             }
+            if (m.getZoom() >= 15.5) {
+              const buildings = m.queryRenderedFeatures(e.point, {
+                layers: [
+                  'atlas-buildings',
+                  ...(m.getLayer('landmark-building-context')
+                    ? ['landmark-building-context']
+                    : []),
+                ],
+              });
+              const clicked: [number, number] = [e.lngLat.lng, e.lngLat.lat];
+              const point = buildings.length
+                ? buildingLookupPoint(buildings[0].geometry, clicked)
+                : clicked;
+              if (point) {
+                const controller = new AbortController();
+                propertyRequest.current = controller;
+                const card = document.createElement('div');
+                card.className = 'atlas-map-popup map-property-popup';
+                const title = document.createElement('strong');
+                title.textContent = 'Finding this property…';
+                title.setAttribute('role', 'status');
+                card.appendChild(title);
+                const popup = new ml.Popup({
+                  closeButton: true,
+                  offset: 14,
+                  maxWidth: '300px',
+                })
+                  .setLngLat(point)
+                  .setDOMContent(card)
+                  .addTo(m);
+                popup.on('close', () => controller.abort());
+                activePopup.current = popup;
+                const message = (text: string) => {
+                  const p = document.createElement('p');
+                  p.textContent = text;
+                  card.appendChild(p);
+                };
+                const search = () => {
+                  const button = document.createElement('button');
+                  button.className = 'map-property-search';
+                  button.textContent = 'Search by address';
+                  button.onclick = () => {
+                    popup.remove();
+                    current.current.onSearch();
+                  };
+                  card.appendChild(button);
+                };
+                void fetch('/api/map-property', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    longitude: point[0],
+                    latitude: point[1],
+                  }),
+                  signal: controller.signal,
+                })
+                  .then(async (response) => {
+                    const result = (await response.json()) as {
+                      records?: Property[];
+                      truncated?: boolean;
+                      error?: string;
+                    };
+                    if (!response.ok)
+                      throw new Error(
+                        result.error || 'Property lookup unavailable.',
+                      );
+                    if (controller.signal.aborted) return;
+                    const records = result.records ?? [];
+                    if (records.length === 1 && !result.truncated) {
+                      popup.remove();
+                      current.current.onPropertyRecord(records[0]);
+                      return;
+                    }
+                    title.textContent = records.length
+                      ? 'Choose a property'
+                      : result.truncated
+                        ? 'Narrow this property search'
+                        : 'No residential record here';
+                    if (!records.length) {
+                      message(
+                        result.truncated
+                          ? 'This point has too many parcel records to show a complete account. Search the address and unit to narrow the results.'
+                          : 'The City’s 2026 assessment map has no residential account at this point. Try the centre of the home or search its address.',
+                      );
+                      search();
+                      return;
+                    }
+                    popup.remove();
+                    setPropertyChoices({
+                      records,
+                      truncated: !!result.truncated,
+                    });
+                  })
+                  .catch(() => {
+                    if (controller.signal.aborted) return;
+                    title.textContent = 'Property lookup unavailable';
+                    message(
+                      'The City’s record service did not respond. Try again, or search the address.',
+                    );
+                    search();
+                  });
+                return;
+              }
+            }
             const areas = m.queryRenderedFeatures(e.point, {
               layers: ['community-wash'],
             });
@@ -859,6 +1132,7 @@ export default function CityMap(props: Props) {
           });
           for (const id of [
             'property-dots',
+            'atlas-buildings',
             'community-wash',
             'bus-points',
             'bus-routes',
@@ -875,7 +1149,29 @@ export default function CityMap(props: Props) {
               if (m) m.getCanvas().style.cursor = '';
             });
           }
-          const observer = new ResizeObserver(() => m?.resize());
+          //ground overlays belong below the roofs, while selection pins stay above.
+          for (const id of [
+            'property-parcels',
+            'property-outlines',
+            'water-mains',
+            'districts',
+          ])
+            m.moveLayer(id, 'atlas-buildings');
+          let previousWidth = m.getContainer().clientWidth;
+          const observer = new ResizeObserver(() => {
+            if (!m || disposed) return;
+            m.resize();
+            const width = m.getContainer().clientWidth;
+            const switchedLayout = width < 760 !== previousWidth < 760;
+            previousWidth = width;
+            const key = current.current.landmark;
+            if (switchedLayout && key) {
+              void import('./calgary-landmarks').then(({ LANDMARKS }) => {
+                if (!m || disposed || current.current.landmark !== key) return;
+                focusLandmark(m, key, LANDMARKS[key], false);
+              });
+            }
+          });
           observer.observe(container.current!);
           m.once('remove', () => observer.disconnect());
           setReady(true);
@@ -889,11 +1185,24 @@ export default function CityMap(props: Props) {
     void start();
     return () => {
       disposed = true;
+      propertyRequest.current?.abort();
       setReady(false);
       m?.remove();
       map.current = null;
     };
   }, [attempt]);
+  useEffect(() => {
+    propertyRequest.current?.abort();
+    activePopup.current?.remove();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- a portal must close when its map selection becomes stale
+    setPropertyChoices(null);
+  }, [
+    props.community?.comm_code,
+    props.property?.rollNumber,
+    props.layer,
+    props.action.id,
+    props.active,
+  ]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready || !communities) return;
@@ -979,33 +1288,12 @@ export default function CityMap(props: Props) {
   useEffect(() => {
     const m = map.current;
     if (!m || !ready) return;
-    const isPhone = m.getContainer().clientWidth < 760;
-    const reduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
     if (!cameraInitialized.current && !props.property) {
       cameraInitialized.current = true;
       return;
     }
     cameraInitialized.current = true;
-    if (props.property)
-      m.flyTo({
-        center: [props.property.longitude, props.property.latitude],
-        zoom: 16.8,
-        padding: isPhone
-          ? { top: 150, bottom: 320, left: 20, right: 20 }
-          : { top: 90, bottom: 90, left: 40, right: 420 },
-        duration: reduced ? 0 : 1400,
-      });
-    else if (props.community) {
-      m.fitBounds(props.community.bounds, {
-        padding: isPhone
-          ? { top: 160, bottom: 315, left: 50, right: 40 }
-          : { top: 140, bottom: 130, left: 110, right: 460 },
-        maxZoom: 14.7,
-        duration: reduced ? 0 : 1300,
-      });
-    }
+    focusSelectedPlace(m, current.current);
   }, [props.community, props.property, ready]);
   useEffect(() => {
     const m = map.current;
@@ -1098,11 +1386,13 @@ export default function CityMap(props: Props) {
       'fill-extrusion-color',
       props.basemap === 'aerial' ? '#e8e8db' : '#f1f6fa',
     );
-    m.setPaintProperty(
-      'atlas-buildings',
-      'fill-extrusion-opacity',
-      props.basemap === 'aerial' ? 0.86 : 0.98,
-    );
+    m.setPaintProperty('atlas-buildings', 'fill-extrusion-opacity', 1);
+    if (m.getLayer('landmark-building-context'))
+      m.setPaintProperty(
+        'landmark-building-context',
+        'fill-extrusion-color',
+        props.basemap === 'aerial' ? '#e8e8db' : '#f1f6fa',
+      );
     for (const l of m.getStyle().layers) {
       if (l.type === 'symbol' && l.id !== 'property-values') {
         m.setPaintProperty(
@@ -1122,6 +1412,7 @@ export default function CityMap(props: Props) {
     const m = map.current;
     if (!m || !ready) return;
     const groups: Record<Overlay, string[]> = {
+      none: [],
       development: ['development-points'],
       transit: [],
       parks: ['park-areas', 'pathways'],
@@ -1138,8 +1429,13 @@ export default function CityMap(props: Props) {
             ? 'visible'
             : 'none',
         );
-    if (props.layer !== 'nearby' || props.overlay === 'transit') return;
-    const sources: Record<Overlay, [string, string]> = {
+    if (
+      props.layer !== 'nearby' ||
+      props.overlay === 'transit' ||
+      props.overlay === 'none'
+    )
+      return;
+    const sources: Record<Exclude<Overlay, 'none'>, [string, string]> = {
       development: ['nearby', 'nearby-points.geojson'],
       transit: ['transit-citywide', 'transit-points.geojson'],
       parks: ['amenities', 'amenities.geojson'],
@@ -1247,19 +1543,22 @@ export default function CityMap(props: Props) {
     return () => controller.abort();
   }, [transitLayers, onTransitStatus, ready]);
   useEffect(() => {
+    if (!ready) return;
     map.current?.easeTo({
       pitch: props.is3d ? 57 : 0,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 0
         : 700,
     });
-  }, [props.is3d]);
+  }, [props.is3d, ready]);
   useEffect(() => {
     const m = map.current;
-    if (!m) return;
+    if (!m || !ready) return;
+    let cancelled = false;
     const type = props.action.type;
     if (type === 'in') m.zoomIn();
     if (type === 'out') m.zoomOut();
+    if (type === 'returnToPlace') focusSelectedPlace(m, current.current, true);
     if (
       type === 'greenLine' &&
       GREEN_LINE_MAP_AVAILABLE &&
@@ -1286,40 +1585,36 @@ export default function CityMap(props: Props) {
           ? 0
           : 600,
       });
-  }, [props.action]);
+    if (isLandmarkKey(type)) {
+      void import('./calgary-landmarks')
+        .then(({ LANDMARKS }) => {
+          if (cancelled || map.current !== m || !current.current.active) return;
+          focusLandmark(m, type, LANDMARKS[type]);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [props.action, ready]);
   return (
-    <div className="map-stage">
+    <div
+      className="map-stage"
+      aria-hidden={!props.active}
+      inert={!props.active}
+    >
+      <MapPropertyDialog
+        result={props.active ? propertyChoices : null}
+        onClose={() => setPropertyChoices(null)}
+        onSelect={props.onPropertyRecord}
+        onSearch={props.onSearch}
+      />
       <div
         ref={container}
         className="city-map"
-        aria-label="Interactive 3D Calgary map. Select a neighbourhood or property marker."
+        aria-label="Interactive 3D Calgary map. Zoom in and click a home to select its property record, or use the address search."
       />
-      <div className="map-rights">
-        <a href="https://openfreemap.org/" target="_blank" rel="noreferrer">
-          OpenFreeMap
-        </a>{' '}
-        ·{' '}
-        <a href="https://openmaptiles.org/" target="_blank" rel="noreferrer">
-          © OpenMapTiles
-        </a>{' '}
-        ·{' '}
-        <a
-          href="https://www.openstreetmap.org/copyright"
-          target="_blank"
-          rel="noreferrer"
-        >
-          © OpenStreetMap contributors
-        </a>
-        {props.basemap === 'aerial' && (
-          <>
-            {' '}
-            ·{' '}
-            <a href="https://maps.calgary.ca/" target="_blank" rel="noreferrer">
-              © The City of Calgary, 2025
-            </a>
-          </>
-        )}
-      </div>
+
       {failed && (
         <div className="map-unavailable">
           <strong>The map connection was interrupted.</strong>

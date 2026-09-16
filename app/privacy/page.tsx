@@ -4,9 +4,9 @@ import { PrivacyControls } from '@/components/atlas/privacy-controls';
 import './privacy.css';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy | Calgary Neighbourhood Analytics',
+  title: 'Privacy policy | Calgary Neighbourhood View',
   description:
-    'How Calgary Neighbourhood Analytics handles browser saves, public records, searches, service providers and privacy requests.',
+    'How Calgary Neighbourhood View handles browser saves, public records, searches, service providers and privacy requests.',
 };
 
 const contents = [
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
 
       <header className="privacy-header">
         <Link className="privacy-wordmark" href="/">
-          Calgary Neighbourhood Analytics
+          Calgary Neighbourhood View
         </Link>
         <Link className="privacy-return" href="/">
           Return to the map <span aria-hidden="true">↗</span>
@@ -109,6 +109,30 @@ export default function PrivacyPage() {
                 when you want to share that context with your browser or
                 assistant; its permissions and privacy practices apply.
               </p>
+              <p>
+                School filters and straight-line distances are calculated in
+                your browser from public school locations bundled with the
+                website. They are not saved. Opening a school or school-board
+                link does not automatically send the selected home address. No
+                student, enrolment or family information is collected.
+              </p>
+              <p>
+                The neighbourhood finder compares bundled public profiles in
+                your browser. Assessment-budget amounts, preferred quadrants,
+                distance limits, school grade group and priority choices remain
+                in page memory. They are not saved, added to a shared URL or
+                uploaded to a recommendation or AI service. The finder does not
+                create a visitor profile. Choosing to save a place separately
+                uses the optional browser storage described above.
+              </p>
+              <p>
+                The nine landmark illustrations are drawn locally from bundled
+                code. Their public map-alignment files are served by the
+                existing host. They do not load an external 3D model, image
+                texture or model-viewer service. The finder and landmarks add no
+                processor, tracking or device-location request; existing hosting
+                and map requests still occur.
+              </p>
               <PrivacyControls />
             </section>
 
@@ -132,6 +156,13 @@ export default function PrivacyPage() {
                 enter private details. The site displays public civic and
                 property fields, not property-owner profiles. Neighbourhood
                 statistics describe areas, not individual residents.
+              </p>
+              <p>
+                Clicking a home on the map sends the selected map coordinates
+                through the app to the City’s public assessment service to find
+                overlapping residential parcels. This is a place you selected,
+                not your device location. The request uses a POST body and a
+                response marked no-store, like address searches.
               </p>
               <p>
                 Construction years come from the City’s public assessment
@@ -241,6 +272,11 @@ export default function PrivacyPage() {
                 app has no visitor search-history database. Public dataset
                 snapshots and public-data caches can remain for reuse; those are
                 separate from a record of who searched.
+              </p>
+              <p>
+                Finder preferences and calculated shortlists are temporary page
+                state, cleared by resetting the finder or ending that page
+                state. They are not a remotely stored recommendation history.
               </p>
               <p>
                 Hosting and map providers may retain operational or security
@@ -363,14 +399,14 @@ export default function PrivacyPage() {
       </main>
 
       <footer className="privacy-footer">
-        <p>Calgary Neighbourhood Analytics</p>
+        <p>Calgary Neighbourhood View</p>
         <div>
           <Link href="/">Return to the app</Link>
           <Link href="/terms" prefetch={false}>
             Use & limitations
           </Link>
           <a href="mailto:az28140@icloud.com">Privacy contact</a>
-          <a href="https://github.com/AHZR199/calgary-neighbourhood-analytics">
+          <a href="https://github.com/AHZR199/calgary-neighbourhood-view">
             Source on GitHub
           </a>
           <a href="#privacy-content">Back to top</a>

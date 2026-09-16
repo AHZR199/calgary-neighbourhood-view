@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "reviewedOn": "2026-09-16",
-  "scope": "Current Calgary Neighbourhood Analytics public-demo source, datasets, calculations, map services and software notices; feature additions reviewed 16 September 2026.",
+  "scope": "Current Calgary Neighbourhood View public-demo source, datasets, calculations, map services and software notices; feature additions reviewed 16 September 2026.",
   "publicReleaseDecision": "The noncommercial demo uses the reviewed sources and link-only current MLA records. The /privacy page describes the operator, data handling and provider limitations. These notes record source permissions and remaining limits; they are not legal clearance.",
   "noncommercialAssumption": "Personal project without payments, advertising, brokerage lead generation or client-marketing use. A later commercial purpose triggers fresh review; no-fee access alone may be insufficient.",
   "notLegalOpinion": true,
@@ -193,15 +193,9 @@
       "id": "development",
       "title": "Development applications",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "development.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/6933-unw5"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["development.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/6933-unw5"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -209,24 +203,15 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "Keep public permit facts; exclude personal applicant/contact details and any third-party copyrighted attachments not licensed by City.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/6933-unw5-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/6933-unw5-metadata.json"]
     },
     {
       "id": "transit",
       "title": "Calgary Transit stops",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "transit.json",
-        "nearby-points.geojson"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/muzh-c9qc"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["transit.json", "nearby-points.geojson"],
+      "sourceUrls": ["https://data.calgary.ca/d/muzh-c9qc"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -234,9 +219,7 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "GTFS and future route assets require separate source entry; do not use transit logos.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/muzh-c9qc-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/muzh-c9qc-metadata.json"]
     },
     {
       "id": "assessments",
@@ -248,12 +231,8 @@
         "assessment-methodology.json",
         "API address-search responses"
       ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/4bsw-nn7w"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "sourceUrls": ["https://data.calgary.ca/d/4bsw-nn7w"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -261,26 +240,18 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "Dataset explicitly licensed; Calgary.ca Assessment Search fifty-address/internal-use rules are a different source. No owner names in assessed public fields. Do not expand into individual personal profiles.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/4bsw-nn7w-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/4bsw-nn7w-metadata.json"]
     },
     {
       "id": "tax",
       "title": "Property tax rates & calculation",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "ownership-methodology.json",
-        "calculator constants"
-      ],
+      "assets": ["ownership-methodology.json", "calculator constants"],
       "sourceUrls": [
         "https://www.calgary.ca/property-owners/taxes/bill-rate-calculation.html",
         "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
       ],
-      "licenceProfileIds": [
-        "calgary-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["calgary-site", "facts"],
       "status": "keep-isolated-facts-and-original-calculation",
       "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
       "requiredAction": [
@@ -294,17 +265,12 @@
       "id": "crime",
       "title": "CPS Community Safety Data workbook",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "crime.json",
-        "crime-derived charts/totals/API/export"
-      ],
+      "assets": ["crime.json", "crime-derived charts/totals/API/export"],
       "sourceUrls": [
         "https://www.calgarypolice.ca/transparency-and-accountability/crime-statistics.html",
         "https://www.calgarypolice.ca/content/dam/police/documents/statistics/Safety%20Community%20Data%202020-Q2%202026.xlsx"
       ],
-      "licenceProfileIds": [
-        "calgary-site"
-      ],
+      "licenceProfileIds": ["calgary-site"],
       "status": "remove-or-link-only-pending-permission",
       "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
       "requiredAction": [
@@ -315,26 +281,16 @@
       "notes": "CPS page footer links Calgary.ca terms. DataNotes explain privacy rounding but no open redistribution licence was found. A downloadable XLSX is not itself permission. Historical discontinued Socrata licence cannot be transferred to this new workbook.",
       "replacementAsset": "historical-crime-app.json",
       "replacementStatus": "The replacement uses a separately licensed historical dataset; it does not permit redistribution of the 2026 CPS workbook.",
-      "replacementSourceUrls": [
-        "https://data.calgary.ca/d/848s-4m4z"
-      ],
+      "replacementSourceUrls": ["https://data.calgary.ca/d/848s-4m4z"],
       "replacementLimit": "2018/2019 historical selected crime categories only; review supplied historical-crime-methodology.md. Must remove current-period workbook labels and numbers."
     },
     {
       "id": "mains",
       "title": "Public water mains",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "water-mains.geojson",
-        "pipes.json",
-        "water-summary.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/w6h9-w33i"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["water-mains.geojson", "pipes.json", "water-summary.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/w6h9-w33i"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -342,24 +298,15 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "",
-      "datasetMetadataEvidence": [
-        "rights-evidence/w6h9-w33i-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/w6h9-w33i-metadata.json"]
     },
     {
       "id": "services",
       "title": "Public water service lines",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "water-services.geojson",
-        "pipes.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/ta76-7bfx"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["water-services.geojson", "pipes.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/ta76-7bfx"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -367,24 +314,15 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "Public infrastructure only; no private plumbing or owner identities. Preserve uncertainty in address matches.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/ta76-7bfx-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/ta76-7bfx-metadata.json"]
     },
     {
       "id": "breaks",
       "title": "Historical water-main breaks",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "water-breaks.geojson",
-        "water-summary.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/dpcu-jr23"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["water-breaks.geojson", "water-summary.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/dpcu-jr23"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -392,25 +330,18 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "",
-      "datasetMetadataEvidence": [
-        "rights-evidence/dpcu-jr23-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/dpcu-jr23-metadata.json"]
     },
     {
       "id": "air",
       "title": "Calgary AQHI",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "air.json",
-        "API air responses"
-      ],
+      "assets": ["air.json", "API air responses"],
       "sourceUrls": [
         "https://dd.weather.gc.ca/today/air_quality/aqhi/pnr/observation/realtime/xml/AQ_OBS_IAKID_CURRENT.xml",
         "https://api.weather.gc.ca/collections/aqhi-observations-realtime"
       ],
-      "licenceProfileIds": [
-        "eccc-data"
-      ],
+      "licenceProfileIds": ["eccc-data"],
       "status": "keep-with-attribution",
       "allowedUse": "Express redistribution and adaptation, including commercial use.",
       "requiredAction": [
@@ -423,15 +354,9 @@
       "id": "boundaries",
       "title": "Community boundaries",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "communities.geojson"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/surr-xmvs"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["communities.geojson"],
+      "sourceUrls": ["https://data.calgary.ca/d/surr-xmvs"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -439,24 +364,18 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "",
-      "datasetMetadataEvidence": [
-        "rights-evidence/surr-xmvs-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/surr-xmvs-metadata.json"]
     },
     {
       "id": "federal",
       "title": "Members of Parliament",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "representatives.json (federal)"
-      ],
+      "assets": ["representatives.json (federal)"],
       "sourceUrls": [
         "https://www.ourcommons.ca/Members/en/search/xml",
         "https://www.ourcommons.ca/en/open-data"
       ],
-      "licenceProfileIds": [
-        "hoc-open"
-      ],
+      "licenceProfileIds": ["hoc-open"],
       "status": "keep-designated-open-feed-only",
       "allowedUse": "Official page expressly describes open data as freely shared, used and built on; specifically offers current-member XML for customized reports.",
       "requiredAction": [
@@ -469,15 +388,11 @@
       "id": "provincial",
       "title": "MLA directory",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "representatives.json (provincial)"
-      ],
+      "assets": ["representatives.json (provincial)"],
       "sourceUrls": [
         "https://www.assembly.ab.ca/members/members-of-the-legislative-assembly"
       ],
-      "licenceProfileIds": [
-        "assembly"
-      ],
+      "licenceProfileIds": ["assembly"],
       "status": "external-directory-link-only",
       "allowedUse": "Ordinary link to the official Assembly directory. No current Assembly member roster is reproduced in the public demo.",
       "requiredAction": [
@@ -490,18 +405,12 @@
       "id": "municipal",
       "title": "Calgary City Council",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "representatives.json (municipal)"
-      ],
+      "assets": ["representatives.json (municipal)"],
       "sourceUrls": [
         "https://www.calgary.ca/council/citycouncil.html",
         "https://data.calgary.ca/d/tz8z-hyaz"
       ],
-      "licenceProfileIds": [
-        "calgary-site",
-        "calgary-open",
-        "facts"
-      ],
+      "licenceProfileIds": ["calgary-site", "calgary-open", "facts"],
       "status": "replace-with-open-dataset",
       "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Facts themselves are not protected by copyright; original expression or compilation may be.",
       "requiredAction": [
@@ -515,26 +424,20 @@
       "id": "elections",
       "title": "Official federal and provincial election results",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "elections.json",
-        "election-history.json"
-      ],
+      "assets": ["elections.json", "election-history.json"],
       "sourceUrls": [
         "https://www.elections.ca/content.aspx?section=res&dir=rep/off/45gedata&document=index&lang=e",
         "https://www.elections.ca/res/rep/off/ovrGE45/62/data_donnees/table_tableau11.csv",
         "https://officialresults.elections.ab.ca/orResultsED.cfm?ED=04&EventId=101",
         "https://www.elections.ab.ca/terms-conditions/"
       ],
-      "licenceProfileIds": [
-        "elections-ca",
-        "elections-ab"
-      ],
+      "licenceProfileIds": ["elections-ca", "elections-ab"],
       "status": "keep-noncommercial-with-conditions",
       "allowedUse": "Express noncommercial reproduction in any format unless otherwise stated.; Express personal/public noncommercial educational reproduction.",
       "requiredAction": [
         "Preserve official candidate vote counts, published one-decimal vote shares and election-time party names.",
         "Give full report title, election date, election authority and exact original source URL.",
-        "Separate any margin/share arithmetic as Calculated by Calgary Neighbourhood Analytics from published results; never edit the official values or imply calculations are official."
+        "Separate any margin/share arithmetic as Calculated by Calgary Neighbourhood View from published results; never edit the official values or imply calculations are official."
       ],
       "notes": "Provincial no-modification condition is narrower than an open-data derivative grant. Arithmetic about unaltered facts is independent analysis, not an altered official report; this is a documented interpretation, not a legal guarantee. If reproducing an altered source table, seek permission or remove it."
     },
@@ -542,15 +445,9 @@
       "id": "history",
       "title": "Assessment history",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "assessment-history.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/4ur7-wsgc"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["assessment-history.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/4ur7-wsgc"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -558,28 +455,20 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "",
-      "datasetMetadataEvidence": [
-        "rights-evidence/4ur7-wsgc-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/4ur7-wsgc-metadata.json"]
     },
     {
       "id": "demographics",
       "title": "Community census profile PDFs",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "demographics.json"
-      ],
+      "assets": ["demographics.json"],
       "sourceUrls": [
         "https://www.calgary.ca/communities/profiles.html",
         "https://communitydata.ca/sites/default/files/ccednet-cdp_schedule-c.pdf",
         "https://data.calgary.ca/d/f9wk-wej9",
         "https://data.calgary.ca/d/msjx-5ygv"
       ],
-      "licenceProfileIds": [
-        "calgary-site",
-        "statcan",
-        "calgary-open"
-      ],
+      "licenceProfileIds": ["calgary-site", "statcan", "calgary-open"],
       "status": "replace-pdf-derived-extract",
       "allowedUse": "Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Express reuse, adaptation and redistribution of covered StatsCan information/value-added products, including commercially.; Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -597,18 +486,13 @@
       "id": "quadrants",
       "title": "Official quadrants",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "quadrants.geojson"
-      ],
+      "assets": ["quadrants.geojson"],
       "sourceUrls": [
         "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/City_quadrant_boundaries/FeatureServer/0",
         "https://www.arcgis.com/sharing/rest/content/items/acc080a9a342412f8437509013aceb32?f=json",
         "https://data.calgary.ca/d/g2n2-qnvh"
       ],
-      "licenceProfileIds": [
-        "calgary-open",
-        "calgary-site"
-      ],
+      "licenceProfileIds": ["calgary-open", "calgary-site"],
       "status": "conflicting-metadata",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
       "requiredAction": [
@@ -622,10 +506,7 @@
       "id": "aerial",
       "title": "City 2025 orthophoto",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "aerial-source.json",
-        "direct City tile service"
-      ],
+      "assets": ["aerial-source.json", "direct City tile service"],
       "sourceUrls": [
         "https://files-us-prod.cms.commerce.dynamics.com/cms/api/tsbgmhdjmt/binary/MA4zyF",
         "https://maps.calgary.ca/CalgaryImagery/",
@@ -646,15 +527,9 @@
       "id": "flood",
       "title": "Municipal regulatory flood map",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "flood-regulatory.geojson"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/tp6q-x2v7"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["flood-regulatory.geojson"],
+      "sourceUrls": ["https://data.calgary.ca/d/tp6q-x2v7"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -662,24 +537,18 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "",
-      "datasetMetadataEvidence": [
-        "rights-evidence/tp6q-x2v7-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/tp6q-x2v7-metadata.json"]
     },
     {
       "id": "flood-hazard",
       "title": "Provincial flood hazard",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "flood-hazard.geojson"
-      ],
+      "assets": ["flood-hazard.geojson"],
       "sourceUrls": [
         "https://open.canada.ca/data/en/dataset/d192b9b1-caac-405e-8d2a-ba6b21929c3f?wbdisable=true",
         "https://geospatial.alberta.ca/mimas/rest/services/fama_data_distribution/fama_public_data_distribution/MapServer/1"
       ],
-      "licenceProfileIds": [
-        "alberta-open"
-      ],
+      "licenceProfileIds": ["alberta-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Exact provincial and federal metadata identify Alberta OGL. Full current v2.2 text verified through ordinary Safari on 14 September 2026; copying, modification, publication and distribution are permitted subject to its conditions.",
       "requiredAction": [
@@ -693,15 +562,9 @@
       "id": "noise",
       "title": "Noise Exposure Forecast contours",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "noise.geojson"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/g5qu-w8fb"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["noise.geojson"],
+      "sourceUrls": ["https://data.calgary.ca/d/g5qu-w8fb"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -709,26 +572,19 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "City expressly offers dataset under its licence; no independent airport logo or Transport Canada artwork is included.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/g5qu-w8fb-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/g5qu-w8fb-metadata.json"]
     },
     {
       "id": "parks",
       "title": "Parks pathways amenities",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "amenities.geojson",
-        "nearby-points.geojson"
-      ],
+      "assets": ["amenities.geojson", "nearby-points.geojson"],
       "sourceUrls": [
         "https://data.calgary.ca/d/kami-qbfh",
         "https://data.calgary.ca/d/qndb-27qm",
         "https://data.calgary.ca/d/7v8c-cjjm"
       ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -746,15 +602,9 @@
       "id": "pm25",
       "title": "Fine-particle observations",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "pm25.json"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/g9s5-qhu5"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["pm25.json"],
+      "sourceUrls": ["https://data.calgary.ca/d/g9s5-qhu5"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -762,24 +612,17 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "Credit source attribution Alberta Environmental Monitoring, Evaluation and Reporting Agency and CRAZ/provincial origin in metadata, as well as City distribution. Dataset supplier is Other; third-party exception remains, but explicit published open-licence pointer provides reuse basis absent contrary notice.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/g9s5-qhu5-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/g9s5-qhu5-metadata.json"]
     },
     {
       "id": "radon",
       "title": "Radon reference guidance",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "original UI guidance/source links"
-      ],
+      "assets": ["original UI guidance/source links"],
       "sourceUrls": [
         "https://www.canada.ca/en/health-canada/services/health-risks-safety/radiation/radon/testing-your-home.html"
       ],
-      "licenceProfileIds": [
-        "canada-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["canada-site", "facts"],
       "status": "keep-noncommercial-factual-reference",
       "allowedUse": "Express noncommercial reproduction, in whole or part and any format, unless otherwise specified.; Facts themselves are not protected by copyright; original expression or compilation may be.",
       "requiredAction": [
@@ -792,21 +635,14 @@
       "id": "mortgage",
       "title": "Mortgage planning",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "calculator logic",
-        "ownership-methodology.json"
-      ],
+      "assets": ["calculator logic", "ownership-methodology.json"],
       "sourceUrls": [
         "https://itools-ioutils.fcac-acfc.gc.ca/MC-CH/MortgageCalculator.aspx",
         "https://www.canada.ca/en/financial-consumer-agency/services/mortgages/down-payment.html",
         "https://www.cmhc-schl.gc.ca/professionals/project-funding-and-mortgage-financing/mortgage-loan-insurance/mortgage-loan-insurance-homeownership-programs/purchase",
         "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
       ],
-      "licenceProfileIds": [
-        "canada-site",
-        "cmhc-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["canada-site", "cmhc-site", "facts"],
       "status": "keep-isolated-facts-and-original-calculation",
       "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
       "requiredAction": [
@@ -821,19 +657,13 @@
       "id": "utilities",
       "title": "Water and cart rates",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "ownership-methodology.json",
-        "calculator defaults"
-      ],
+      "assets": ["ownership-methodology.json", "calculator defaults"],
       "sourceUrls": [
         "https://www.calgary.ca/water/water-utility/residential-water-rates-and-billing.html",
         "https://www.calgary.ca/waste/residential/rates.html",
         "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
       ],
-      "licenceProfileIds": [
-        "calgary-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["calgary-site", "facts"],
       "status": "keep-isolated-facts-and-original-calculation",
       "allowedUse": "Isolated factual rates/rules and independent arithmetic in original expression, subject to the unresolved application of website contractual terms; no blanket republication permission for source content.",
       "requiredAction": [
@@ -847,17 +677,11 @@
       "id": "registration",
       "title": "Alberta title-registration fees",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "calculator constants",
-        "ownership-methodology.json"
-      ],
+      "assets": ["calculator constants", "ownership-methodology.json"],
       "sourceUrls": [
         "https://www.alberta.ca/system/files/sartr-land-titles-and-surveys-common-documents-fee-schedule.pdf"
       ],
-      "licenceProfileIds": [
-        "alberta-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["alberta-site", "facts"],
       "status": "keep-noncommercial-factual-reference",
       "allowedUse": "Express noncommercial copying and distribution unless otherwise indicated.; Facts themselves are not protected by copyright; original expression or compilation may be.",
       "requiredAction": [
@@ -870,20 +694,13 @@
       "id": "condo",
       "title": "Condo reserves and documents",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "original checklist",
-        "ownership-methodology.json"
-      ],
+      "assets": ["original checklist", "ownership-methodology.json"],
       "sourceUrls": [
         "https://www.alberta.ca/reserve-funds",
         "https://www.alberta.ca/special-levies",
         "https://www.calgary.ca/property-owners/taxes/local-improvements.html"
       ],
-      "licenceProfileIds": [
-        "alberta-site",
-        "calgary-site",
-        "facts"
-      ],
+      "licenceProfileIds": ["alberta-site", "calgary-site", "facts"],
       "status": "keep-original-checklist-link-references",
       "allowedUse": "Express noncommercial copying and distribution unless otherwise indicated.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.; Facts themselves are not protected by copyright; original expression or compilation may be.",
       "requiredAction": [
@@ -896,15 +713,9 @@
       "id": "schools-extra",
       "title": "School-location inventory",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "nearby-points.geojson"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/fd9t-tdn2"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["nearby-points.geojson"],
+      "sourceUrls": ["https://data.calgary.ca/d/fd9t-tdn2"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.",
       "requiredAction": [
@@ -912,26 +723,18 @@
         "Retain dataset IDs, dates and transformations."
       ],
       "notes": "Location and public institutional fields only; no school crests, private student information or catchment guarantee.",
-      "datasetMetadataEvidence": [
-        "rights-evidence/fd9t-tdn2-metadata.json"
-      ]
+      "datasetMetadataEvidence": ["rights-evidence/fd9t-tdn2-metadata.json"]
     },
     {
       "id": "wards-extra",
       "title": "Ward geometry and councillor fields",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "wards.geojson",
-        "representatives.json"
-      ],
+      "assets": ["wards.geojson", "representatives.json"],
       "sourceUrls": [
         "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/Ward_Boundaries/FeatureServer/0",
         "https://data.calgary.ca/d/tz8z-hyaz"
       ],
-      "licenceProfileIds": [
-        "calgary-open",
-        "calgary-site"
-      ],
+      "licenceProfileIds": ["calgary-open", "calgary-site"],
       "status": "replace-conflicting-arcgis-with-socrata",
       "allowedUse": "Express permission to copy, adapt, publish and redistribute licensed information, including commercially.; Personal noncommercial access and a single personal/educational copy; no general public-redistribution or derivative-use permission.",
       "requiredAction": [
@@ -945,16 +748,12 @@
       "id": "federal-boundaries-extra",
       "title": "Federal electoral geometry",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "electoral.geojson (federal)"
-      ],
+      "assets": ["electoral.geojson (federal)"],
       "sourceUrls": [
         "https://www.elections.ca/content.aspx?dir=cir/mapsCorner/vector&document=index&lang=e&section=res",
         "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_KMZ.zip"
       ],
-      "licenceProfileIds": [
-        "elections-ca"
-      ],
+      "licenceProfileIds": ["elections-ca"],
       "status": "keep-noncommercial-with-conditions",
       "allowedUse": "Express noncommercial reproduction in any format unless otherwise stated.",
       "requiredAction": [
@@ -967,16 +766,12 @@
       "id": "provincial-boundaries-extra",
       "title": "Provincial electoral geometry",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "electoral.geojson (provincial)"
-      ],
+      "assets": ["electoral.geojson (provincial)"],
       "sourceUrls": [
         "https://www.elections.ab.ca/resources/maps/",
         "https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip"
       ],
-      "licenceProfileIds": [
-        "elections-ab"
-      ],
+      "licenceProfileIds": ["elections-ab"],
       "status": "replace-modified-geometry",
       "allowedUse": "Express personal/public noncommercial educational reproduction.",
       "requiredAction": [
@@ -991,18 +786,12 @@
       "id": "basemap-extra",
       "title": "OpenFreeMap/OSM basemap",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "remote tiles,3D-building model"
-      ],
+      "assets": ["remote tiles,3D-building model"],
       "sourceUrls": [
         "https://openfreemap.org/",
         "https://tiles.openfreemap.org/planet"
       ],
-      "licenceProfileIds": [
-        "ofm",
-        "osm",
-        "omt"
-      ],
+      "licenceProfileIds": ["ofm", "osm", "omt"],
       "status": "keep-fix-visible-attribution",
       "allowedUse": "Express website/app map integration and commercial use; code MIT, underlying data/style licences separate.; Redistribution and adaptation with ODbL conditions.; Code BSD3; design CC BY4.0.",
       "requiredAction": [
@@ -1015,17 +804,12 @@
       "id": "map-style-extra",
       "title": "Positron style, fonts and map sprites",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "remote style,fonts,sprites,Natural Earth"
-      ],
+      "assets": ["remote style,fonts,sprites,Natural Earth"],
       "sourceUrls": [
         "https://github.com/hyperknot/openfreemap-styles/blob/main/LICENSE.md",
         "https://github.com/openmaptiles/positron-gl-style/blob/master/LICENSE.md"
       ],
-      "licenceProfileIds": [
-        "ofm",
-        "omt"
-      ],
+      "licenceProfileIds": ["ofm", "omt"],
       "status": "keep-with-style-notices",
       "allowedUse": "Express website/app map integration and commercial use; code MIT, underlying data/style licences separate.; Code BSD3; design CC BY4.0.",
       "requiredAction": [
@@ -1038,9 +822,7 @@
       "id": "software-extra",
       "title": "Imported application code and dependencies",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "browser JS,CSS,MapLibre worker,source checkout"
-      ],
+      "assets": ["browser JS,CSS,MapLibre worker,source checkout"],
       "sourceUrls": [
         "https://github.com/maplibre/maplibre-gl-js/blob/main/LICENSE.txt",
         "https://github.com/Jakubantalik/Libraries.dev/tree/main/packages/liquid-gooey",
@@ -1068,17 +850,11 @@
       "id": "original-interface-extra",
       "title": "Original app charts, interface and icon",
       "checkedOn": "2026-09-14",
-      "assets": [
-        "app charts/layout",
-        "favicon.svg",
-        "Lucide UI icons"
-      ],
+      "assets": ["app charts/layout", "favicon.svg", "Lucide UI icons"],
       "sourceUrls": [
         "https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/guide-copyright"
       ],
-      "licenceProfileIds": [
-        "facts"
-      ],
+      "licenceProfileIds": ["facts"],
       "status": "keep-subject-to-input-and-code-rights",
       "allowedUse": "Facts themselves are not protected by copyright; original expression or compilation may be.",
       "requiredAction": [
@@ -1092,15 +868,11 @@
       "id": "radon-open",
       "title": "Historical Calgary CMA indoor radon survey",
       "checkedOn": "2026-09-16",
-      "assets": [
-        "radon.json"
-      ],
+      "assets": ["radon.json"],
       "sourceUrls": [
         "https://open.canada.ca/data/dataset/744d8a3b-b9e0-41b8-be5f-5f869a36a221"
       ],
-      "licenceProfileIds": [
-        "canada-open"
-      ],
+      "licenceProfileIds": ["canada-open"],
       "status": "keep-with-attribution",
       "requiredAction": [
         "Keep Health Canada, survey period, CMA scope, original CSV checksum, method and OGL attribution with the derivative.",
@@ -1112,16 +884,9 @@
       "id": "construction-year",
       "title": "City-recorded year of construction",
       "checkedOn": "2026-09-16",
-      "assets": [
-        "properties.json",
-        "/api/assessments"
-      ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/4bsw-nn7w"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "assets": ["properties.json", "/api/assessments"],
+      "sourceUrls": ["https://data.calgary.ca/d/4bsw-nn7w"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "notes": "Existing City Account AYOC field. Exact account rows only, reject implausible/malformed/future values and preserve conflicts. No completion-certificate, renovation-age or neighbour-based inference."
     },
@@ -1135,9 +900,7 @@
         "https://mytax.calgary.ca/TermsUse.aspx?target=SearchProperty.aspx",
         "https://landregistry.alberta.ca/"
       ],
-      "licenceProfileIds": [
-        "calgary-site"
-      ],
+      "licenceProfileIds": ["calgary-site"],
       "status": "link-only-no-sale-records",
       "notes": "No suitable free public-redistribution source established. City myTax access is restricted and prohibits automated extraction/unauthorized republication; Alberta title/document access is paid. Last-sold date/price remain null. No personal account access, scraping or purchased records."
     },
@@ -1145,17 +908,13 @@
       "id": "solar-model",
       "title": "Local approximate solar calculations and orientation guidance",
       "checkedOn": "2026-09-16",
-      "assets": [
-        "lib/atlas/solar.ts"
-      ],
+      "assets": ["lib/atlas/solar.ts"],
       "sourceUrls": [
         "https://gml.noaa.gov/grad/solcalc/solareqns.PDF",
         "https://prod-natural-resources.azure.cloud.nrcan-rncan.gc.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-8-upgrading-windows-exterior-doors",
         "https://www.alberta.ca/albertas-new-time-system-abt"
       ],
-      "licenceProfileIds": [
-        "facts"
-      ],
+      "licenceProfileIds": ["facts"],
       "status": "original-calculations-and-linked-guidance",
       "notes": "Original code implements published mathematical equations; no copied NOAA calculator code, external solar API, proprietary imagery or shadow model. General NRCan orientation advice paraphrased and linked. Time rule reflects Alberta permanent UTC−6 from November 2026; historical dates use America/Edmonton. Source attribution and limitations retained."
     },
@@ -1168,12 +927,8 @@
         "transit-points.geojson",
         "transit-citywide.json"
       ],
-      "sourceUrls": [
-        "https://data.calgary.ca/d/npk7-z3bj"
-      ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "sourceUrls": ["https://data.calgary.ca/d/npk7-z3bj"],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "notes": "Official GTFS captured 14 September 2026; 260 routes with 702 shape variants from active-service trips. Display geometry is simplified, not inferred from station points. Source checksum, date range, transformations and City OGL attribution retained. Scheduled service is not live service. No transit logos or third-party route maps copied."
     },
@@ -1181,19 +936,390 @@
       "id": "green-line-phase-one",
       "title": "Green Line Phase 1 planned alignment and stations",
       "checkedOn": "2026-09-16",
-      "assets": [
-        "green-line.geojson"
-      ],
+      "assets": ["green-line.geojson"],
       "sourceUrls": [
         "https://www.calgary.ca/green-line/downtown-segment.html",
         "https://www.arcgis.com/sharing/rest/content/items/ea67fac93f054502a8dbdbb21a657513?f=pjson",
         "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Green_Line_Stations_for_CSC_Green_Line_Embedded_Web_Map/FeatureServer?f=pjson"
       ],
-      "licenceProfileIds": [
-        "calgary-open"
-      ],
+      "licenceProfileIds": ["calgary-open"],
       "status": "keep-with-attribution",
       "notes": "The alignment ArcGIS item licenceInfo and station service copyrightText explicitly link City open-data terms. Current map rows updated 10 September 2026, checked against the 8 September downtown surface-route update. Only 27 Phase 1 line segments and 11 planned stations are retained; future extensions and superseded downtown geometry excluded. Cartographic geometry, non-operating, no opening-date guarantee or score contribution. Dated status is independently paraphrased; no official map image, logos or webpage prose copied."
+    },
+    {
+      "id": "school-directory",
+      "title": "Citywide schools and official website links",
+      "checkedOn": "2026-09-16",
+      "assets": ["schools.geojson"],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/fd9t-tdn2",
+        "https://education.alberta.ca/media/1626669/authority_and_school.xlsx",
+        "https://open.canada.ca/data/api/action/package_show?id=3542f7c1-fe9b-4203-aa01-8c859a871bd3"
+      ],
+      "licenceProfileIds": ["calgary-open", "alberta-open"],
+      "status": "keep-with-attribution",
+      "allowedUse": "Both source datasets expressly permit adaptation and redistribution under their respective open government licences.",
+      "requiredAction": [
+        "Retain City and Alberta attribution, licence links, source dates, hashes and transformation metadata.",
+        "Distinguish civic area inclusion and straight-line proximity from designated-school eligibility.",
+        "Keep source grade-group flags and unknown levels; do not infer numbered grades or school rankings.",
+        "Use only uniquely matched source-published school URLs, without staff contacts, crests or copied school content."
+      ],
+      "notes": "506 City source points reconcile to 499 non-postsecondary schools and seven excluded postsecondary sites. Source excludes private Early Childhood Services operators. Website join requires exact normalized school name, address and authority; no guessed or fuzzy matches. Individual destination uptime is unverified. No student data or attendance zones are republished.",
+      "datasetMetadataEvidence": [
+        {
+          "url": "https://data.calgary.ca/api/views/fd9t-tdn2.json",
+          "sha256": "cbe10121cb42fd250a85d905f225449379bc2e6dd3838b1f53a09d997e05f2e0"
+        },
+        {
+          "url": "https://open.canada.ca/data/api/action/package_show?id=3542f7c1-fe9b-4203-aa01-8c859a871bd3",
+          "sha256": "ba91e544c8eceb09026990405e3f1cb64d9b11d057bd441950b36bd56daa4cef"
+        }
+      ]
+    },
+    {
+      "id": "neighbourhood-finder",
+      "title": "Neighbourhood profile derivative and local preference matching",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "neighbourhood-finder.json",
+        "lib/atlas/neighbourhood-finder.ts"
+      ],
+      "sourceUrls": [
+        "https://data.calgary.ca/d/4bsw-nn7w",
+        "https://data.calgary.ca/d/surr-xmvs",
+        "https://data.calgary.ca/d/npk7-z3bj",
+        "https://data.calgary.ca/d/fd9t-tdn2",
+        "https://data.calgary.ca/d/kami-qbfh",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["calgary-open", "osm"],
+      "status": "keep-with-source-attribution-and-derivative-obligations",
+      "allowedUse": "Original comparison code uses separately identified City open-data inputs and OSM-derived amenity information. OSM-derived data retains ODbL obligations; the City input attribution remains attached. This does not relicense unrelated source material.",
+      "requiredAction": [
+        "Offer the public profile derivative and source amenity extract with dates, hashes, methods and applicable licences; retain visible City and OpenStreetMap attribution.",
+        "Preserve applicable ODbL derivative-database and share-alike obligations in further distributions, rather than treating app-source availability as blanket permission.",
+        "Keep assessed medians and quartiles distinct from asking prices, sale transactions, available homes and lending affordability.",
+        "Expose weighted coverage, keep unknown data missing, require at least 70% selected weight for an overall score, and separate hard limits from ranked preferences.",
+        "Do not introduce demographic, political, crime, resident-profile or regional-radon variables into neighbourhood matching.",
+        "Keep preferences in transient browser memory; review privacy terms before adding storage, preference uploads, external recommendation services or tracking."
+      ],
+      "downloads": [
+        "/data/neighbourhood-finder.json",
+        "/data/access-amenities-osm.geojson"
+      ],
+      "notes": "223 City Residential-class boundary profiles; 219 have eligible summaries containing 499,197 accounts. The four missing summaries remain unavailable. Values combine residential property types; verified home-type matching is not offered. Distances use one labelled reference point per area, not every home. School proximity is not school quality, eligibility or catchment. Planned Green Line service is excluded. The deterministic finder calls no AI service and creates no visitor preference database."
+    },
+    {
+      "id": "calgary-tower-landmark",
+      "title": "Original procedural Calgary Tower illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/calgary-tower-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.calgarytower.com/architecture",
+        "https://www.openstreetmap.org/way/25719793",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/",
+        "https://github.com/mrdoob/three.js/blob/r186/LICENSE"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original procedural code is authored in the project. The overall height is an attributed numeric fact; placement uses an OSM-derived footprint centroid. The operator page is not treated as an open licence for its imagery, prose, blueprints, architecture or marks.",
+      "requiredAction": [
+        "Retain the operator source for the 190.8 m height, OpenStreetMap attribution and ODbL link for footprint-derived placement.",
+        "Provide the minimal landmark footprint extract with source/date/method and applicable derivative-data obligations.",
+        "State that smaller dimensions and placement are illustrative, not surveyed or suitable for engineering, property-boundary or shading decisions.",
+        "Keep the distributed Three.js licence and copyright notice with the software.",
+        "Do not imply architect, owner or operator endorsement or claim that original code clears rights in the underlying architecture.",
+        "Review any later external model, texture, blueprint, logo or photographic asset separately before incorporating it."
+      ],
+      "notes": "Original geometry forms the shaft, crown, windows and mast; 190.8 m is the published overall height. Location is the OSM tower polygon centroid, superseding the earlier City visitor-information point, and is not surveyed. No external model, photograph, blueprint, texture or logo is bundled. The shared local renderer adds no remote model service, processor or tracking. Authorship of code does not establish blanket architectural, copyright, trademark or publication clearance.",
+      "downloads": ["/data/landmark-footprints.geojson"]
+    },
+    {
+      "id": "saddledome-landmark",
+      "title": "Original procedural Saddledome illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/saddledome-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.scotiabanksaddledome.com/building-design/",
+        "https://www.scotiabanksaddledome.com/technical-information/",
+        "https://doi.org/10.3217/978-3-99161-057-1-115",
+        "https://data.calgary.ca/d/x34e-bcjz",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["calgary-open", "osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original saddle-surface code with separately licensed City point and OSM-derived outline cross-check. Published structural facts are attributed; no third-party architectural drawing, photograph or model is republished. No licence to the underlying building design is asserted.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context.",
+        "Keep the 41 m model peak explicitly approximate; operator-published 89 ft interior clearance is not external building height."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Primary City/CSEC-coauthored engineering paper supports the roof high ends east/west, low ends north/south, ring beam and bearing concept. Roof curvature, 41 m external peak, facade subdivisions and entrance details are illustrative. City point [-114.0519846,51.0374081] is not surveyed. The shared OpenFreeMap building feature is not hidden because it includes 1,386 unrelated parts. Rendering stays local with no new processor or tracking."
+    },
+    {
+      "id": "bow-landmark",
+      "title": "Original procedural Bow illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/bow-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://zeidler.com/projects/the-bow/",
+        "https://www.otis.com/en/ae/our-company/global-projects/project-showcase/the-bow-calgary",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original geometry and facade code use the OSM-derived mapped crescent plan and attributed 237.5 m height from the project supplier. Source pages are factual references, not licences for their illustrations, architectural designs, imagery or marks.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Crescent form, diagrid rhythm and glazing are original schematic geometry with approximate finer dimensions. Footprint, location and orientation derive from OpenStreetMap via OpenFreeMap; ODbL attribution and derivative-data obligations remain. No third-party model, drawing, texture or logo is shipped. Rendering uses the shared local scene."
+    },
+    {
+      "id": "peace-bridge-landmark",
+      "title": "Original procedural Peace Bridge illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/peace-bridge-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://calatrava.com/projects/peace-bridge-calgary.html",
+        "https://newsroom.calgary.ca/the-peace-bridge-railings-have-been-repaired/",
+        "https://www.openstreetmap.org/way/1313657677",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original parametric geometry uses individually attributed overall dimensions from the architect and OSM-derived alignment. The architect and City pages are factual references, not permission to reproduce their photos, drawings or architectural design.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Published bridge envelope is 126 m long, 8 m wide and 5.85 m high. Fine member dimensions, helix phase/pitch and height above the flat map are illustrative. Cable side railings reflect the City 2023 update; the upper canopy remains glazed in the illustration. No external assets or logos, no invented river piers, and no new processor."
+    },
+    {
+      "id": "landmark-footprints",
+      "title": "Minimal OSM-derived landmark footprint and alignment extract",
+      "checkedOn": "2026-09-16",
+      "assets": ["landmark-footprints.geojson"],
+      "sourceUrls": [
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/",
+        "https://openfreemap.org/"
+      ],
+      "licenceProfileIds": ["osm", "ofm"],
+      "status": "keep-with-source-attribution-and-derivative-obligations",
+      "allowedUse": "Minimal public geometry extract from identified OpenStreetMap/OpenFreeMap records for the nine landmark placements and plans, under applicable ODbL conditions. This does not license the underlying architectural designs or external model assets.",
+      "requiredAction": [
+        "Retain visible OpenStreetMap contributor credit, direct ODbL licence link, source/date/method metadata and the downloadable extract.",
+        "Preserve applicable ODbL derivative-database obligations in redistributions or adaptations.",
+        "Do not add mapper identities, editing-account metadata or unrelated surrounding buildings.",
+        "State that coordinates and outlines are approximate geographic records, not surveys or legal boundaries."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "59 minimal geometry records covering the nine landmark placements and relevant municipal/jump parts. The separate single-building restore preserves an unrelated map feature. ODbL geography does not confer rights in the underlying designs or sculpture."
+    },
+    {
+      "id": "telus-sky-landmark",
+      "title": "Original approximate TELUS Sky illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/telus-sky-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://big.dk/projects/telus-sky-4861",
+        "https://custommetal.ab.ca/project/telus-sky-exterior/",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "222.3 m facade-contractor height; stepped original plates and frames. No Northern Lights artwork, logo or external mesh."
+    },
+    {
+      "id": "wonderland-landmark",
+      "title": "Original approximate Wonderland illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/wonderland-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://jaumeplensa.com/works-and-projects/public-space/wonderland-2012",
+        "https://www.heavyexperience.com/wonderland",
+        "https://laws-lois.justice.gc.ca/eng/acts/C-42/section-32.2.html",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-simplified-depiction-artwork-rights-not-cleared",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context.",
+        "Credit Jaume Plensa and do not present the code licence or noncommercial status as clearance for the underlying artwork. Assess the intended publication/reuse context separately."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Wonderland (2012) by Jaume Plensa. Independent simplified generic wire-head geometry, not a scan, traced mesh or exact facial reproduction. Artist-published envelope 12 × 7.8 × 10.7 m. No open licence or explicit permission for reusable 3D artwork geometry was established. Attribution is not permission; Canadian Copyright Act 32.2(1)(b) enumerates pictorial media and does not by itself establish clearance for a redistributable 3D sculptural model. Browser-rendered depiction scope remains legally unresolved in this engineering review."
+    },
+    {
+      "id": "central-library-landmark",
+      "title": "Original approximate Central Library illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/central-library-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson",
+        "library-building-restore.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.snohetta.com/projects/calgary-central-library",
+        "https://www.calgarylibrary.ca/read-learn-and-explore/central-library/facts",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": [
+        "/data/landmark-footprints.geojson",
+        "/data/library-building-restore.geojson"
+      ],
+      "notes": "Original curved skin, hexagonal pattern and raised wood arch. Model height 28.5 m and detail dimensions are illustrative. Exact unrelated companion polygon restored before suppressing merged feature4968240260; if restore fails, coarse map remains."
+    },
+    {
+      "id": "city-hall-landmark",
+      "title": "Original approximate Historic City Hall and Municipal Building illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/city-hall-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.calgary.ca/arts-culture/heritage-sites/city-hall-character.html",
+        "https://www.calgary.ca/arts-culture/heritage-sites/city-hall-construction.html",
+        "https://www.calgary.ca/content/dam/www/ca/city-clerks/documents/muni-tours/the-municipal-complex.pdf",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Original sandstone/clock tower and municipal context. Historic tower32.5 m and municipal maximum48.2 m are illustrative, not exact City heights. Clock hands show a static illustrative time. Minimal OSM building parts are in the public footprint extract. Only unshared individually checked municipal coarse parts are suppressed."
+    },
+    {
+      "id": "olympic-park-landmark",
+      "title": "Original approximate Canada Olympic Park illustration",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "lib/atlas/olympic-park-model.ts",
+        "components/atlas/calgary-landmarks.ts",
+        "landmark-footprints.geojson"
+      ],
+      "sourceUrls": [
+        "https://www.heritagecalgary.ca/heritage-calgary-blog/inventory1000",
+        "https://www.winsport.ca/new-day-lodge/olympic-legacy-assets/",
+        "https://report.winsport.ca/2025-our-history/",
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/"
+      ],
+      "licenceProfileIds": ["osm", "facts"],
+      "status": "original-illustration-with-scoped-input-and-software-notices",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "requiredAction": [
+        "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
+        "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
+        "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
+        "Reassess any later asset import or materially different distribution/commercial context."
+      ],
+      "downloads": ["/data/landmark-footprints.geojson"],
+      "notes": "Original approximate heritage depiction of mapped ski-jump structures. The main physical tower height is58 m; 90 m refers to jump classification. WinSport dates decommissioning to2018. Full hillside terrain and current demolition status of every smaller mapped structure are not established. Shared map identifier2722018200 is retained."
+    },
+    {
+      "id": "library-building-context",
+      "title": "Unrelated companion building preserved during Library replacement",
+      "checkedOn": "2026-09-16",
+      "assets": ["library-building-restore.geojson"],
+      "sourceUrls": [
+        "https://www.openstreetmap.org/copyright",
+        "https://opendatacommons.org/licenses/odbl/1-0/",
+        "https://openfreemap.org/"
+      ],
+      "licenceProfileIds": ["osm", "ofm"],
+      "status": "keep-with-source-attribution-and-derivative-obligations",
+      "allowedUse": "Minimal single-polygon ODbL source extract preserving the original21 m height and0 m base of an unrelated building in merged feature4968240260.",
+      "requiredAction": [
+        "Retain visible OpenStreetMap contributor credit, direct ODbL licence link, source/date/method metadata and the downloadable extract.",
+        "Preserve applicable ODbL derivative-database obligations in redistributions or adaptations.",
+        "Do not add mapper identities, editing-account metadata or unrelated surrounding buildings.",
+        "State that coordinates and outlines are approximate geographic records, not surveys or legal boundaries."
+      ],
+      "downloads": ["/data/library-building-restore.geojson"],
+      "notes": "Preserves surrounding map buildings when replacing the Library. Contains geometry and provenance only, no mapper identities. If unavailable, keep the original merged feature."
     }
   ],
   "releaseRules": [
@@ -1512,18 +1638,18 @@
     "remainingOperationalConditions": [
       "Keep the project noncommercial or review restricted source permissions before changing its use.",
       "Keep privacy details current when providers or data handling change; assess which laws apply to the actual operation.",
-      "The descriptive project name has only had a preliminary search, not formal trademark clearance."
+      "No name-specific trademark or domain clearance has been established for the renamed Calgary Neighbourhood View release; the earlier search does not cover this name."
     ],
     "assemblyElectionPeriodCondition": "materials may not be used in advertising for political party purposes or during general election or by-election periods;",
     "assemblyConditionNote": "The public demo uses link-only current MLA details. The ambiguous condition is preserved as historical review evidence, not relied upon to reproduce the current roster.",
     "operatingBase": "Alberta, Canada. Provider locations are described separately in /privacy.",
     "brandReview": {
-      "name": "Calgary Neighbourhood Analytics",
-      "exactFullNameMatchSurfacedInPreliminaryWebSearch": false,
+      "name": "Calgary Neighbourhood View",
       "formalTrademarkClearance": false,
-      "reviewedOn": "2026-09-14",
-      "preliminarySearchScope": "Six public-web queries for exact Canadian/US spelling, plural Neighbourhoods, concatenated variants and indexed CIPO-domain results; selected page reads. No direct registry, corporate-name or domain search.",
-      "relatedDescriptiveUse": "Neighbourhood analytics is used descriptively by Property.ca; no exclusivity established."
+      "domainClearanceEstablished": false,
+      "renamedOn": "2026-09-16",
+      "reviewStatus": "No trademark or domain clearance has been established for this renamed release. The earlier name-specific search does not cover this name.",
+      "independence": "Independent descriptive project; no official affiliation or endorsement is implied."
     },
     "publicDemo": {
       "host": "Vercel",
@@ -1539,9 +1665,9 @@
         "https://www.apple.com/legal/privacy/"
       ],
       "privacyPolicy": "/privacy",
-      "privacyReviewedOn": "2026-09-14",
+      "privacyReviewedOn": "2026-09-16",
       "privacyContractLimitation": "Vercel published DPA processor terms specify Pro/Enterprise; confirmed Hobby processor/transfer coverage is not established.",
-      "sourceRepository": "https://github.com/AHZR199/calgary-neighbourhood-analytics"
+      "sourceRepository": "https://github.com/AHZR199/calgary-neighbourhood-view"
     }
   },
   "featureReviewAddendum": {
@@ -1550,10 +1676,30 @@
       "Historical regional radon context",
       "Local sun-direction calculator",
       "Construction-year validation",
-      "Sale-history availability disclosure"
+      "Sale-history availability disclosure",
+      "Local neighbourhood finder with explicit priorities and limits",
+      "Nine original approximate Calgary landmark illustrations"
     ],
-    "privacyChanges": "No new third-party processor, storage, account or visitor measurement collection. Solar choices stay in page memory; radon aggregate ships with the app; construction uses the existing public City lookup.",
+    "privacyChanges": "No new third-party processor, account or visitor tracking. Solar and finder choices remain transient page state; matching uses bundled profiles without an AI service or preference upload. Nine landmarks share a local Three.js renderer with no external models or textures. Existing public City lookups and hosting/map requests remain disclosed separately.",
     "termsUrl": "/terms",
     "sourceMonitor": "Ordinary upstream timestamp changes create warnings and a review report; actual schema/network errors fail. No automatic snapshot replacement."
+  },
+  "schoolAndMapSelectionReview": {
+    "reviewedOn": "2026-09-16",
+    "privacy": "School filters and distances stay in browser memory. Public school data is served by the existing host. Map clicks send a selected point through the existing City lookup processor in a POST body; app responses are no-store. No device location or new storage key is used.",
+    "limitations": "School proximity is not admission or assigned-school eligibility. Map parcel matches can return multiple residential accounts; users choose the address/unit. Geometry is not a survey or proof of ownership."
+  },
+  "finderAndLandmarkReview": {
+    "reviewedOn": "2026-09-16",
+    "finderPrivacy": "Preferences, budgets, distances and results remain transient browser memory. No localStorage preference write, preference URL, AI service, recommendation endpoint or visitor-profile database is introduced.",
+    "finderScope": "223 eligible Residential-class community profiles; 219 assessment summaries. Original transparent preference matching, not listings, financial eligibility, resident profiling or a safety/quality score.",
+    "rightsLimit": "City and OSM conditions, ODbL derivative-data duties and software notices remain applicable. Original model code does not confer rights in the underlying architectural designs. No blanket copyright, architectural, trademark, publication or endorsement clearance is established. Wonderland is credited to Jaume Plensa; no blanket clearance of sculptural rights or redistributable3D reproduction has been established.",
+    "downloads": [
+      "/data/neighbourhood-finder.json",
+      "/data/access-amenities-osm.geojson",
+      "/data/landmark-footprints.geojson",
+      "/data/library-building-restore.geojson"
+    ],
+    "landmarkPrivacy": "Nine landmark views use one local renderer and bundled original code, with minimal OSM-derived footprint/part extracts; no remote model or texture service, new processor or tracking."
   }
 }

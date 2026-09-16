@@ -80,7 +80,10 @@ function DialogContent({
           if (event.defaultPrevented) return;
           const previous = returnFocus.current;
           const target =
-            previous?.isConnected && previous !== document.body
+            previous?.isConnected &&
+            previous !== document.body &&
+            previous.getClientRects().length > 0 &&
+            !previous.closest('[inert], [hidden]')
               ? previous
               : document.querySelector<HTMLElement>(
                   '[data-dialog-focus-fallback]',

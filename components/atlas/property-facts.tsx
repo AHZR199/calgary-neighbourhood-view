@@ -124,7 +124,7 @@ export function HomeResearchNotes({ property }: { property: Property | null }) {
       )}
       <p>
         See the website’s{' '}
-        <a href="https://calgary-neighbourhood-analytics.vercel.app/terms">
+        <a href="https://calgary-neighbourhood-view.vercel.app/terms">
           use and limitations
         </a>{' '}
         before relying on these records.
