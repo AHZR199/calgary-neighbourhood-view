@@ -2,7 +2,7 @@
 
 A side project by Abdullah Zubair for exploring the public records behind Calgary homes and neighbourhoods. Pick a place on the map, compare a few areas, work through ownership costs and print a research brief with its sources attached.
 
-[Open the demo](https://calgary-neighbourhood-view.vercel.app)
+[Open the demo](https://calgaryneighbourhoodview.com)
 
 ## What's here
 
@@ -56,7 +56,7 @@ When updating a snapshot, review its source terms, update the source cards and r
 
 ## Privacy and reuse
 
-The project is operated from Alberta, Canada. There are no accounts, ads or visitor analytics. Browser saves are local, but hosting, searches and map requests still involve service providers. The [privacy policy](https://calgary-neighbourhood-view.vercel.app/privacy), also available at `/privacy` locally, explains the data flows and deletion controls. [Privacy operations](docs/privacy-operations.md) records the maintenance duties and provider limitations. Questions or corrections: [az28140@icloud.com](mailto:az28140@icloud.com).
+The project is operated from Alberta, Canada. There are no accounts, ads or visitor analytics. Browser saves are local, but hosting, searches and map requests still involve service providers. The [privacy policy](https://calgaryneighbourhoodview.com/privacy), also available at `/privacy` locally, explains the data flows and deletion controls. [Privacy operations](docs/privacy-operations.md) records the maintenance duties and provider limitations. Questions or corrections: [az28140@icloud.com](mailto:az28140@icloud.com).
 
 The finder ranks 223 City Residential-class neighbourhood profiles; 219 have eligible assessment summaries. Matching runs in the browser over a bundled [profile dataset](public/data/neighbourhood-finder.json). Preferences are temporary page state, with no AI service, preference upload or new tracking. Assessment medians mix residential property types and are not listing prices. Hard limits stay separate from weighted preferences; demographics, crime, politics and radon are not ranking inputs.
 
@@ -68,4 +68,4 @@ Wonderland (2012) is by [Jaume Plensa](https://jaumeplensa.com/works-and-project
 
 This is a research aid. It doesn't provide MLS listings, sale-price history, guaranteed school assignments, insurance quotes or property-specific legal and inspection conclusions.
 
-Sale prices and dates stay unavailable because no suitable free redistributable source was established. Sunlight calculations don't model trees, nearby buildings or window direction. The [data notes](docs/data-notes.md) and [use and limitations page](https://calgary-neighbourhood-view.vercel.app/terms) explain what these records and estimates can support.
+Sale prices and dates stay unavailable because no suitable free redistributable source was established. Sunlight calculations don't model trees, nearby buildings or window direction. The [data notes](docs/data-notes.md) and [use and limitations page](https://calgaryneighbourhoodview.com/terms) explain what these records and estimates can support.
