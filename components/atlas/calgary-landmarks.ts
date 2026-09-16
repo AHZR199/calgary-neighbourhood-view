@@ -44,13 +44,19 @@ export const LANDMARK_LAYER_ID = 'calgary-landmarks';
 export const LANDMARKS = {
   tower: { ...CALGARY_TOWER, zoom: 16.45, bearing: -18, pitch: 58 },
   bow: { ...BOW, zoom: 16.1, bearing: 25, pitch: 58 },
-  saddledome: { ...SADDLEDOME, zoom: 17.05, bearing: -32, pitch: 54 },
+  saddledome: { ...SADDLEDOME, zoom: 17.05, bearing: 170, pitch: 65 },
   peace: { ...PEACE_BRIDGE, zoom: 17.65, bearing: 25, pitch: 55 },
-  wonderland: { ...WONDERLAND, zoom: 20, bearing: 0, pitch: 62 },
+  wonderland: { ...WONDERLAND, zoom: 20, bearing: 110, pitch: 68 },
   sky: { ...TELUS_SKY, zoom: 16.25, bearing: 40, pitch: 58 },
   library: { ...CENTRAL_LIBRARY, zoom: 17.3, bearing: -60, pitch: 57 },
   hall: { ...CITY_HALL, zoom: 17.25, bearing: 65, pitch: 57 },
-  olympic: { ...OLYMPIC_PARK, zoom: 16.45, bearing: -140, pitch: 58 },
+  olympic: {
+    ...OLYMPIC_PARK,
+    coordinates: [-114.212641, 51.077763],
+    zoom: 16,
+    bearing: -140,
+    pitch: 54,
+  },
 } satisfies Record<
   LandmarkKey,
   {

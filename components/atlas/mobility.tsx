@@ -181,18 +181,20 @@ export function MobilityContext({
         · straight-line distances
       </p>
       <div className="access-scores">
-        <div>
-          <Footprints size={18} />
-          <strong>
-            {essentials.score ?? '—'}
-            <small>/100</small>
-          </strong>
-          <span>Walkability estimate</span>
-          <small>
-            {essentials.count}/6 amenity types · {essentials.observedWeight}%
-            weight covered
-          </small>
-        </div>
+        {essentials.score != null && (
+          <div>
+            <Footprints size={18} />
+            <strong>
+              {essentials.score}
+              <small>/100</small>
+            </strong>
+            <span>Walkability estimate</span>
+            <small>
+              {essentials.count}/6 amenity types · {essentials.observedWeight}%
+              weight covered
+            </small>
+          </div>
+        )}
         <div>
           <BusFront size={18} />
           <strong>
@@ -333,44 +335,50 @@ export function MobilityContext({
           </a>
         </>
       )}
-      <div className="section-line essentials-heading">
-        <h3>Everyday essentials</h3>
-        <span>Mapped nearby places</span>
-      </div>
+      {essentials.breakdown.some((item) => item.nearest) && (
+        <div className="section-line essentials-heading">
+          <h3>Everyday essentials</h3>
+          <span>Mapped nearby places</span>
+        </div>
+      )}
       <div className="essentials-list">
-        {essentials.breakdown.map((c) => (
-          <div key={c.id}>
-            <span>
-              {c.label}
-              <small>
-                {c.nearest
-                  ? c.nearest.name ||
-                    `Mapped ${c.nearest.subcategory.replaceAll('_', ' ')}`
-                  : 'No mapped place in this extract'}
-              </small>
-            </span>
-            {c.nearest ? (
-              <a
-                href={
-                  c.nearest.sourceUrl ||
-                  `https://data.calgary.ca/d/${c.nearest.sourceId}`
-                }
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`${c.label}: ${c.nearest.name || 'mapped location'}, ${distanceLabel(c.nearest.distanceM)}, source`}
-              >
-                {distanceLabel(c.nearest.distanceM)}
-                <ArrowUpRight size={12} />
-              </a>
-            ) : (
-              <b>—</b>
-            )}
-          </div>
-        ))}
+        {essentials.breakdown
+          .filter((c) => c.nearest)
+          .map((c) => (
+            <div key={c.id}>
+              <span>
+                {c.label}
+                <small>
+                  {c.nearest
+                    ? c.nearest.name ||
+                      `Mapped ${c.nearest.subcategory.replaceAll('_', ' ')}`
+                    : null}
+                </small>
+              </span>
+              {c.nearest ? (
+                <a
+                  href={
+                    c.nearest.sourceUrl ||
+                    `https://data.calgary.ca/d/${c.nearest.sourceId}`
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${c.label}: ${c.nearest.name || 'mapped location'}, ${distanceLabel(c.nearest.distanceM)}, source`}
+                >
+                  {distanceLabel(c.nearest.distanceM)}
+                  <ArrowUpRight size={12} />
+                </a>
+              ) : null}
+            </div>
+          ))}
       </div>
       <div className="essentials-list supplemental-list">
         {result.supplemental
-          .filter((c) => !compact || ['childcare', 'gyms'].includes(c.category))
+          .filter(
+            (c) =>
+              c.nearest &&
+              (!compact || ['childcare', 'gyms'].includes(c.category)),
+          )
           .map((c) => (
             <div key={c.category}>
               <span>
@@ -386,7 +394,7 @@ export function MobilityContext({
                   {c.nearest
                     ? c.nearest.name ||
                       `Mapped ${c.nearest.subcategory.replaceAll('_', ' ')}`
-                    : 'No mapped place in this extract'}
+                    : null}
                 </small>
               </span>
               {c.nearest ? (
@@ -399,9 +407,7 @@ export function MobilityContext({
                   {distanceLabel(c.nearest.distanceM)}
                   <ArrowUpRight size={12} />
                 </a>
-              ) : (
-                <b>—</b>
-              )}
+              ) : null}
             </div>
           ))}
       </div>
@@ -446,9 +452,10 @@ export function MobilityContext({
           its stronger direction.
         </p>
         <p>
-          These are independent Neighbourhood View estimates, not official ratings or
-          licensed Walk Score® or Transit Score® results. A neighbourhood
-          reference point does not describe every home in that area.
+          These are independent Neighbourhood View estimates, not official
+          ratings or licensed Walk Score® or Transit Score® results. A
+          neighbourhood reference point does not describe every home in that
+          area.
         </p>
         <a href="/data/access-heuristic.json" target="_blank" rel="noreferrer">
           Download walkability methodology <ArrowUpRight size={12} />
@@ -486,15 +493,8 @@ export function MobilityReport({
   property: Property | null;
   comparison?: boolean;
 }) {
-  const { result, quadrant } = useMobility(community, property);
-  if (!result)
-    return (
-      <p className="quiet-note">
-        {quadrant
-          ? 'Choose an address for transport context.'
-          : 'Nearby services are unavailable or loading.'}
-      </p>
-    );
+  const { result } = useMobility(community, property);
+  if (!result) return null;
   const { essentials, transit, downtown, supplemental } = result;
   return (
     <div className="mobility-report">
@@ -504,13 +504,15 @@ export function MobilityReport({
         straight-line distances.
       </p>
       <dl>
-        <div>
-          <dt>Walkability estimate</dt>
-          <dd>
-            {essentials.score ?? '—'}/100 · {essentials.count}/6 types,{' '}
-            {essentials.observedWeight}% weight
-          </dd>
-        </div>
+        {essentials.score != null && (
+          <div>
+            <dt>Walkability estimate</dt>
+            <dd>
+              {essentials.score}/100 · {essentials.count}/6 types,{' '}
+              {essentials.observedWeight}% weight
+            </dd>
+          </div>
+        )}
         <div>
           <dt>Weekday transit access</dt>
           <dd>{transit.accessEstimate.value}/100</dd>
@@ -521,26 +523,26 @@ export function MobilityReport({
         </div>
         {!comparison && (
           <>
-            <div>
-              <dt>Nearest train</dt>
-              <dd>
-                {transit.nearestTrainStations[0]?.name} ·{' '}
-                {transit.nearestTrainStations[0]
-                  ? distanceLabel(
-                      transit.nearestTrainStations[0].distanceMetres,
-                    )
-                  : '—'}
-              </dd>
-            </div>
-            <div>
-              <dt>Nearest bus stop</dt>
-              <dd>
-                {transit.nearestBusStops[0]?.name} ·{' '}
-                {transit.nearestBusStops[0]
-                  ? distanceLabel(transit.nearestBusStops[0].distanceMetres)
-                  : '—'}
-              </dd>
-            </div>
+            {transit.nearestTrainStations[0] && (
+              <div>
+                <dt>Nearest train</dt>
+                <dd>
+                  {transit.nearestTrainStations[0].name} ·{' '}
+                  {distanceLabel(
+                    transit.nearestTrainStations[0].distanceMetres,
+                  )}
+                </dd>
+              </div>
+            )}
+            {transit.nearestBusStops[0] && (
+              <div>
+                <dt>Nearest bus stop</dt>
+                <dd>
+                  {transit.nearestBusStops[0].name} ·{' '}
+                  {distanceLabel(transit.nearestBusStops[0].distanceMetres)}
+                </dd>
+              </div>
+            )}
             {[
               ...essentials.breakdown
                 .filter((c) => c.id === 'groceries')
@@ -551,16 +553,18 @@ export function MobilityReport({
                   label: c.category === 'childcare' ? 'Child care' : 'Gym',
                   nearest: c.nearest,
                 })),
-            ].map((c) => (
-              <div key={c.label}>
-                <dt>{c.label}</dt>
-                <dd>
-                  {c.nearest
-                    ? `${c.nearest.name || 'Mapped location'} · ${distanceLabel(c.nearest.distanceM)}`
-                    : 'Unavailable'}
-                </dd>
-              </div>
-            ))}
+            ]
+              .filter((c) => c.nearest)
+              .map((c) => (
+                <div key={c.label}>
+                  <dt>{c.label}</dt>
+                  <dd>
+                    {c.nearest
+                      ? `${c.nearest.name || 'Mapped location'} · ${distanceLabel(c.nearest.distanceM)}`
+                      : null}
+                  </dd>
+                </div>
+              ))}
           </>
         )}
       </dl>

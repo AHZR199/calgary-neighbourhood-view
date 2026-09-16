@@ -10,6 +10,8 @@ import {
   Mesh,
   MeshStandardMaterial,
   Object3D,
+  ShapeUtils,
+  Vector2,
   Vector3,
 } from 'three';
 
@@ -26,11 +28,13 @@ export const SADDLEDOME = {
   sourceUrl: 'https://www.scotiabanksaddledome.com/building-design/',
   structureSourceUrl:
     'https://diglib.tugraz.at/download.php?id=68ac3d93379e5&location=browse',
+  roofMaterialSourceUrl:
+    'https://col.sika.com/dms/getdocument.get/2894d59b-e3e2-36a1-ae85-6cfbfee941b9/2014%20Ambitions%2018%20EN.pdf',
   locationSourceUrl: 'https://data.calgary.ca/d/x34e-bcjz',
   locationMethod:
     'City visitor-information point, aligned to the approximate OpenStreetMap outline in the 13 September 2026 OpenFreeMap snapshot; not a survey.',
   detail:
-    'Original architectural illustration of the saddle roof, ring beam and concourse. Roof orientation follows published engineering research; height, facade details and smaller dimensions are approximate.',
+    'Original architectural illustration of the white saddle roof, leaning pale enclosure, red stair towers and concourse. Roof orientation follows published engineering research; height, facade details and smaller dimensions are approximate.',
 };
 
 const radiusX = 70;
@@ -112,13 +116,13 @@ function roofRibbon(innerRadius: number, outerRadius: number, offset: number) {
   return geometry(positions, indices);
 }
 
-//thin mesh strips keep the roof panel rhythm readable without image textures.
+//the visible roof is a white membrane, not an exposed six-metre structural grid.
 function roofSeams() {
   const positions: number[] = [];
   const indices: number[] = [];
-  const halfWidth = 0.095;
-  for (const axis of ['x', 'z']) {
-    for (let offset = -60; offset <= 60; offset += 6) {
+  const halfWidth = 0.035;
+  for (const axis of ['x']) {
+    for (let offset = -66; offset <= 66; offset += 3) {
       const fixedRadius = axis === 'x' ? radiusX : radiusZ;
       const runningRadius = axis === 'x' ? radiusZ : radiusX;
       const extent =
@@ -142,6 +146,124 @@ function roofSeams() {
   return geometry(positions, indices);
 }
 
+export function saddledomeWallPoint(angle: number, height: number) {
+  const x = radiusX * 0.968 * Math.cos(angle);
+  const z = radiusZ * 0.968 * Math.sin(angle);
+  const top = saddledomeRoofHeight(x / 0.968, z / 0.968) - 1.9;
+  const inset = Math.max(0, top - height) * 0.22;
+  const radius = Math.hypot(x, z);
+  return new Vector3(
+    x * (1 - inset / radius),
+    height,
+    z * (1 - inset / radius),
+  );
+}
+
+function leaningEnclosure() {
+  const positions: number[] = [];
+  const indices: number[] = [];
+  for (let i = 0; i <= edgeSegments; i++) {
+    const angle = (i / edgeSegments) * Math.PI * 2;
+    const top =
+      saddledomeRoofHeight(
+        radiusX * Math.cos(angle),
+        radiusZ * Math.sin(angle),
+      ) - 1.9;
+    const bottomPoint = saddledomeWallPoint(angle, 12.3);
+    const topPoint = saddledomeWallPoint(angle, top);
+    positions.push(...bottomPoint.toArray(), ...topPoint.toArray());
+    if (i < edgeSegments) {
+      const at = i * 2;
+      indices.push(at, at + 1, at + 2, at + 1, at + 3, at + 2);
+    }
+  }
+  return geometry(positions, indices);
+}
+
+function enclosureSeams() {
+  const positions: number[] = [];
+  const indices: number[] = [];
+  for (let y = 12.6; y < 39; y += 0.62) {
+    for (let i = 0; i < edgeSegments; i++) {
+      const a = (i / edgeSegments) * Math.PI * 2;
+      const b = ((i + 1) / edgeSegments) * Math.PI * 2;
+      const topA =
+        saddledomeRoofHeight(radiusX * Math.cos(a), radiusZ * Math.sin(a)) - 2;
+      const topB =
+        saddledomeRoofHeight(radiusX * Math.cos(b), radiusZ * Math.sin(b)) - 2;
+      if (y + 0.035 > Math.min(topA, topB)) continue;
+      const start = positions.length / 3;
+      for (const [angle, height] of [
+        [a, y],
+        [a, y + 0.035],
+        [b, y],
+        [b, y + 0.035],
+      ]) {
+        const point = saddledomeWallPoint(angle, height);
+        point.x += Math.cos(angle) * 0.035;
+        point.z += Math.sin(angle) * 0.035;
+        positions.push(...point.toArray());
+      }
+      indices.push(
+        start,
+        start + 1,
+        start + 2,
+        start + 1,
+        start + 3,
+        start + 2,
+      );
+    }
+  }
+  return geometry(positions, indices);
+}
+
+function concourseSeams() {
+  const positions: number[] = [];
+  const indices: number[] = [];
+  for (let y = 5.6; y < 9.3; y += 0.42) {
+    for (let i = 0; i <= edgeSegments; i++) {
+      const angle = (i / edgeSegments) * Math.PI * 2;
+      const radius = 71.5 - ((y - 5.4) / 4.05) * 0.6 + 0.03;
+      const x = radius * Math.cos(angle);
+      const z = radius * (radiusZ / radiusX) * Math.sin(angle);
+      const at = positions.length / 3;
+      positions.push(x, y, z, x, y + 0.032, z);
+      if (i < edgeSegments)
+        indices.push(at, at + 1, at + 2, at + 1, at + 3, at + 2);
+    }
+  }
+  return geometry(positions, indices);
+}
+
+function stairTowerShapes() {
+  const plan: [number, number][] = [[-5, -2.4]];
+  for (let i = 0; i <= 24; i++) {
+    const angle = Math.PI * (1 - i / 24);
+    plan.push([5 * Math.cos(angle), 5 * Math.sin(angle)]);
+  }
+  plan.push([5, -2.4]);
+  const top = (x: number, z: number) => 23.2 - 0.04 * x - 0.055 * z * z;
+  const wallPositions: number[] = [];
+  const wallIndices: number[] = [];
+  for (let i = 0; i <= plan.length; i++) {
+    const [x, z] = plan[i % plan.length];
+    wallPositions.push(x, 5.3, z, x, top(x, z), z);
+    if (i < plan.length) {
+      const at = i * 2;
+      wallIndices.push(at, at + 2, at + 1, at + 1, at + 2, at + 3);
+    }
+  }
+  const roofPositions = plan.flatMap(([x, z]) => [x, top(x, z) + 0.09, z]);
+  const roofIndices = ShapeUtils.triangulateShape(
+    plan.map(([x, z]) => new Vector2(x, z)),
+    [],
+  ).flatMap(([a, b, c]) => [a, c, b]);
+  return {
+    wall: geometry(wallPositions, wallIndices),
+    roof: geometry(roofPositions, roofIndices),
+  };
+}
+
 export function createSaddledomeModel(): Group {
   const model = new Group();
   model.name = 'Saddledome';
@@ -158,24 +280,30 @@ export function createSaddledomeModel(): Group {
     roughness: 0.9,
   });
   const roof = new MeshStandardMaterial({
-    color: '#e2e2da',
+    color: '#e5e7e3',
     roughness: 0.86,
     side: DoubleSide,
   });
   const roofSeam = new MeshStandardMaterial({
-    color: '#bac1bd',
+    color: '#d6dcd8',
     roughness: 0.85,
     side: DoubleSide,
   });
   const red = new MeshStandardMaterial({
-    color: '#9f4140',
+    color: '#b94f3d',
     roughness: 0.66,
     metalness: 0.12,
     side: DoubleSide,
   });
-  const redRib = new MeshStandardMaterial({
-    color: '#793c3a',
-    roughness: 0.72,
+  const enclosure = new MeshStandardMaterial({
+    color: '#bdb9aa',
+    roughness: 0.85,
+    side: DoubleSide,
+  });
+  const enclosureJoint = new MeshStandardMaterial({
+    color: '#a4a599',
+    roughness: 0.9,
+    side: DoubleSide,
   });
   const glass = new MeshStandardMaterial({
     color: '#455964',
@@ -241,73 +369,64 @@ export function createSaddledomeModel(): Group {
 
   //an opaque raised base covers the coarse 5 m basemap extrusion without hiding neighbours.
   ellipse('concrete foundation', 71.5, 71.5, 0, 5.4, concrete);
-  ellipse('lower concourse plinth', 70.9, 71.5, 5.4, 7.2, paleConcrete);
-  ellipse('recessed concourse glazing', 69.8, 69.8, 7.2, 11.4, glass);
-  ellipse('concourse concrete overhang', 71.1, 70.5, 11.4, 12.2, paleConcrete);
+  ellipse('lower concourse plinth', 70.9, 71.5, 5.4, 9.45, paleConcrete);
+  ellipse('recessed concourse glazing', 70.25, 70.25, 9.45, 10.55, glass);
+  ellipse('concourse concrete overhang', 69.2, 70.5, 10.55, 12.2, paleConcrete);
   ellipse('upper concourse shadow line', 68.9, 68.9, 12.2, 13, shadowConcrete);
+  add(concourseSeams(), enclosureJoint, 'concourse horizontal cladding');
 
   repeated(
     'concourse concrete piers',
-    80,
-    new BoxGeometry(0.75, 5.4, 1.8),
+    40,
+    new BoxGeometry(0.28, 5.4, 0.5),
     concrete,
     (part, i) => {
-      const angle = (i / 80) * Math.PI * 2;
-      part.position.set(70.4 * Math.sin(angle), 8.7, 69.9 * Math.cos(angle));
+      const angle = (i / 40) * Math.PI * 2;
+      part.position.set(70.8 * Math.sin(angle), 8.1, 70.3 * Math.cos(angle));
       part.rotation.y = angle;
     },
   );
   repeated(
     'concourse window mullions',
     240,
-    new BoxGeometry(0.12, 4.15, 0.18),
+    new BoxGeometry(0.13, 1.13, 0.2),
     silver,
     (part, i) => {
       const angle = (i / 240) * Math.PI * 2;
-      part.position.set(69.9 * Math.sin(angle), 9.3, 69.4 * Math.cos(angle));
+      part.position.set(70.34 * Math.sin(angle), 10, 69.84 * Math.cos(angle));
       part.rotation.y = angle;
     },
   );
 
-  add(
-    curvedWall(
-      0.969,
-      () => 12.2,
-      (x, z) => saddledomeRoofHeight(x / 0.969, z / 0.969) - 2,
-    ),
-    red,
-    'curved red upper bowl enclosure',
-  );
-  repeated(
-    'upper bowl standing seams',
-    192,
-    new BoxGeometry(0.16, 1, 0.2),
-    redRib,
-    (part, i) => {
-      const angle = (i / 192) * Math.PI * 2;
-      const x = radiusX * 0.971 * Math.sin(angle);
-      const z = radiusZ * 0.971 * Math.cos(angle);
-      const top = saddledomeRoofHeight(x / 0.971, z / 0.971) - 2.1;
-      part.position.set(x, (12.3 + top) / 2, z);
-      part.scale.y = Math.max(0.2, top - 12.3);
-      part.rotation.y = angle;
-    },
-  );
+  add(leaningEnclosure(), enclosure, 'leaning pale upper enclosure');
+  add(enclosureSeams(), enclosureJoint, 'horizontal cladding joints');
 
   const supportCount = 32;
   repeated(
     'perimeter roof bearings',
     supportCount,
-    new BoxGeometry(1.5, 1, 2.1),
-    paleConcrete,
+    new BoxGeometry(1.6, 1, 1.55),
+    shadowConcrete,
     (part, i) => {
       const angle = (i / supportCount) * Math.PI * 2;
-      const x = radiusX * 0.975 * Math.sin(angle);
-      const z = radiusZ * 0.975 * Math.cos(angle);
-      const top = saddledomeRoofHeight(x / 0.975, z / 0.975) - 1.45;
-      part.position.set(x, (12 + top) / 2, z);
-      part.scale.y = Math.max(0.5, top - 12);
-      part.rotation.y = angle;
+      const wallAngle = Math.PI / 2 - angle;
+      const topY =
+        saddledomeRoofHeight(
+          radiusX * Math.sin(angle),
+          radiusZ * Math.cos(angle),
+        ) - 1.55;
+      const bottom = saddledomeWallPoint(wallAngle, 12.1);
+      const top = saddledomeWallPoint(wallAngle, topY);
+      bottom.x += Math.sin(angle) * 0.75;
+      bottom.z += Math.cos(angle) * 0.75;
+      top.x += Math.sin(angle) * 0.75;
+      top.z += Math.cos(angle) * 0.75;
+      part.position.copy(bottom).add(top).multiplyScalar(0.5);
+      part.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        top.clone().sub(bottom).normalize(),
+      );
+      part.scale.y = bottom.distanceTo(top);
     },
   );
 
@@ -324,6 +443,64 @@ export function createSaddledomeModel(): Group {
   add(saddleRoof(), roof, 'continuous saddle roof');
   add(roofSeams(), roofSeam, 'roof panel seams');
   add(roofRibbon(0.982, 1, 0), paleConcrete, 'roof perimeter coping');
+  add(
+    curvedWall(
+      1.002,
+      (x, z) => saddledomeRoofHeight(x / 1.002, z / 1.002) - 1.2,
+      (x, z) => saddledomeRoofHeight(x / 1.002, z / 1.002) - 0.75,
+    ),
+    red,
+    'terracotta roof edge trim',
+  );
+
+  //daylight reference photos show four red stair towers projecting from pale walls.
+  const stairs = stairTowerShapes();
+  const placeStair = (part: Object3D, i: number) => {
+    const angle = Math.PI / 4 + (i / 4) * Math.PI * 2;
+    part.position.set(65.5 * Math.sin(angle), 0, 65 * Math.cos(angle));
+    part.rotation.y = angle;
+  };
+  repeated('red curved stair towers', 4, stairs.wall, red, placeStair);
+  repeated('stair tower curved caps', 4, stairs.roof, paleConcrete, placeStair);
+  repeated(
+    'stair tower upper windows',
+    4,
+    new BoxGeometry(2.3, 2.5, 0.08),
+    glass,
+    (part, i) => {
+      const angle = Math.PI / 4 + (i / 4) * Math.PI * 2;
+      part.position.set(70.52 * Math.sin(angle), 20.2, 70.02 * Math.cos(angle));
+      part.rotation.y = angle;
+    },
+  );
+  repeated(
+    'low end concrete entrance piers',
+    4,
+    new BoxGeometry(1.3, 8.5, 2.4),
+    paleConcrete,
+    (part, i) => {
+      part.position.set(i % 2 ? -4.8 : 4.8, 10, i < 2 ? -69.7 : 69.7);
+    },
+  );
+  repeated(
+    'low end concrete entrance lintels',
+    2,
+    new BoxGeometry(11, 1.25, 2.4),
+    paleConcrete,
+    (part, i) => {
+      part.position.set(0, 14.35, i ? 69.7 : -69.7);
+    },
+  );
+  repeated(
+    'round concourse vents',
+    4,
+    new CylinderGeometry(0.7, 0.7, 0.1, 20),
+    shadowConcrete,
+    (part, i) => {
+      part.position.set(i % 2 ? -3.1 : 3.1, 11.8, i < 2 ? -70.95 : 70.95);
+      part.rotation.x = Math.PI / 2;
+    },
+  );
 
   //the west concourse projects into the existing mapped southwest entrance footprint.
   const entry = add(

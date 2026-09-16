@@ -7,6 +7,7 @@ import {
   Material,
   Mesh,
   MeshStandardMaterial,
+  Raycaster,
   Vector3,
 } from 'three';
 import {
@@ -14,6 +15,7 @@ import {
   disposeSaddledomeModel,
   SADDLEDOME,
   saddledomeRoofHeight,
+  saddledomeWallPoint,
 } from '../lib/atlas/saddledome-model';
 
 test('the saddle rises east and west and falls north and south', () => {
@@ -71,15 +73,19 @@ test('roof and exterior details use finite opaque geometry with bounded renderin
         assert.ok(Number.isFinite(value));
     }
   });
-  assert.ok(drawCalls <= 25, `${drawCalls} draw calls`);
-  assert.ok(vertices < 20000, `${vertices} stored vertices`);
+  assert.ok(drawCalls <= 32, `${drawCalls} draw calls`);
+  assert.ok(vertices < 35000, `${vertices} stored vertices`);
   assert.ok(triangles < 40000, `${triangles} instanced triangles`);
-  assert.ok(instances > 500);
+  assert.ok(instances > 300 && instances < 450);
   for (const name of [
     'continuous saddle roof',
     'saddle perimeter ring beam',
     'roof panel seams',
-    'curved red upper bowl enclosure',
+    'leaning pale upper enclosure',
+    'horizontal cladding joints',
+    'red curved stair towers',
+    'stair tower curved caps',
+    'terracotta roof edge trim',
     'concourse window mullions',
     'perimeter roof bearings',
     'west entrance glazed doors',
@@ -91,6 +97,34 @@ test('roof and exterior details use finite opaque geometry with bounded renderin
   const normals = roof.geometry.getAttribute('normal');
   for (let i = 0; i < normals.count; i++)
     assert.ok(normals.getY(i) > 0.7, 'roof winding must face upward');
+  disposeSaddledomeModel(model);
+});
+
+test('the pale enclosure leans out toward the saddle and red towers stay outside it', () => {
+  const low = saddledomeWallPoint(0, 12.3);
+  const high = saddledomeWallPoint(0, 38);
+  assert.ok(high.x - low.x > 5, 'the high walls must not form a vertical drum');
+  const model = createSaddledomeModel();
+  const stairs = model.getObjectByName(
+    'red curved stair towers',
+  ) as InstancedMesh;
+  assert.equal(stairs.count, 4);
+  const roofCaps = model.getObjectByName(
+    'stair tower curved caps',
+  ) as InstancedMesh;
+  const normals = roofCaps.geometry.getAttribute('normal');
+  for (let i = 0; i < normals.count; i++) assert.ok(normals.getY(i) > 0);
+  const direction = new Vector3(-1, 0, -1).normalize();
+  const hit = new Raycaster(new Vector3(90, 18, 90), direction).intersectObject(
+    stairs,
+  );
+  assert.ok(hit.length, 'the rounded stair enclosure must render from outside');
+  const window = model.getObjectByName('recessed concourse glazing') as Mesh;
+  const bounds = new Box3().setFromObject(window);
+  assert.ok(
+    bounds.max.y - bounds.min.y < 1.2,
+    'the concourse has a narrow ribbon of windows',
+  );
   disposeSaddledomeModel(model);
 });
 

@@ -128,7 +128,8 @@ function focusLandmark(
   animate = true,
 ) {
   const mobile = map.getContainer().clientWidth < 760;
-  const tall = key === 'tower' || key === 'bow' || key === 'sky';
+  const tall =
+    key === 'tower' || key === 'bow' || key === 'sky' || key === 'olympic';
   map.easeTo({
     center: landmark.coordinates,
     zoom: landmark.zoom - (mobile ? 0.6 : 0),
@@ -258,6 +259,7 @@ export default function CityMap(props: Props) {
           pitch: 57,
           bearing: -24,
           maxZoom: 20,
+          maxPitch: 70,
           minZoom: 9,
           attributionControl: false,
           canvasContextAttributes: { antialias: true },

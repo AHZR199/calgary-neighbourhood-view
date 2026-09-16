@@ -16,6 +16,26 @@ apply. Data licences, image-viewing permissions and map attribution are separate
 from software licensing and are documented in the application source credits.
 
 ========================================================================
+Canada Olympic Park terrain — Natural Resources Canada, CanElevation HRDEM
+
+Contains information licensed under the Open Government Licence – Canada.
+https://open.canada.ca/en/open-government-licence-canada
+
+Source: High Resolution Digital Elevation Model (HRDEM) - CanElevation Series
+https://open.canada.ca/data/en/dataset/957782bf-847c-4644-a757-e383c0057995
+Project: NRCAN-Calgary_West_utm11_2020-1m (2020 collection)
+Retrieved: 2026-09-16
+
+The bundled public/data/olympic-park-terrain.json is a 5 m grid derived from the
+1 m bare-earth terrain source. It retains source links, dates, methods and a
+source-window checksum. Preserve the attribution and licence with copies or
+adaptations. The map uses a local height datum and blends the outside edge into
+its flat basemap; structures and vegetation are separate approximate drawings.
+No NRCan endorsement or rights to official symbols are implied. This data
+licence is separate from the OpenStreetMap/ODbL footprint inputs and from the
+software notices that follow.
+
+========================================================================
 @alloc/quick-lru 5.2.0 — license
 sindresorhus/quick-lru
 

@@ -763,6 +763,41 @@ export default function Home() {
     ].slice(0, 25);
   }, [data, query, remoteResults]);
   const selectedSaved = saved.some((s) => s.id === placeId);
+  const comparisonRecords = compare.map((id) => {
+    const place = resolvePlace(id);
+    const stats = place ? data?.aggregates[place.code] : undefined;
+    const assessment = place?.property?.assessedValue ?? stats?.median;
+    const crime = place ? data?.crime[place.code] : undefined;
+    const water = place ? data?.water[place.code] : undefined;
+    const pipe = place?.property
+      ? data?.pipes[place.property.rollNumber]
+      : undefined;
+    const publishedCrime = crime?.latestYearComparison.current.publishedCount;
+    return {
+      id,
+      place,
+      values: [
+        assessment != null ? money(assessment) : null,
+        assessment != null ? money(assessment * TAX_RATE) : null,
+        place?.property?.yearBuilt ?? null,
+        publishedCrime != null ? `${number(publishedCrime)} published` : null,
+        water?.['water-breaks'].recordsSince2021 ?? null,
+        pipe?.knownMaterials.length ? pipe.materialSummary : null,
+        data
+          ? `${data.air.city.displayAqhi} · ${data.air.city.riskCategory}`
+          : null,
+      ],
+    };
+  });
+  const reportAssessment =
+    property?.assessedValue ?? data?.aggregates[code]?.median;
+  const reportCrime =
+    data?.crime[code]?.latestYearComparison.current.publishedCount;
+  const reportPipeRecord = property ? data?.pipes[property.rollNumber] : null;
+  const reportPipe = reportPipeRecord?.knownMaterials.length
+    ? reportPipeRecord.materialSummary
+    : null;
+
   return (
     <main className={`atlas-app ${view !== 'explore' ? 'workspace-open' : ''}`}>
       <a
@@ -1678,57 +1713,32 @@ export default function Home() {
                     'Recorded main breaks · since 2021',
                     'Public service material',
                     'City AQHI',
-                  ].map((label, i) => (
-                    <tr key={label}>
-                      <th>{label}</th>
-                      {compare.map((id) => {
-                        const p = resolvePlace(id),
-                          stat = p ? data?.aggregates[p.code] : undefined,
-                          assessment =
-                            p?.property?.assessedValue ?? stat?.median,
-                          crime = p ? data?.crime[p.code] : undefined,
-                          water = p ? data?.water[p.code] : undefined,
-                          pipe = p?.property
-                            ? data?.pipes[p.property.rollNumber]
-                            : undefined;
-                        const values = [
-                          assessment ? money(assessment) : 'Unavailable',
-                          assessment
-                            ? money(assessment * TAX_RATE)
-                            : 'Unavailable',
-                          p?.property?.yearBuilt ?? 'Varies',
-                          crime?.latestYearComparison.current.publishedCount !=
-                          null
-                            ? `${number(crime.latestYearComparison.current.publishedCount)} published`
-                            : 'Unavailable',
-                          water?.['water-breaks'].recordsSince2021 ??
-                            'Not included',
-                          pipe?.materialSummary ??
-                            (p?.property
-                              ? 'Public record unavailable'
-                              : 'Select a property'),
-                          data
-                            ? `${data.air.city.displayAqhi} · ${data.air.city.riskCategory}`
-                            : 'Unavailable',
-                        ];
-                        return (
+                  ].map((label, index) =>
+                    comparisonRecords.some(
+                      (record) => record.values[index] != null,
+                    ) ? (
+                      <tr key={label}>
+                        <th>{label}</th>
+                        {comparisonRecords.map(({ id, place, values }) => (
                           <td key={id}>
-                            {values[i]}
-                            {i === 0 && !p?.property && (
-                              <small>
-                                Community median · eligible accounts
-                              </small>
-                            )}
-                            {i === 3 && (
+                            {values[index]}
+                            {values[index] != null &&
+                              index === 0 &&
+                              !place?.property && (
+                                <small>
+                                  Community median · eligible accounts
+                                </small>
+                              )}
+                            {values[index] != null && index === 3 && (
                               <small>
                                 Historical 2019 · selected categories
                               </small>
                             )}
                           </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
+                        ))}
+                      </tr>
+                    ) : null,
+                  )}
                   <tr>
                     <th>Getting around</th>
                     {compare.map((id) => {
@@ -1785,47 +1795,41 @@ export default function Home() {
           </DialogDescription>
           {data && (
             <>
-              <div className="report-metrics">
-                <div>
-                  <small>
-                    {property ? '2026 assessment' : 'Median 2026 assessment'}
-                  </small>
-                  <strong>
-                    {property
-                      ? money(property.assessedValue)
-                      : data.aggregates[code]
-                        ? money(data.aggregates[code].median)
-                        : 'Not available'}
-                  </strong>
+              {(reportAssessment != null ||
+                reportCrime != null ||
+                reportPipe) && (
+                <div className="report-metrics">
+                  {reportAssessment != null && (
+                    <>
+                      <div>
+                        <small>
+                          {property
+                            ? '2026 assessment'
+                            : 'Median 2026 assessment'}
+                        </small>
+                        <strong>{money(reportAssessment)}</strong>
+                      </div>
+                      <div>
+                        <small>Estimated annual property tax</small>
+                        <strong>{money(reportAssessment * TAX_RATE)}</strong>
+                      </div>
+                    </>
+                  )}
+                  {reportCrime != null && (
+                    <div>
+                      <small>Crime · historical 2019</small>
+                      <strong>{reportCrime}</strong>
+                      <span>Historical 2019 · selected categories</span>
+                    </div>
+                  )}
+                  {reportPipe && (
+                    <div>
+                      <small>Public service connection</small>
+                      <strong>{reportPipe}</strong>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <small>Estimated annual property tax</small>
-                  <strong>
-                    {property
-                      ? money(property.assessedValue * TAX_RATE)
-                      : data.aggregates[code]
-                        ? money(data.aggregates[code].median * TAX_RATE)
-                        : 'Not available'}
-                  </strong>
-                </div>
-                <div>
-                  <small>Crime · historical 2019</small>
-                  <strong>
-                    {data.crime[code]?.latestYearComparison.current
-                      .publishedCount ?? 'Unavailable'}
-                  </strong>
-                  <span>Historical 2019 · selected categories</span>
-                </div>
-                <div>
-                  <small>Public service connection</small>
-                  <strong>
-                    {property
-                      ? data.pipes[property.rollNumber]?.materialSummary ||
-                        'Unverified'
-                      : 'Address required'}
-                  </strong>
-                </div>
-              </div>
+              )}
               <MobilityReport
                 community={community ?? null}
                 property={property}
@@ -1835,8 +1839,10 @@ export default function Home() {
                 <h3>Place & ownership context</h3>
                 <p>
                   {property
-                    ? `City assessment account ${property.rollNumber}. Recorded construction year: ${property.yearBuilt ?? 'unavailable'}.`
-                    : `${data.aggregates[code]?.count?.toLocaleString() ?? 'No'} eligible residential assessment accounts. The median describes this cohort, not an individual home or sale price.`}{' '}
+                    ? `City assessment account ${property.rollNumber}.${property.yearBuilt != null ? ` Recorded construction year: ${property.yearBuilt}.` : ''}`
+                    : data.aggregates[code]
+                      ? `${data.aggregates[code].count.toLocaleString()} eligible residential assessment accounts. The median describes this cohort, not an individual home or sale price.`
+                      : ''}{' '}
                   The 2026 residential tax rate is 0.0066499. Estimates exclude
                   unconfirmed local improvements, special charges, arrears and
                   adjustments.

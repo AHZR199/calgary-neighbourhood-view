@@ -9,6 +9,10 @@ import {
   Raycaster,
   Vector3,
 } from 'three';
+import {
+  olympicGroundHeight,
+  olympicTerrainWeight,
+} from '../lib/atlas/olympic-park-terrain';
 import { containsPoint } from '../lib/atlas/geography';
 import { disposeCalgaryTowerModel } from '../lib/atlas/calgary-tower-model';
 import {
@@ -16,16 +20,20 @@ import {
   OLYMPIC_PARK,
   createOlympicParkModel,
   olympicParkMetresToLngLat,
+  olympicRampPoint,
 } from '../lib/atlas/olympic-park-model';
 
 test('the main tower uses physical height, lies in its mapped footprint and stays grounded', () => {
   const model = createOlympicParkModel();
   const bounds = new Box3().setFromObject(model);
-  assert.ok(Math.abs(bounds.min.y) < 0.001);
-  assert.ok(Math.abs(bounds.max.y - 58) < 0.001);
+  assert.ok(bounds.min.y >= 0);
+  assert.ok(bounds.max.y > 150 && bounds.max.y < 170);
+  assert.equal(model.userData.mainTowerPhysicalHeight, 58);
+  assert.ok(Math.abs(olympicGroundHeight(0, 0) - 96.7) < 1);
+  assert.ok(olympicGroundHeight(65, -303) < 1);
   assert.equal(OLYMPIC_PARK.heightMetres, 58);
-  assert.ok(bounds.max.x - bounds.min.x < 135);
-  assert.ok(bounds.max.z - bounds.min.z < 365);
+  assert.ok(bounds.max.x - bounds.min.x <= 390);
+  assert.ok(bounds.max.z - bounds.min.z <= 540);
   assert.ok(
     containsPoint(OLYMPIC_PARK.coordinates, {
       type: 'Polygon',
@@ -74,14 +82,31 @@ test('inrun headings and endpoints follow the mapped ramps without flipping nort
     assert.ok(end[0] > start[0]);
     const ramp = model.getObjectByName(`${jump.name} curved inrun`) as Mesh;
     assert.equal(ramp.userData.osmWay, jump.rampWay);
-    const bounds = new Box3().setFromObject(ramp);
-    assert.ok(
-      bounds.min.y >= 5.19,
-      'the custom ramp stays above the existing 5 m extrusion',
-    );
+    const top = olympicRampPoint(jump, 0);
+    const bottom = olympicRampPoint(jump, 1);
+    assert.ok(top.y > bottom.y);
+    assert.equal(olympicTerrainWeight(...jump.centre), 1);
+    if (i === 3) {
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        const point = olympicRampPoint(jump, t);
+        assert.ok(
+          Math.abs(point.y - olympicGroundHeight(point.x, point.z) - 0.65) <
+            0.001,
+        );
+      }
+    } else {
+      assert.ok(
+        Math.abs(
+          top.y - olympicGroundHeight(...jump.centre) - jump.deckHeight,
+        ) < 0.001,
+      );
+      assert.ok(
+        Math.abs(bottom.y - olympicGroundHeight(...jump.end) - 3.4) < 0.001,
+      );
+    }
     const midpoint = new Vector3(
       (jump.start[0] + jump.end[0]) / 2,
-      70,
+      200,
       (jump.start[1] + jump.end[1]) / 2,
     );
     const hit = new Raycaster(midpoint, new Vector3(0, -1, 0)).intersectObject(
@@ -92,7 +117,7 @@ test('inrun headings and endpoints follow the mapped ramps without flipping nort
   disposeCalgaryTowerModel(model);
 });
 
-test('landing relief remains shallow and detailed structures have a bounded rendering cost', () => {
+test('landings follow licensed terrain and detailed structures have a bounded rendering cost', () => {
   const model = createOlympicParkModel();
   let meshes = 0;
   let vertices = 0;
@@ -109,14 +134,20 @@ test('landing relief remains shallow and detailed structures have a bounded rend
       for (const value of object.instanceMatrix.array)
         assert.ok(Number.isFinite(value));
     }
-    if (object.name === 'mapped landing strip') {
+    if (object.name.endsWith('landing')) {
       landings++;
-      const bounds = new Box3().setFromObject(object);
-      assert.ok(bounds.min.y >= 0);
-      assert.ok(
-        bounds.max.y < 3,
-        'do not invent a giant hillside on the flat map',
-      );
+      for (let vertex = 0; vertex < position.count; vertex++) {
+        assert.ok(
+          Math.abs(
+            position.getY(vertex) -
+              olympicGroundHeight(
+                position.getX(vertex),
+                position.getZ(vertex),
+              ) -
+              0.24,
+          ) < 0.001,
+        );
+      }
       const normals = object.geometry.getAttribute('normal');
       for (let vertex = 0; vertex < normals.count; vertex++)
         assert.ok(
@@ -127,21 +158,19 @@ test('landing relief remains shallow and detailed structures have a bounded rend
     for (const material of Array.isArray(object.material)
       ? object.material
       : [object.material])
-      assert.equal(material.transparent, false);
+      assert.equal(material.transparent, object.name === 'lidar hillside');
   });
-  assert.equal(landings, 3);
-  assert.ok(meshes < 40);
-  assert.ok(vertices < 10000);
+  assert.equal(landings, 4);
+  assert.ok(meshes < 65);
+  assert.ok(vertices < 34000);
   assert.ok(instances > 1000 && instances < 2500);
   for (const name of [
     'main concrete tower',
-    'observation glazing',
-    'window mullions',
+    'lidar hillside',
     'inrun safety handrails',
     'paired ski grooves',
     'inrun access stair treads',
-    'inrun concrete trestles',
-    'trestle cross bracing',
+    'solid inrun support walls',
   ])
     assert.ok(
       model.getObjectByName(name),

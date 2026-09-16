@@ -177,15 +177,17 @@
       ]
     },
     "canada-open": {
-      "title": "Open Government Licence – Canada v2.0",
+      "title": "Open Government Licence – Canada, version 2.0",
       "url": "https://open.canada.ca/en/open-government-licence-canada",
-      "permission": "Express permission to copy, modify, publish and redistribute licensed information, including commercially, subject to attribution and exclusions.",
+      "permission": "Worldwide royalty-free reuse of licensed information, including copying, modifying, publishing and distributing for commercial or noncommercial purposes, subject to terms.",
       "conditions": [
-        "Acknowledge the source and link the licence.",
-        "No publisher endorsement or rights to official symbols are implied.",
-        "Respect exclusions for personal information and third-party rights."
+        "Acknowledge the source and retain the stated attribution; link the licence where possible.",
+        "Personal information, inaccessible records, unauthorized third-party rights and official symbols are excluded.",
+        "Do not imply official status or endorsement."
       ],
-      "attribution": "Contains information licensed under the Open Government Licence – Canada."
+      "attribution": "Contains information licensed under the Open Government Licence – Canada.",
+      "verifiedOn": "2026-09-16",
+      "verification": "NRCan HRDEM catalogue lists Open Government Licence – Canada; the hrdem-lidar STAC collection explicitly identifies OGL-Canada-2.0."
     }
   },
   "entries": [
@@ -1056,7 +1058,8 @@
         "https://doi.org/10.3217/978-3-99161-057-1-115",
         "https://data.calgary.ca/d/x34e-bcjz",
         "https://www.openstreetmap.org/copyright",
-        "https://opendatacommons.org/licenses/odbl/1-0/"
+        "https://opendatacommons.org/licenses/odbl/1-0/",
+        "https://col.sika.com/dms/getdocument.get/2894d59b-e3e2-36a1-ae85-6cfbfee941b9/2014%20Ambitions%2018%20EN.pdf"
       ],
       "licenceProfileIds": ["calgary-open", "osm", "facts"],
       "status": "original-illustration-with-scoped-input-and-software-notices",
@@ -1070,7 +1073,7 @@
         "Keep the 41 m model peak explicitly approximate; operator-published 89 ft interior clearance is not external building height."
       ],
       "downloads": ["/data/landmark-footprints.geojson"],
-      "notes": "Primary City/CSEC-coauthored engineering paper supports the roof high ends east/west, low ends north/south, ring beam and bearing concept. Roof curvature, 41 m external peak, facade subdivisions and entrance details are illustrative. City point [-114.0519846,51.0374081] is not surveyed. The shared OpenFreeMap building feature is not hidden because it includes 1,386 unrelated parts. Rendering stays local with no new processor or tracking."
+      "notes": "Primary City/CSEC-coauthored engineering paper supports the roof high ends east/west, low ends north/south, ring beam and bearing concept. Roof curvature, 41 m external peak, facade subdivisions and entrance details are illustrative. City point [-114.0519846,51.0374081] is not surveyed. The shared OpenFreeMap building feature is not hidden because it includes 1,386 unrelated parts. Rendering stays local with no new processor or tracking. Daylight roofing references inform the white membrane, pale horizontally ribbed facade and separate red stair towers; no reference images are redistributed."
     },
     {
       "id": "bow-landmark",
@@ -1276,28 +1279,64 @@
       "checkedOn": "2026-09-16",
       "assets": [
         "lib/atlas/olympic-park-model.ts",
+        "lib/atlas/olympic-tower-model.ts",
+        "lib/atlas/olympic-park-terrain.ts",
         "components/atlas/calgary-landmarks.ts",
-        "landmark-footprints.geojson"
+        "landmark-footprints.geojson",
+        "olympic-park-terrain.json"
       ],
       "sourceUrls": [
         "https://www.heritagecalgary.ca/heritage-calgary-blog/inventory1000",
         "https://www.winsport.ca/new-day-lodge/olympic-legacy-assets/",
         "https://report.winsport.ca/2025-our-history/",
         "https://www.openstreetmap.org/copyright",
-        "https://opendatacommons.org/licenses/odbl/1-0/"
+        "https://opendatacommons.org/licenses/odbl/1-0/",
+        "https://open.canada.ca/data/en/dataset/957782bf-847c-4644-a757-e383c0057995",
+        "https://open.canada.ca/en/open-government-licence-canada"
       ],
-      "licenceProfileIds": ["osm", "facts"],
+      "licenceProfileIds": ["osm", "facts", "canada-open"],
       "status": "original-illustration-with-scoped-input-and-software-notices",
-      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs. Source references are not permission for all uses of the underlying architecture or artwork, photographs, drawings, marks or third-party models.",
+      "allowedUse": "Original procedural map illustration using attributed factual and OSM geographic inputs, with a separately licensed NRCan terrain derivative. Source references are not permission for all uses of underlying architecture, photographs, drawings, marks or third-party models.",
       "requiredAction": [
         "Preserve source links, applicable City and OpenStreetMap credits, ODbL link and the downloadable minimal footprint extract.",
+        "Preserve NRCan attribution, the Open Government Licence – Canada link and the terrain source/date/method metadata. Keep measured terrain distinct from approximate structures, illustrative vegetation and the unmapped main landing ribbon.",
         "Keep published dimensions distinct from illustrative smaller geometry, colours and placement; do not use the model for surveys, engineering, access, boundaries or shadow calculations.",
         "Retain Three.js software notices. No third-party model, photograph, blueprint, texture or logo is bundled.",
         "Do not imply architect, owner or operator endorsement or ownership of the underlying architectural design. Original code does not establish blanket copyright, architectural, trademark or publication clearance.",
         "Reassess any later asset import or materially different distribution/commercial context."
       ],
-      "downloads": ["/data/landmark-footprints.geojson"],
-      "notes": "Original approximate heritage depiction of mapped ski-jump structures. The main physical tower height is58 m; 90 m refers to jump classification. WinSport dates decommissioning to2018. Full hillside terrain and current demolition status of every smaller mapped structure are not established. Shared map identifier2722018200 is retained."
+      "downloads": [
+        "/data/landmark-footprints.geojson",
+        "/data/olympic-park-terrain.json"
+      ],
+      "notes": "Original approximate heritage depiction of mapped ski-jump structures on a local hillside sampled from NRCan’s 2020 1 m bare-earth DTM. The physical main tower height is 58 m; 90 m is the historic jump designation. WinSport dates decommissioning to 2018. Smaller structures and vegetation are illustrative, and only three landing polygons are mapped; the main landing ribbon is an approximation. The terrain edge blends into the flat basemap. This is not a current demolition inventory, access guide or engineering model. Shared map identifier 2722018200 is retained."
+    },
+    {
+      "id": "olympic-park-terrain",
+      "title": "Canada Olympic Park local terrain derived from NRCan HRDEM",
+      "checkedOn": "2026-09-16",
+      "assets": [
+        "olympic-park-terrain.json",
+        "lib/atlas/olympic-park-terrain.ts"
+      ],
+      "sourceUrls": [
+        "https://open.canada.ca/data/en/dataset/957782bf-847c-4644-a757-e383c0057995",
+        "https://datacube.services.geo.ca/stac/api/collections/hrdem-lidar",
+        "https://canelevation-dem.s3.ca-central-1.amazonaws.com/hrdem-lidar/NRCAN-Calgary_West_utm11_2020-1m-dtm.tif",
+        "https://open.canada.ca/en/open-government-licence-canada"
+      ],
+      "licenceProfileIds": ["canada-open"],
+      "status": "keep-with-source-attribution-and-licence",
+      "allowedUse": "Small bilinearly sampled derivative of the licensed NRCan bare-earth DTM. Source collection explicitly identifies OGL-Canada-2.0.",
+      "requiredAction": [
+        "Preserve the attribution: Contains information licensed under the Open Government Licence – Canada.",
+        "Retain the licence link, source dataset and collection, retrieval date, coordinate and vertical datums, method and source-window checksum.",
+        "Keep the 2020 collection date visible; do not describe the model as a current site survey, safety assessment or engineering model.",
+        "Explain that the local datum and outer-edge blending are display treatments; original absolute samples remain available.",
+        "Do not imply NRCan endorsement or reproduce official symbols under this data licence."
+      ],
+      "downloads": ["/data/olympic-park-terrain.json"],
+      "notes": "79 columns by 109 rows, 5 m spacing, 8,611 samples from the 1 m DTM; no missing samples. EPSG:3979 source and CGVD2013 vertical datum. The 2020 DSM was consulted only as a structural-proportion cross-check and is not bundled. Terrain is served by the existing host with no live NRCan request or new visitor-data processor."
     },
     {
       "id": "library-building-context",
@@ -1698,8 +1737,9 @@
       "/data/neighbourhood-finder.json",
       "/data/access-amenities-osm.geojson",
       "/data/landmark-footprints.geojson",
-      "/data/library-building-restore.geojson"
+      "/data/library-building-restore.geojson",
+      "/data/olympic-park-terrain.json"
     ],
-    "landmarkPrivacy": "Nine landmark views use one local renderer and bundled original code, with minimal OSM-derived footprint/part extracts; no remote model or texture service, new processor or tracking."
+    "landmarkPrivacy": "Nine landmark views use one local renderer and bundled original code, with minimal OSM-derived footprint/part extracts and a licensed local NRCan terrain grid; no remote model or texture service, live NRCan request, new processor or tracking."
   }
 }

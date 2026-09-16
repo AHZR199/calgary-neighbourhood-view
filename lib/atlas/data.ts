@@ -325,7 +325,7 @@ export const SOURCES = [
     date: 'References reviewed 16 Sep 2026',
     scope: 'Illustrative saddle roof · external height approximate',
     detail:
-      'The original model depicts the curved saddle roof, edge beam, supports, red enclosure and concourse. Published engineering research describes east–west sagging and north–south hogging cables, informing the roof orientation. The 41 m model peak and fine dimensions are illustrative; the operator’s 89-foot interior clearance is not used as the building’s external height. Location follows the City community-services point checked against the mapped outline. No venue branding or third-party model is bundled.',
+      'The original model depicts the white saddle roof, pale ribbed enclosure, red stair towers and concourse. Daylight photographs in Sika’s roofing project inform the facade and membrane materials. Published engineering research describes east–west sagging and north–south hogging cables, informing the roof orientation. The 41 m model peak and fine dimensions are illustrative; the operator’s 89-foot interior clearance is not used as the building’s external height. Location follows the City community-services point checked against the mapped outline. No venue branding or third-party model is bundled.',
   },
   {
     id: 'peace-bridge-landmark',
@@ -389,9 +389,20 @@ export const SOURCES = [
     publisher: 'Original app geometry · Heritage Calgary / WinSport',
     url: 'https://www.heritagecalgary.ca/heritage-calgary-blog/inventory1000',
     date: 'References reviewed 16 Sep 2026',
-    scope: '58 m main tower · former ski jumps',
+    scope: '58 m main tower · former ski jumps on measured terrain',
     detail:
-      'Heritage Calgary identifies a physical main-tower height of 58 m: the common “90 m jump” name is not the tower height. Original geometry follows mapped towers, inruns and landing-strip alignment. The flat map does not represent the site’s full hillside terrain; landing-ground treatment and fine details are approximate. WinSport decommissioned the jumps in 2018; these are shown as heritage landmarks, not operating facilities.',
+      'Heritage Calgary identifies a physical main-tower height of 58 m: “90 m jump” is its historic designation. Original structures follow OpenStreetMap alignment and sit on a local hillside derived from NRCan’s 2020 lidar. Smaller structural dimensions, vegetation and the unmapped main landing ribbon are illustrative. The outer terrain edge blends into the flat city map. WinSport decommissioned the jumps in 2018; this is a heritage depiction, not a current demolition inventory or access guide.',
+  },
+  {
+    id: 'olympic-park-terrain',
+    category: 'Map',
+    name: 'Canada Olympic Park: measured hillside',
+    publisher: 'Natural Resources Canada · CanElevation HRDEM',
+    url: '/data/olympic-park-terrain.json',
+    date: '2020 lidar collection · retrieved 16 Sep 2026',
+    scope: '1 m source terrain · 5 m display grid · 8,611 samples',
+    detail:
+      'A small extract of the Calgary West bare-earth digital terrain model supplies local ground elevations. Heights are bilinearly sampled from the 1 m source into a 5 m grid, with the source URL, date, coordinate system, method and checksum preserved in this download. The map subtracts a local datum and blends its outer edge into the flat basemap. This is an orientation illustration, not a current terrain survey. Contains information licensed under the Open Government Licence – Canada. No live NRCan request or new visitor-data processor is introduced.',
   },
   {
     id: 'library-building-context',

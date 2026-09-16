@@ -281,7 +281,7 @@ function SchoolSummary({
             <li key={school.id}>
               <div>
                 <strong>{school.name}</strong>
-                <small>{school.grades || 'Grade group not supplied'}</small>
+                {school.grades && <small>{school.grades}</small>}
               </div>
               <span>{distanceLabel(school.distanceM)}</span>
             </li>
@@ -322,17 +322,19 @@ function SchoolCard({ school }: { school: SchoolMatch }) {
       <div className="school-card-top">
         <div className="school-card-title">
           <h4>{school.name}</h4>
-          <p>{school.board || 'Board not listed in source'}</p>
+          {school.board && <p>{school.board}</p>}
         </div>
         <div className="school-distance">
           <strong>{distanceLabel(school.distanceM)}</strong>
           <small>straight-line</small>
         </div>
       </div>
-      <div className="school-card-facts">
-        <span>{school.grades || 'Grade group not supplied'}</span>
-        {!school.inSelectedArea && <span>Outside selected area</span>}
-      </div>
+      {(school.grades || !school.inSelectedArea) && (
+        <div className="school-card-facts">
+          {school.grades && <span>{school.grades}</span>}
+          {!school.inSelectedArea && <span>Outside selected area</span>}
+        </div>
+      )}
       {school.address && <p className="school-address">{school.address}</p>}
       {school.locationNote && (
         <p className="schools-note">{school.locationNote}</p>

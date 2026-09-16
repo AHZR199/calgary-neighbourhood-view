@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { Box3, InstancedMesh, Mesh, Raycaster, Vector3 } from 'three';
+import { Box3, InstancedMesh, Matrix4, Mesh, Raycaster, Vector3 } from 'three';
 import {
   WONDERLAND,
   createWonderlandModel,
@@ -59,8 +59,8 @@ test('Wonderland uses finite instanced wire geometry with a bounded render cost'
     material = object.material;
     object.addEventListener('dispose', () => instanceDisposals++);
   });
-  assert.equal(meshCount, 2);
-  assert.ok(instances > 5000 && instances < 7300);
+  assert.equal(meshCount, 3);
+  assert.ok(instances > 14000 && instances < 19000);
   assert.ok(geometry && material && !Array.isArray(material));
   geometry.addEventListener('dispose', () => geometryDisposals++);
   material.addEventListener('dispose', () => materialDisposals++);
@@ -68,5 +68,29 @@ test('Wonderland uses finite instanced wire geometry with a bounded render cost'
   disposeCalgaryTowerModel(model);
   assert.equal(geometryDisposals, 1);
   assert.equal(materialDisposals, 1);
-  assert.equal(instanceDisposals, 2);
+  assert.equal(instanceDisposals, 3);
+});
+
+test('Wonderland keeps a tapered portrait and fine open wires instead of a rounded cage', () => {
+  const model = createWonderlandModel();
+  const wires = model.getObjectByName(
+    'open wire head contours',
+  ) as InstancedMesh;
+  const pose = new Matrix4();
+  const lowerJaw: number[] = [];
+  const temples: number[] = [];
+  for (let index = 0; index < wires.count; index++) {
+    wires.getMatrixAt(index, pose);
+    const point = new Vector3().setFromMatrixPosition(pose);
+    if (point.y > 2.7 && point.y < 3.0) lowerJaw.push(Math.abs(point.x));
+    if (point.y > 8 && point.y < 8.6) temples.push(Math.abs(point.x));
+  }
+  assert.ok(Math.max(...lowerJaw) < Math.max(...temples) * 0.73);
+  assert.ok(model.userData.renderedWireDiameterMetres <= 0.03);
+  assert.ok(model.getObjectByName('closed eyes and gentle mouth contours'));
+  assert.equal(
+    model.userData.photographicReference,
+    WONDERLAND.fabricationSourceUrl,
+  );
+  disposeCalgaryTowerModel(model);
 });

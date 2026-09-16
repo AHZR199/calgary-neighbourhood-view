@@ -13,7 +13,7 @@ import type { Overlay } from './city-map';
 import { EnvironmentalChecklist, LocationOverlayDetails } from './location';
 import type { Community, Property } from '@/lib/atlas/data';
 import { CORE, titleCase } from '@/lib/atlas/data';
-import { BuyerChecklist, EmptyState, SourceLink } from './panels';
+import { BuyerChecklist, SourceLink } from './panels';
 import type {
   TransitMapLayers,
   TransitMapStatus,
@@ -54,11 +54,11 @@ function WeekdayRoutes({
   property: Property | null;
 }) {
   const mobility = useMobility(community, property);
-  if (community.class === 'Quadrant') return null;
+  if (community.class === 'Quadrant' || !mobility.result) return null;
   return (
     <div className="nearby-single-metric">
       <TrainFront size={18} aria-hidden="true" />
-      <strong>{mobility.result?.transit.nearbyRoutes.length ?? '—'}</strong>
+      <strong>{mobility.result.transit.nearbyRoutes.length}</strong>
       <div>
         <span>Weekday routes within 800 m</span>
         <small>
@@ -207,35 +207,33 @@ export function NearbyPanel({
         )}
         {section === 'development' && (
           <section>
-            <div className="nearby-single-metric">
-              <Construction size={18} aria-hidden="true" />
-              <strong>
-                {loaded && covered && !failed ? local.length : '—'}
-              </strong>
-              <div>
-                <span>Development applications</span>
-                <small>
-                  {covered
-                    ? 'Sep 2025–Sep 2026'
-                    : 'Detailed extract not included'}
-                </small>
+            {loaded && covered && !failed && (
+              <div className="nearby-single-metric">
+                <Construction size={18} aria-hidden="true" />
+                <strong>{local.length}</strong>
+                <div>
+                  <span>Development applications</span>
+                  <small>Sep 2025–Sep 2026</small>
+                </div>
               </div>
-            </div>
-            <div className="section-line">
-              <h3>Development activity</h3>
-              <select
-                aria-label="Filter development applications"
-                value={filter}
-                onChange={(e) => {
-                  setFilter(e.target.value);
-                  setCount(5);
-                }}
-              >
-                <option value="all">All applications</option>
-                <option value="residential">Residential</option>
-                <option value="active">Exclude cancelled / refused</option>
-              </select>
-            </div>
+            )}
+            {covered && (
+              <div className="section-line">
+                <h3>Development activity</h3>
+                <select
+                  aria-label="Filter development applications"
+                  value={filter}
+                  onChange={(e) => {
+                    setFilter(e.target.value);
+                    setCount(5);
+                  }}
+                >
+                  <option value="all">All applications</option>
+                  <option value="residential">Residential</option>
+                  <option value="active">Exclude cancelled / refused</option>
+                </select>
+              </div>
+            )}
             {!loaded && (
               <p className="quiet-note" role="status">
                 Loading development records…
@@ -301,11 +299,20 @@ export function NearbyPanel({
                 see the full local extract.
               </p>
             )}
-            {loaded && !failed && !local.length && (
-              <EmptyState title="Detailed activity not included here">
-                This extract covers the four initial study communities. Explore
-                the City’s development map for other addresses.
-              </EmptyState>
+            {!covered && (
+              <a
+                className="resource-card"
+                href="https://developmentmap.calgary.ca/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Construction size={20} />
+                <span>
+                  City development map
+                  <small>Explore applications near this address</small>
+                </span>
+                <ArrowUpRight size={17} />
+              </a>
             )}
             <p className="quiet-note">
               Applications include signs, renovations and changes of use.

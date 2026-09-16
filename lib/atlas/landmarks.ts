@@ -18,7 +18,7 @@ export const LANDMARK_DETAILS = {
     fact: 'Saddle roof · Stampede Park',
     source: 'saddledome-landmark',
     description:
-      'The roof rises at the east and west ends above a red enclosure, concrete supports and a glazed concourse.',
+      'The roof rises at the east and west ends above pale ribbed walls, red stair towers and a glazed concourse.',
   },
   peace: {
     name: 'Peace Bridge',

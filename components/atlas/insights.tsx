@@ -57,80 +57,99 @@ export function CensusContext({ code }: { code: string }) {
   }, []);
   const row = records.find((c) => c.communityCode === code);
   if (!row) return null;
+  const singleHouseholds = row.households.sizeDistribution.find(
+    (item) => item.label === '1 person',
+  )?.percent;
+  const metrics = [
+    {
+      label: 'Private-household residents',
+      value: row.populationPrivateHouseholds,
+      unit: '',
+    },
+    {
+      label: 'Average household size',
+      value: row.households.averageSize,
+      unit: '',
+    },
+    {
+      label: 'Private households',
+      value: row.households.totalBySizeTable,
+      unit: '',
+    },
+    { label: 'One-person households', value: singleHouseholds, unit: '%' },
+  ].filter((metric) => metric.value != null);
+  const ages = row.ageGroups.filter((item) => item.percent != null);
+  const sizes = row.households.sizeDistribution.filter(
+    (item) => item.percent != null,
+  );
+  if (!metrics.length && !ages.length && !sizes.length) return null;
   return (
     <section className="census-context">
       <div className="section-line">
         <h3>People & households</h3>
         <span className="data-badge">2021 census</span>
       </div>
-      <div className="census-grid">
-        <div>
-          <strong>
-            {row.populationPrivateHouseholds === null
-              ? '—'
-              : number(row.populationPrivateHouseholds)}
-          </strong>
-          <span>Private-household residents</span>
+      {metrics.length > 0 && (
+        <div className="census-grid">
+          {metrics.map((metric) => (
+            <div key={metric.label}>
+              <strong>
+                {metric.value == null ? null : number(metric.value)}
+                {metric.unit && <small>{metric.unit}</small>}
+              </strong>
+              <span>{metric.label}</span>
+            </div>
+          ))}
         </div>
-        <div>
-          <strong>{row.households.averageSize ?? '—'}</strong>
-          <span>Average household size</span>
-        </div>
-        <div>
-          <strong>
-            {row.households.totalBySizeTable === null
-              ? '—'
-              : number(row.households.totalBySizeTable)}
-          </strong>
-          <span>Private households</span>
-        </div>
-        <div>
-          <strong>
-            {row.households.sizeDistribution.find((d) => d.label === '1 person')
-              ?.percent ?? '—'}
-            <small>%</small>
-          </strong>
-          <span>One-person households</span>
-        </div>
-      </div>
-      <details className="reading-detail">
-        <summary>
-          Age & household composition <ChevronRight size={14} />
-        </summary>
-        <h4 className="distribution-label">Age of residents</h4>
-        <div
-          className="percent-axis"
-          aria-label="Percentage scale from 0 to 100"
-        >
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
-        </div>
-        <div className="age-distribution">
-          {row.ageGroups.map((a) => (
-            <div key={a.label}>
-              <span>{a.label} years</span>
-              <div>
-                <span style={{ width: `${a.percent ?? 0}%` }} />
+      )}
+      {(ages.length > 0 || sizes.length > 0) && (
+        <details className="reading-detail">
+          <summary>
+            Age & household composition <ChevronRight size={14} />
+          </summary>
+          {ages.length > 0 && (
+            <>
+              <h4 className="distribution-label">Age of residents</h4>
+              <div
+                className="percent-axis"
+                aria-label="Percentage scale from 0 to 100"
+              >
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
               </div>
-              <strong>{a.percent === null ? '—' : `${a.percent}%`}</strong>
-            </div>
-          ))}
-        </div>
-        <h4 className="distribution-label">People per household</h4>
-        <div className="housing-mix">
-          {row.households.sizeDistribution.map((d) => (
-            <div key={d.label}>
-              <span>{d.label}</span>
-              <strong>{d.percent === null ? '—' : `${d.percent}%`}</strong>
-            </div>
-          ))}
-        </div>
-      </details>
+              <div className="age-distribution">
+                {ages.map((item) => (
+                  <div key={item.label}>
+                    <span>{item.label} years</span>
+                    <div>
+                      <span style={{ width: `${item.percent}%` }} />
+                    </div>
+                    <strong>{item.percent}%</strong>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {sizes.length > 0 && (
+            <>
+              <h4 className="distribution-label">People per household</h4>
+              <div className="housing-mix">
+                {sizes.map((item) => (
+                  <div key={item.label}>
+                    <span>{item.label}</span>
+                    <strong>{item.percent}%</strong>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </details>
+      )}
       <p className="quiet-note">
         Historical data on 2022 community geography; excludes collective
-        dwellings. Published rounding is preserved. Missing values stay
-        unavailable. This does not describe individual residents.
+        dwellings. Published rounding is preserved. This does not describe
+        individual residents.
       </p>
       <a
         className="source-link"
@@ -209,7 +228,7 @@ export function AssessmentHistory({ property }: { property: Property }) {
       off = true;
     };
   }, [property]);
-  if (rows.length < 2) return null;
+  if (rows.filter((row) => row.assessedValue != null).length < 2) return null;
   const scale = chartScale(rows.map((r) => r.assessedValue ?? 0)),
     selected = rows.find((r) => r.year === active),
     prior = rows.find((r) => r.year === active - 1);
@@ -227,9 +246,9 @@ export function AssessmentHistory({ property }: { property: Property }) {
       <div className="history-readout">
         <span>{active}</span>
         <strong>
-          {selected?.assessedValue
+          {selected?.assessedValue != null
             ? money(selected.assessedValue)
-            : 'No record'}
+            : null}
         </strong>
         {change !== null && (
           <small>
@@ -258,26 +277,33 @@ export function AssessmentHistory({ property }: { property: Property }) {
           role="group"
           aria-label="Select an assessment year"
         >
-          {rows.map((r) => (
-            <button
-              key={r.year}
-              aria-label={`${r.year}: ${r.assessedValue ? money(r.assessedValue) : 'No record'}`}
-              aria-pressed={r.year === active}
-              className={r.year === active ? 'active' : ''}
-              onClick={() => setActive(r.year)}
-            >
-              <span className="history-bar-track">
-                <span
-                  style={{
-                    height: r.assessedValue
-                      ? `${(r.assessedValue / scale.top) * 100}%`
-                      : '2px',
-                  }}
-                />
-              </span>
-              <small>{String(r.year).slice(2)}</small>
-            </button>
-          ))}
+          {rows.map((r) =>
+            r.assessedValue == null ? (
+              <span
+                className="history-gap"
+                key={r.year}
+                aria-hidden="true"
+                style={{ flex: 1, minWidth: 0 }}
+              />
+            ) : (
+              <button
+                key={r.year}
+                aria-label={`${r.year}: ${money(r.assessedValue)}`}
+                aria-pressed={r.year === active}
+                className={r.year === active ? 'active' : ''}
+                onClick={() => setActive(r.year)}
+              >
+                <span className="history-bar-track">
+                  <span
+                    style={{
+                      height: `${(r.assessedValue / scale.top) * 100}%`,
+                    }}
+                  />
+                </span>
+                <small>{String(r.year).slice(2)}</small>
+              </button>
+            ),
+          )}
         </div>
       </div>
       <p className="quiet-note">

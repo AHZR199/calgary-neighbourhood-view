@@ -295,33 +295,33 @@ export function Overview({
         </span>
       </button>
       <div className="overview-facts">
-        <button onClick={() => onLayer('property')}>
-          <span>Estimated property tax</span>
-          <strong>
-            {value ? money(value * TAX_RATE) : '—'}
-            <small>/year</small>
-          </strong>
-          <small>
-            {value
-              ? `${money((value * TAX_RATE) / 12, 2)}/month · 2026 rate`
-              : 'Select a property or assessed value'}
-          </small>
-        </button>
-        <button onClick={() => onLayer('property')}>
-          <span>{property ? 'Year built' : 'Residential accounts'}</span>
-          <strong>
-            {property
-              ? property.yearBuilt || '—'
-              : stats
-                ? number(stats.count)
-                : '—'}
-          </strong>
-          <small>
-            {property
-              ? `${property.subPropertyUse ? titleCase(property.subPropertyUse) : 'City assessment record'}`
-              : 'Eligible 2026 accounts in this area'}
-          </small>
-        </button>
+        {value != null && (
+          <button onClick={() => onLayer('property')}>
+            <span>Estimated property tax</span>
+            <strong>
+              {money(value * TAX_RATE)}
+              <small>/year</small>
+            </strong>
+            <small>{money((value * TAX_RATE) / 12, 2)}/month · 2026 rate</small>
+          </button>
+        )}
+        {(property ? property.yearBuilt != null : stats != null) && (
+          <button onClick={() => onLayer('property')}>
+            <span>{property ? 'Year built' : 'Residential accounts'}</span>
+            <strong>
+              {property
+                ? property.yearBuilt
+                : stats
+                  ? number(stats.count)
+                  : null}
+            </strong>
+            <small>
+              {property
+                ? `${property.subPropertyUse ? titleCase(property.subPropertyUse) : 'City assessment record'}`
+                : 'Eligible 2026 accounts in this area'}
+            </small>
+          </button>
+        )}
         <button onClick={() => onLayer('air')}>
           <span>Calgary air quality</span>
           <strong>
@@ -336,17 +336,19 @@ export function Overview({
             )}
           </small>
         </button>
-        <button onClick={() => onLayer('property')}>
-          <span>{property ? 'Area median assessment' : 'Tax outlook'}</span>
-          <strong>
-            {property && stats ? money(stats.median) : 'Scenario planner'}
-          </strong>
-          <small>
-            {property
-              ? 'Neighbourhood context · 2026'
-              : 'Explore changes; future rates not final'}
-          </small>
-        </button>
+        {(!property || stats) && (
+          <button onClick={() => onLayer('property')}>
+            <span>{property ? 'Area median assessment' : 'Tax outlook'}</span>
+            <strong>
+              {property && stats ? money(stats.median) : 'Scenario planner'}
+            </strong>
+            <small>
+              {property
+                ? 'Neighbourhood context · 2026'
+                : 'Explore changes; future rates not final'}
+            </small>
+          </button>
+        )}
       </div>
       <MobilityContext
         community={community}
@@ -373,90 +375,89 @@ export function Overview({
         </button>
       )}
       <RadonPanel compact onSource={onSource} />
-      <section className="overview-topic">
-        <div className="section-line">
-          <h3>Infrastructure & the home</h3>
-          <button onClick={() => onLayer('water')}>
-            Details <ChevronRight size={14} />
-          </button>
-        </div>
-        <div className="overview-evidence">
-          <Droplets size={21} />
-          <div>
-            <strong>
-              {pipe
-                ? pipe.materialSummary
-                : property
-                  ? 'Public service line not confirmed'
-                  : 'Select a home for service-line records'}
-            </strong>
-            <p>
-              {pipe
-                ? `${pipe.matchLabel}. Public records do not establish private or indoor pipe materials.`
-                : 'A neighbourhood’s pipe material cannot establish what is inside a particular home.'}
-            </p>
+      {(water || Boolean(pipe?.knownMaterials.length)) && (
+        <section className="overview-topic">
+          <div className="section-line">
+            <h3>Infrastructure & the home</h3>
+            <button onClick={() => onLayer('water')}>
+              Details <ChevronRight size={14} />
+            </button>
           </div>
-        </div>
-        {water && (
-          <dl className="overview-definition">
-            <div>
-              <dt>Mapped public main segments</dt>
-              <dd>{number(water['water-mains'].count)}</dd>
+          {Boolean(pipe?.knownMaterials.length) && pipe && (
+            <div className="overview-evidence">
+              <Droplets size={21} />
+              <div>
+                <strong>{pipe.materialSummary}</strong>
+                <p>
+                  {pipe.matchLabel}. Public records do not establish private or
+                  indoor pipe materials.
+                </p>
+              </div>
             </div>
-            <div>
-              <dt>Recorded main breaks since 2021</dt>
-              <dd>{number(water['water-breaks'].recordsSince2021)}</dd>
-            </div>
-          </dl>
-        )}
-        <p className="quiet-note">
-          Main-break and material summaries cover the four study communities. A
-          material or installation year alone does not predict replacement.
-        </p>
-      </section>
-      <section className="overview-topic">
-        <div className="section-line">
-          <h3>Who represents this place</h3>
-          <button onClick={() => onLayer('politics')}>
-            Political context <ChevronRight size={14} />
-          </button>
-        </div>
-        {reps.map((rep) => (
-          <a
-            className="overview-representative"
-            href={rep.profileUrl || rep.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            key={rep.id}
-          >
-            <span>
-              <small>
-                {rep.level === 'federal'
-                  ? 'MP'
-                  : rep.level === 'provincial'
-                    ? 'MLA'
-                    : 'Councillor'}{' '}
-                · {rep.district}
-              </small>
-              <strong>{rep.name || rep.displayName || 'Vacant seat'}</strong>
-              <small>
-                {rep.status === 'link-only'
-                  ? 'Official Assembly directory'
-                  : rep.party || 'Municipal office · no party listed'}
-              </small>
-            </span>
-            <ArrowUpRight size={15} />
-          </a>
-        ))}
-        <p className="quiet-note">
-          {property
-            ? 'Address point matched to published district boundaries. Verify boundary-edge properties with the official locator.'
-            : 'Select an address for its MP and MLA. Neighbourhoods can cross electoral boundaries.'}{' '}
-          MP records verified 13 September 2026; councillors verified 14
-          September 2026. Current MLA details are linked to the official
-          directory.
-        </p>
-      </section>
+          )}
+          {water && (
+            <dl className="overview-definition">
+              <div>
+                <dt>Mapped public main segments</dt>
+                <dd>{number(water['water-mains'].count)}</dd>
+              </div>
+              <div>
+                <dt>Recorded main breaks since 2021</dt>
+                <dd>{number(water['water-breaks'].recordsSince2021)}</dd>
+              </div>
+            </dl>
+          )}
+          <p className="quiet-note">
+            Main-break and material summaries cover the four study communities.
+            A material or installation year alone does not predict replacement.
+          </p>
+        </section>
+      )}
+      {reps.length > 0 && (
+        <section className="overview-topic">
+          <div className="section-line">
+            <h3>Who represents this place</h3>
+            <button onClick={() => onLayer('politics')}>
+              Political context <ChevronRight size={14} />
+            </button>
+          </div>
+          {reps.map((rep) => (
+            <a
+              className="overview-representative"
+              href={rep.profileUrl || rep.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              key={rep.id}
+            >
+              <span>
+                <small>
+                  {rep.level === 'federal'
+                    ? 'MP'
+                    : rep.level === 'provincial'
+                      ? 'MLA'
+                      : 'Councillor'}{' '}
+                  · {rep.district}
+                </small>
+                <strong>{rep.name || rep.displayName || 'Vacant seat'}</strong>
+                <small>
+                  {rep.status === 'link-only'
+                    ? 'Official Assembly directory'
+                    : rep.party || 'Municipal office · no party listed'}
+                </small>
+              </span>
+              <ArrowUpRight size={15} />
+            </a>
+          ))}
+          <p className="quiet-note">
+            {property
+              ? 'Address point matched to published district boundaries. Verify boundary-edge properties with the official locator.'
+              : 'Select an address for its MP and MLA. Neighbourhoods can cross electoral boundaries.'}{' '}
+            MP records verified 13 September 2026; councillors verified 14
+            September 2026. Current MLA details are linked to the official
+            directory.
+          </p>
+        </section>
+      )}
       <AreaContext
         community={community}
         property={property}
@@ -509,7 +510,8 @@ export function Overview({
               <span>
                 <strong>{titleCase(p.address)}</strong>
                 <small>
-                  Built {p.yearBuilt || 'year unavailable'} · City assessment
+                  {p.yearBuilt != null ? `Built ${p.yearBuilt} · ` : ''}City
+                  assessment
                 </small>
               </span>
               <span className="price-small">
@@ -749,7 +751,7 @@ export function PropertyPanel({
               </span>
               <span>
                 <strong>{titleCase(p.address)}</strong>
-                <small>Built {p.yearBuilt || 'year unreported'}</small>
+                {p.yearBuilt != null && <small>Built {p.yearBuilt}</small>}
               </span>
               <span className="price-small">
                 {compactMoney(p.assessedValue)}
@@ -811,20 +813,13 @@ export function CrimePanel({
           Choose a neighbourhood. Community counts cannot be allocated
           accurately to address quadrants.
         </EmptyState>
-      ) : !crime ? (
-        <EmptyState title="Historical record unavailable">
-          This area was not matched to the licensed historical extract. That
-          does not mean no crime occurred.
-        </EmptyState>
-      ) : (
+      ) : !crime ? null : (
         <>
           <div className="crime-headline">
             <span className="metric-label">Historical crime · 2019</span>
-            <strong>
-              {comparison?.current.publishedCount != null
-                ? number(comparison.current.publishedCount)
-                : 'Partial record'}
-            </strong>
+            {comparison?.current.publishedCount != null && (
+              <strong>{number(comparison.current.publishedCount)}</strong>
+            )}
             <span>January–December 2019 · selected categories</span>
             {months < 12 && (
               <p className="quiet-note">
@@ -851,25 +846,39 @@ export function CrimePanel({
               population or visitors.
             </p>
           </div>
-          <CrimeChart crime={crime} />
-          <section>
-            <div className="section-line">
-              <h3>By category</h3>
-              <span>Historical counts</span>
-            </div>
-            <div className="category-heading">
-              <span>Available records</span>
-              <span>2018</span>
-              <span>2019</span>
-            </div>
-            {crime.latestYearCategories.map((c) => (
-              <div className="crime-category" key={c.category}>
-                <span>{c.category}</span>
-                <span>{c.priorPublishedCount ?? '—'}</span>
-                <strong>{c.currentPublishedCount ?? '—'}</strong>
+          {crime.monthly.some((month) => month.publishedCount != null) && (
+            <CrimeChart crime={crime} />
+          )}
+          {crime.latestYearCategories.some(
+            (category) =>
+              category.priorPublishedCount != null ||
+              category.currentPublishedCount != null,
+          ) && (
+            <section>
+              <div className="section-line">
+                <h3>By category</h3>
+                <span>Historical counts</span>
               </div>
-            ))}
-          </section>
+              <div className="category-heading">
+                <span>Available records</span>
+                <span>2018</span>
+                <span>2019</span>
+              </div>
+              {crime.latestYearCategories
+                .filter(
+                  (c) =>
+                    c.priorPublishedCount != null ||
+                    c.currentPublishedCount != null,
+                )
+                .map((c) => (
+                  <div className="crime-category" key={c.category}>
+                    <span>{c.category}</span>
+                    <span>{c.priorPublishedCount}</span>
+                    <strong>{c.currentPublishedCount}</strong>
+                  </div>
+                ))}
+            </section>
+          )}
           <p className="quiet-note">
             Category totals sum available source records, not necessarily every
             month in the year. Eight named crime categories; disorder records
@@ -901,7 +910,10 @@ export function WaterPanel({
   onSource: (id: string) => void;
   onSearch: () => void;
 }) {
-  const [livePipe, setLivePipe] = useState<Pipe | null>(null),
+  const [livePipe, setLivePipe] = useState<{
+      rollNumber: string;
+      pipe: Pipe | null;
+    } | null>(null),
     [checkingPipe, setCheckingPipe] = useState(false);
   useEffect(() => {
     let cancelled = false;
@@ -910,7 +922,8 @@ export function WaterPanel({
       setCheckingPipe(true);
       getPublicPropertyDetails(property)
         .then((d) => {
-          if (!cancelled) setLivePipe(d.pipe);
+          if (!cancelled)
+            setLivePipe({ rollNumber: property.rollNumber, pipe: d.pipe });
         })
         .catch(() => {})
         .finally(() => {
@@ -922,7 +935,19 @@ export function WaterPanel({
     };
   }, [property, data.pipes]);
   const water = data.water[community.comm_code],
-    pipe = property ? (data.pipes[property.rollNumber] ?? livePipe) : null;
+    pipe = property
+      ? (data.pipes[property.rollNumber] ??
+        (livePipe?.rollNumber === property.rollNumber ? livePipe.pipe : null))
+      : null;
+  const pipeRecords =
+    pipe?.records.filter(
+      (record) =>
+        !['', 'Unknown', 'Other', 'Not available'].includes(
+          record.materialLabel || record.material,
+        ) ||
+        record.installedDate ||
+        record.diameterMm != null,
+    ) ?? [];
   const materials = water
     ? Object.entries(water['water-mains'].byMaterialOrType).sort(
         (a, b) => b[1] - a[1],
@@ -933,45 +958,52 @@ export function WaterPanel({
       <div className="water-intro">
         <h2>Public water infrastructure</h2>
       </div>
-      {property ? (
+      {property &&
+      (pipe?.knownMaterials.length || pipeRecords.length || checkingPipe) ? (
         <section className="pipe-card">
           <span className="metric-label">Public service connection</span>
-          <strong>
-            {pipe?.materialSummary ||
-              (checkingPipe
-                ? 'Checking City records…'
-                : 'Public record unavailable')}
-          </strong>
-          <span
-            className={`match-label ${pipe?.matchQuality === 'exact-address' ? 'verified' : ''}`}
-          >
-            {pipe?.matchQuality === 'exact-address' ? (
-              <Check size={14} />
-            ) : (
-              <Info size={14} />
-            )}{' '}
-            {pipe?.matchLabel || 'Material unverified'}
-          </span>
-          {pipe?.records.map((r, i) => (
-            <div className="pipe-record" key={i}>
-              <span>
-                {r.materialLabel || r.material}
-                <small>
-                  {r.installedDate
-                    ? `Recorded installation: ${r.installedDate.slice(0, 10)}`
-                    : 'Installation date unreported'}
-                </small>
-              </span>
-              <strong>{r.diameterMm ? `${r.diameterMm} mm` : '—'}</strong>
-            </div>
-          ))}
+          {checkingPipe ? (
+            <strong role="status">Checking City records…</strong>
+          ) : pipe?.knownMaterials.length ? (
+            <strong>{pipe.materialSummary}</strong>
+          ) : null}
+          {pipe?.matchLabel && !checkingPipe && (
+            <span
+              className={`match-label ${pipe?.matchQuality === 'exact-address' ? 'verified' : ''}`}
+            >
+              {pipe?.matchQuality === 'exact-address' ? (
+                <Check size={14} />
+              ) : (
+                <Info size={14} />
+              )}{' '}
+              {pipe.matchLabel}
+            </span>
+          )}
+          {!checkingPipe &&
+            pipeRecords.map((r, i) => (
+              <div className="pipe-record" key={i}>
+                <span>
+                  {!['', 'Unknown', 'Other', 'Not available'].includes(
+                    r.materialLabel || r.material,
+                  )
+                    ? r.materialLabel || r.material
+                    : null}
+                  {r.installedDate && (
+                    <small>
+                      Recorded installation: {r.installedDate.slice(0, 10)}
+                    </small>
+                  )}
+                </span>
+                {r.diameterMm != null && <strong>{r.diameterMm} mm</strong>}
+              </div>
+            ))}
           <p className="quiet-note">
             Public portion only. Interior plumbing and the private service line
             are unverified. Multiple records may describe different connections;
             active status is not established.
           </p>
         </section>
-      ) : (
+      ) : !property ? (
         <button className="outline-action" onClick={onSearch}>
           <House size={18} />
           <span>
@@ -979,7 +1011,7 @@ export function WaterPanel({
           </span>
           <ArrowRight size={17} />
         </button>
-      )}
+      ) : null}
       {water ? (
         <>
           <section>
@@ -1043,13 +1075,7 @@ export function WaterPanel({
             Hillhurst, Sunnyside, Bridgeland / Riverside and Beltline.
           </p>
         </>
-      ) : (
-        <EmptyState title="Main network not included here yet">
-          The map’s detailed public water network currently covers the four
-          central study communities. Use the City’s source to investigate
-          another area.
-        </EmptyState>
-      )}
+      ) : null}
       <details className="reading-detail">
         <summary>
           What about Poly-B inside a home?
@@ -1167,76 +1193,78 @@ export function AirPanel({
           property or long-term exposure.
         </p>
       </div>
-      <section>
-        <div className="section-line">
-          <h3>Recent city observations</h3>
-          <span>Saved 24-hour series</span>
-        </div>
-        <svg
-          viewBox="0 0 320 142"
-          className="air-chart"
-          role="img"
-          aria-label="Calgary AQHI, saved recent observations"
-        >
-          <ChartAxes scale={scale} unit="AQHI" />
-          <path
-            d={`M ${points.replaceAll(' ', ' L ')}`}
-            fill="none"
-            stroke="#829eaa"
-            strokeWidth="2.5"
-          />
-        </svg>
-        <div className="range-labels">
-          <span>
-            {new Date(observations[0]?.observedAt).toLocaleString('en-CA', {
-              timeZone: 'America/Edmonton',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-            })}
-          </span>
-          <span>
-            {new Date(observations.at(-1)!.observedAt).toLocaleString('en-CA', {
-              timeZone: 'America/Edmonton',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-            })}
-          </span>
-        </div>
-      </section>
-      <section>
-        <div className="section-line">
-          <h3>Monitoring stations</h3>
-          <span>Same observation period</span>
-        </div>
-        {air.stations.map((s) => (
-          <div className="station-row" key={s.id}>
-            <MapPin size={17} />
+      {observations.length > 0 && (
+        <section>
+          <div className="section-line">
+            <h3>Recent city observations</h3>
+            <span>Saved 24-hour series</span>
+          </div>
+          <svg
+            viewBox="0 0 320 142"
+            className="air-chart"
+            role="img"
+            aria-label="Calgary AQHI, saved recent observations"
+          >
+            <ChartAxes scale={scale} unit="AQHI" />
+            <path
+              d={`M ${points.replaceAll(' ', ' L ')}`}
+              fill="none"
+              stroke="#829eaa"
+              strokeWidth="2.5"
+            />
+          </svg>
+          <div className="range-labels">
             <span>
-              {s.name}
-              <small className="station-time">
-                {new Date(
-                  s.observedAt ?? air.observationPeriod.at,
-                ).toLocaleString('en-CA', {
+              {new Date(observations[0]?.observedAt).toLocaleString('en-CA', {
+                timeZone: 'America/Edmonton',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+              })}
+            </span>
+            <span>
+              {new Date(observations.at(-1)!.observedAt).toLocaleString(
+                'en-CA',
+                {
                   timeZone: 'America/Edmonton',
                   month: 'short',
                   day: 'numeric',
                   hour: 'numeric',
-                  minute: '2-digit',
-                })}
-              </small>
+                },
+              )}
             </span>
-            <strong>{s.displayLabel ?? s.displayAqhi}</strong>
-            <small>{s.riskCategory}</small>
           </div>
-        ))}
-      </section>
-      {air.unavailableStations?.map((s) => (
-        <p className="quiet-note" key={s.id}>
-          {s.name}: no reading published for this observation.
-        </p>
-      ))}
+        </section>
+      )}
+      {air.stations.length > 0 && (
+        <section>
+          <div className="section-line">
+            <h3>Monitoring stations</h3>
+            <span>Same observation period</span>
+          </div>
+          {air.stations.map((s) => (
+            <div className="station-row" key={s.id}>
+              <MapPin size={17} />
+              <span>
+                {s.name}
+                <small className="station-time">
+                  {new Date(
+                    s.observedAt ?? air.observationPeriod.at,
+                  ).toLocaleString('en-CA', {
+                    timeZone: 'America/Edmonton',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                </small>
+              </span>
+              <strong>{s.displayLabel ?? s.displayAqhi}</strong>
+              <small>{s.riskCategory}</small>
+            </div>
+          ))}
+        </section>
+      )}
       <ParticulateHistory />
       <SourceLink id="air" onSource={onSource} />
     </div>
@@ -1336,14 +1364,16 @@ export function CivicPanel({
               </div>
               <p className="district-name">{rep.district}</p>
               <div className="rep-footer">
-                <span className="party-label">
-                  {!linkOnly && <i style={{ background: color }} />}
-                  {linkOnly
-                    ? 'Official Assembly directory'
-                    : rep.status === 'vacant'
-                      ? 'No current officeholder'
-                      : rep.party || 'Party affiliation unspecified'}
-                </span>
+                {(linkOnly || rep.status === 'vacant' || rep.party) && (
+                  <span className="party-label">
+                    {!linkOnly && <i style={{ background: color }} />}
+                    {linkOnly
+                      ? 'Official Assembly directory'
+                      : rep.status === 'vacant'
+                        ? 'No current officeholder'
+                        : rep.party}
+                  </span>
+                )}
                 <a
                   href={rep.profileUrl || rep.sourceUrl}
                   target="_blank"

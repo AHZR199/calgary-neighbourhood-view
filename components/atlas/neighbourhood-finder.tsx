@@ -100,30 +100,26 @@ function MatchCard({
           </span>
           <h3>{profile.name}</h3>
         </div>
-        <div
-          className="finder-match"
-          aria-label={
-            match.score === null
-              ? 'Match score unavailable'
-              : `Preference match ${match.score} out of 100`
-          }
-        >
-          <strong>
-            {match.score ?? '—'}
-            {match.score !== null && <small> /100</small>}
-          </strong>
-          <span>Preference match</span>
-        </div>
+        {match.score != null && (
+          <div
+            className="finder-match"
+            aria-label={`Preference match ${match.score} out of 100`}
+          >
+            <strong>
+              {match.score}
+              <small> /100</small>
+            </strong>
+            <span>Preference match</span>
+          </div>
+        )}
       </div>
       <dl className="finder-card-metrics">
-        <div>
-          <dt>2026 median assessment</dt>
-          <dd>
-            {profile.assessment
-              ? money(profile.assessment.median)
-              : 'Unavailable'}
-          </dd>
-        </div>
+        {profile.assessment && (
+          <div>
+            <dt>2026 median assessment</dt>
+            <dd>{money(profile.assessment.median)}</dd>
+          </div>
+        )}
         <div>
           <dt>Downtown · straight-line</dt>
           <dd>{profile.downtownKm.toFixed(1)} km</dd>
@@ -174,13 +170,15 @@ function MatchCard({
             </tr>
           </thead>
           <tbody>
-            {active.map((criterion) => (
-              <tr key={criterion.id}>
-                <th scope="row">{criterion.label}</th>
-                <td>{weightLabels[criterion.weight]}</td>
-                <td>{criterion.score ?? 'Unavailable'}</td>
-              </tr>
-            ))}
+            {active
+              .filter((criterion) => criterion.score != null)
+              .map((criterion) => (
+                <tr key={criterion.id}>
+                  <th scope="row">{criterion.label}</th>
+                  <td>{weightLabels[criterion.weight]}</td>
+                  <td>{criterion.score}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
         {active.map((criterion) => (

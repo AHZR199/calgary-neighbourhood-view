@@ -70,7 +70,7 @@ const point = (bearing: number, radius: number) => ({
 });
 const duration = (minutes: number | null) =>
   minutes === null
-    ? 'Unavailable'
+    ? null
     : `${Math.floor(Math.round(minutes) / 60)}h ${String(Math.round(minutes) % 60).padStart(2, '0')}m`;
 
 function SunCompass({
@@ -434,21 +434,27 @@ export function SolarPanel({
         </p>
       )}
       <div className="solar-events">
-        <div>
-          <Sunrise size={16} aria-hidden="true" />
-          <span>Sunrise</span>
-          <strong>{formatSolarTime(day.sunrise)}</strong>
-        </div>
-        <div>
-          <Sun size={16} aria-hidden="true" />
-          <span>Daylight</span>
-          <strong>{duration(day.daylightMinutes)}</strong>
-        </div>
-        <div>
-          <Sunset size={16} aria-hidden="true" />
-          <span>Sunset</span>
-          <strong>{formatSolarTime(day.sunset)}</strong>
-        </div>
+        {day.sunrise != null && (
+          <div>
+            <Sunrise size={16} aria-hidden="true" />
+            <span>Sunrise</span>
+            <strong>{formatSolarTime(day.sunrise)}</strong>
+          </div>
+        )}
+        {day.daylightMinutes != null && (
+          <div>
+            <Sun size={16} aria-hidden="true" />
+            <span>Daylight</span>
+            <strong>{duration(day.daylightMinutes)}</strong>
+          </div>
+        )}
+        {day.sunset != null && (
+          <div>
+            <Sunset size={16} aria-hidden="true" />
+            <span>Sunset</span>
+            <strong>{formatSolarTime(day.sunset)}</strong>
+          </div>
+        )}
       </div>
       <p className="solar-note">
         Approximate times for an unobstructed horizon. Daylight is not the
@@ -463,7 +469,9 @@ export function SolarPanel({
             aria-label={`Show sun path for ${season.label}, ${year}`}
           >
             <span>{season.label}</span>
-            <strong>{duration(season.day.daylightMinutes)}</strong>
+            {season.day.daylightMinutes != null && (
+              <strong>{duration(season.day.daylightMinutes)}</strong>
+            )}
             <small>{Math.round(season.day.maxElevation)}° highest sun</small>
           </button>
         ))}

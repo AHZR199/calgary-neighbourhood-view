@@ -24,59 +24,142 @@ export const WONDERLAND = {
     'https://jaumeplensa.com/works-and-projects/public-space/wonderland-2012',
   locationSourceUrl: 'https://tiles.openfreemap.org/planet',
   artist: 'Jaume Plensa',
+  fabricationSourceUrl: 'https://www.heavyexperience.com/wonderland',
   detail:
     'Independent, simplified map-scale depiction of Wonderland by Jaume Plensa (2012). The artist publishes dimensions of 12 × 7.8 × 10.7 m. This original generic head geometry is not a scan or a reproduction of the artist’s mesh; facial proportions, wire spacing, openings and orientation are approximate. Original model code does not establish clearance of rights in the artwork.',
 };
 
 type Profile = [height: number, halfWidth: number, front: number, back: number];
 type Segment = [Vector3, Vector3];
-const wireRadius = 0.032;
-//a deliberately simplified head, drawn from profiles rather than traced sculpture data.
+//the real rods are roughly 18–22 mm across; a small display allowance keeps them readable.
+const wireRadius = 0.014;
+const height = WONDERLAND.heightMetres;
+//an original portrait profile: a long face and tapered jaw, rather than a sphere with a nose.
+//dimensions and photographs guide the silhouette; these are not traced or scanned vertices.
 const profile: Profile[] = [
-  [0, 2.05, 2.3, -2.45],
-  [1.7, 2.08, 2.45, -2.6],
-  [2.7, 2.18, 2.8, -3.1],
-  [3.45, 2.5, 3.48, -3.75],
-  [4.35, 3.06, 3.65, -4.35],
-  [5.6, 3.61, 3.69, -4.73],
-  [7.1, 3.84, 3.6, -4.78],
-  [8.7, 3.73, 3.64, -4.49],
-  [10.1, 3.04, 3.16, -3.81],
-  [11.15, 1.99, 2.22, -2.62],
-  [11.8, 0.84, 0.98, -1.18],
-  [12, 0, 0, 0],
+  [0, 2.46, 1.56, -2.93],
+  [1.05, 2.32, 1.46, -2.79],
+  [1.75, 2.22, 1.65, -2.93],
+  [2.25, 2.22, 2.69, -3.16],
+  [2.85, 2.51, 3.28, -3.56],
+  [3.65, 2.89, 3.35, -4.09],
+  [4.65, 3.15, 3.27, -4.64],
+  [5.8, 3.42, 3.2, -5.03],
+  [7.1, 3.65, 3.2, -5.13],
+  [8.45, 3.87, 3.37, -4.97],
+  [9.55, 3.73, 3.43, -4.52],
+  [10.55, 3.2, 3.15, -3.82],
+  [11.3, 2.3, 2.51, -2.83],
+  [11.8, 1.16, 1.38, -1.49],
+  [12, 0, 0.1, 0.1],
 ];
 
+//monotone tangents avoid rings of sharp creases where the profile measurements meet.
+function slope(index: number, field: number) {
+  const previous = profile[Math.max(0, index - 1)];
+  const current = profile[index];
+  const next = profile[Math.min(profile.length - 1, index + 1)];
+  const before =
+    index > 0
+      ? (current[field] - previous[field]) / (current[0] - previous[0])
+      : (next[field] - current[field]) / (next[0] - current[0]);
+  const after =
+    index < profile.length - 1
+      ? (next[field] - current[field]) / (next[0] - current[0])
+      : before;
+  return before * after <= 0 ? 0 : (2 * before * after) / (before + after);
+}
+const tangents = profile.map((_, index) => [
+  0,
+  slope(index, 1),
+  slope(index, 2),
+  slope(index, 3),
+]);
 function dimensions(y: number) {
   const index = Math.max(0, profile.findIndex((row) => row[0] >= y) - 1);
   const a = profile[index];
   const b = profile[index + 1] ?? a;
-  const t = Math.min(1, Math.max(0, (y - a[0]) / (b[0] - a[0] || 1)));
-  const blend = (k: number) => a[k] + (b[k] - a[k]) * t;
-  return { width: blend(1), front: blend(2), back: blend(3) };
+  const step = b[0] - a[0] || 1;
+  const t = Math.min(1, Math.max(0, (y - a[0]) / step));
+  const t2 = t * t;
+  const t3 = t2 * t;
+  const blend = (field: number) =>
+    (2 * t3 - 3 * t2 + 1) * a[field] +
+    (t3 - 2 * t2 + t) * step * tangents[index][field] +
+    (-2 * t3 + 3 * t2) * b[field] +
+    (t3 - t2) * step * tangents[index + 1][field];
+  return { width: Math.max(0, blend(1)), front: blend(2), back: blend(3) };
 }
 
 function gaussian(value: number, centre: number, width: number) {
   return Math.exp(-(((value - centre) / width) ** 2));
 }
 
-function surface(y: number, theta: number) {
+function surface(baseY: number, theta: number) {
+  const cosine = Math.cos(theta);
+  const face = Math.max(0, cosine);
+  const unwarpedX = dimensions(baseY).width * Math.sin(theta);
+  const eyeContour =
+    gaussian(unwarpedX, -1.37, 0.8) + gaussian(unwarpedX, 1.37, 0.8);
+  //bend the grid around the features too; horizontal latitude rings erase a face head-on.
+  const y = Math.min(
+    height,
+    Math.max(
+      0,
+      baseY +
+        face ** 4 *
+          (0.34 * gaussian(unwarpedX, 0, 0.74) * gaussian(baseY, 5.8, 1) -
+            0.42 * eyeContour * gaussian(baseY, 7.14, 0.56) +
+            0.13 * eyeContour * gaussian(baseY, 7.92, 0.4) -
+            0.15 * gaussian(unwarpedX, 0, 1.3) * gaussian(baseY, 4.4, 0.55)),
+    ),
+  );
   const { width, front, back } = dimensions(y);
-  const x = width * Math.sin(theta);
-  const face = Math.max(0, Math.cos(theta));
-  let z = (front + back) / 2 + ((front - back) / 2) * Math.cos(theta);
-  //nose, brow, eye sockets, lips and chin stay part of the same hollow wire surface.
+  const centre = (front + back) / 2;
+  let x = width * Math.sin(theta);
+  x +=
+    face ** 4 *
+    Math.sign(x) *
+    (0.24 * gaussian(Math.abs(x), 1.37, 0.8) * gaussian(y, 7.15, 0.7) -
+      0.14 * gaussian(Math.abs(x), 0.65, 0.45) * gaussian(y, 5.85, 0.65));
+  //a flatter front keeps the cheeks and forehead from reading like a globe.
+  let z =
+    centre +
+    (cosine >= 0
+      ? (front - centre) * cosine ** 0.62
+      : (centre - back) * cosine);
+  const noseBridge = 0.42 * gaussian(x, 0, 0.43) * gaussian(y, 6.65, 1.08);
+  const noseTip = 0.62 * gaussian(x, 0, 0.61) * gaussian(y, 5.67, 0.39);
+  const noseWings =
+    0.13 *
+    (gaussian(x, -0.57, 0.25) + gaussian(x, 0.57, 0.25)) *
+    gaussian(y, 5.46, 0.24);
+  const eyes =
+    -0.27 *
+    (gaussian(x, -1.37, 0.74) + gaussian(x, 1.37, 0.74)) *
+    gaussian(y, 7.1, 0.38);
+  const cheek =
+    0.13 *
+    (gaussian(x, -1.8, 0.75) + gaussian(x, 1.8, 0.75)) *
+    gaussian(y, 5.95, 0.8);
+  const brow = 0.09 * gaussian(y, 7.61, 0.3);
+  const lips =
+    gaussian(x, 0, 1.18) *
+    (0.17 * gaussian(y, 4.55, 0.16) +
+      0.16 * gaussian(y, 4.21, 0.21) -
+      0.1 * gaussian(y, 4.39, 0.075));
+  const chin = 0.16 * gaussian(x, 0, 1.22) * gaussian(y, 2.95, 0.52);
   z +=
-    face ** 6 *
-    (1.67 * gaussian(x, 0, 0.61) * gaussian(y, 6.15, 1.02) +
-      0.23 * gaussian(y, 7.35, 0.25) -
-      0.36 *
-        (gaussian(x, -1.55, 0.6) + gaussian(x, 1.55, 0.6)) *
-        gaussian(y, 7.05, 0.42) +
-      0.39 * gaussian(x, 0, 1.35) * gaussian(y, 4.9, 0.28) -
-      0.16 * gaussian(x, 0, 1.1) * gaussian(y, 4.63, 0.14) +
-      0.28 * gaussian(y, 3.8, 0.45));
-  return new Vector3(x, wireRadius + (y / 12) * (12 - wireRadius * 2), z);
+    face ** 5 *
+    (noseBridge + noseTip + noseWings + eyes + cheek + brow + lips + chin);
+  //small integrated ears; the body remains one open wire surface.
+  const side = gaussian(Math.abs(cosine), 0, 0.2) * gaussian(y, 6.35, 0.85);
+  x += Math.sign(x) * 0.15 * side;
+  return new Vector3(
+    x,
+    wireRadius + (y / height) * (height - wireRadius * 2),
+    z,
+  );
 }
 
 function angularDistance(a: number, b: number) {
@@ -90,7 +173,7 @@ function isEntrance(y: number, theta: number) {
   );
   return (
     distance < 0.43 &&
-    y < 2.65 * Math.sqrt(Math.max(0, 1 - (distance / 0.43) ** 2))
+    y < 2.55 * Math.sqrt(Math.max(0, 1 - (distance / 0.43) ** 2))
   );
 }
 
@@ -99,9 +182,9 @@ export function createWonderlandModel(): Group {
   head.name = 'Wonderland';
   const segments: Segment[] = [];
   const arches: Segment[] = [];
-  const meridians = 64;
-  const heightSteps = 72;
-  const rings = 43;
+  const meridians = 104;
+  const heightSteps = 100;
+  const rings = 69;
   function segment(y0: number, t0: number, y1: number, t1: number) {
     if (
       isEntrance(y0, t0) ||
@@ -138,14 +221,34 @@ export function createWonderlandModel(): Group {
       const a = (i / 30) * Math.PI;
       const b = ((i + 1) / 30) * Math.PI;
       arches.push([
-        surface(2.65 * Math.sin(a), side + 0.43 * Math.cos(a)),
-        surface(2.65 * Math.sin(b), side + 0.43 * Math.cos(b)),
+        surface(2.55 * Math.sin(a), side + 0.43 * Math.cos(a)),
+        surface(2.55 * Math.sin(b), side + 0.43 * Math.cos(b)),
       ]);
     }
   }
 
+  //slight eyelid and lip contours make the quiet expression legible without solid inserts.
+  const expression: Segment[] = [];
+  for (const eye of [-1, 1]) {
+    for (let i = 0; i < 26; i++) {
+      const eyelidPoint = (t: number) => {
+        const x = eye * 1.37 + t * 0.85;
+        const y = 7.1 - 0.16 * (1 - t * t);
+        return surface(y, Math.asin(x / dimensions(y).width));
+      };
+      expression.push([eyelidPoint(i / 13 - 1), eyelidPoint((i + 1) / 13 - 1)]);
+    }
+  }
+  for (let i = 0; i < 30; i++) {
+    const mouthPoint = (t: number) => {
+      const y = 4.39 + 0.045 * (1 - t * t);
+      return surface(y, Math.asin((t * 1.15) / dimensions(y).width));
+    };
+    expression.push([mouthPoint(i / 15 - 1), mouthPoint((i + 1) / 15 - 1)]);
+  }
+
   //fit the original drawing to the artist's published envelope, without a scan.
-  const points = [...segments, ...arches].flat();
+  const points = [...segments, ...arches, ...expression].flat();
   const minX = Math.min(...points.map((p) => p.x));
   const maxX = Math.max(...points.map((p) => p.x));
   const minZ = Math.min(...points.map((p) => p.z));
@@ -157,7 +260,7 @@ export function createWonderlandModel(): Group {
     p.z = (p.z - (minZ + maxZ) / 2) * zScale;
   }
   const wire = new MeshStandardMaterial({
-    color: '#e4e5de',
+    color: '#eeeee7',
     metalness: 0.14,
     roughness: 0.7,
   });
@@ -179,7 +282,8 @@ export function createWonderlandModel(): Group {
     head.add(mesh);
   }
   add('open wire head contours', segments, wireRadius);
-  add('two open neck arches', arches, wireRadius * 1.1);
+  add('two open neck arches', arches, wireRadius * 1.45);
+  add('closed eyes and gentle mouth contours', expression, wireRadius * 1.2);
   //a westward map presentation; this is approximate, not surveyed orientation.
   head.rotation.y = -Math.PI / 2;
   head.userData = {
@@ -190,6 +294,8 @@ export function createWonderlandModel(): Group {
     approximateOrientation: true,
     simplifiedDepiction: true,
     hollow: true,
+    renderedWireDiameterMetres: wireRadius * 2,
+    photographicReference: WONDERLAND.fabricationSourceUrl,
   };
   head.updateMatrixWorld(true);
   return head;
