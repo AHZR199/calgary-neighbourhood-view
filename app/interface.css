@@ -89,7 +89,6 @@
   --chart-3: #5c809d;
   --chart-4: #879eaf;
   --chart-5: #d6e4ee;
-  --font-editorial: Georgia, 'Times New Roman', serif;
   --surface-shadow: 0 3px 16px #243c4e0f, 0 1px 3px #243c4e08;
 }
 html,
@@ -123,7 +122,7 @@ button:active {
   letter-spacing: 0.15em;
 }
 .brand-name {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-size: 22px;
   font-weight: 400;
   letter-spacing: -0.025em;
@@ -247,7 +246,7 @@ button:active {
   box-shadow: var(--surface-shadow);
 }
 .inspector h1 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: 36px;
   letter-spacing: -0.035em;
@@ -492,7 +491,7 @@ button:active {
   border-bottom: 1px solid #d6e2eb;
 }
 .map-layers-heading [data-slot='dialog-title'] {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-size: 28px;
   font-weight: 400;
   line-height: 1.2;
@@ -607,7 +606,7 @@ button:active {
   border-bottom: 1px solid var(--border);
 }
 .workspace-heading h1 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: 40px;
   letter-spacing: -0.03em;
@@ -688,7 +687,7 @@ button:active {
 }
 .saved-card-body h2 {
   color: #243c4e;
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-size: 25px;
   font-weight: 400;
 }
@@ -717,7 +716,7 @@ button:active {
   max-width: 540px;
 }
 .about-story h2 {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-size: 30px;
   font-weight: 400;
   margin-top: 0;
@@ -747,7 +746,7 @@ button:active {
 .comparison-dialog [data-slot='dialog-title'],
 .report-dialog [data-slot='dialog-title'],
 .ownership-dialog [data-slot='dialog-title'] {
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-weight: 400;
   letter-spacing: -0.025em;
   color: #243c4e;
@@ -1215,7 +1214,7 @@ button:active {
 }
 .landmark-card h1 {
   margin: 12px 0 6px;
-  font-family: var(--font-editorial);
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: 31px;
   color: #243c4e;
@@ -1282,6 +1281,11 @@ button:active {
   letter-spacing: -0.025em;
   color: #2c4556;
   white-space: nowrap;
+}
+
+.atlas-app .maplibregl-map,
+.atlas-app .maplibregl-popup {
+  font-family: var(--font-sans);
 }
 @media (max-width: 760px),
   (max-width: 960px) and (max-height: 500px) and (orientation: landscape) {

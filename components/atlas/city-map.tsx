@@ -307,6 +307,21 @@ export default function CityMap(props: Props) {
         );
         if (!response.ok) throw Error('Map unavailable');
         const style = (await response.json()) as ml.StyleSpecification;
+        const fontUrl = new URL(
+          '/fonts/lil-grotesk/LilGrotesk-Variable.woff2',
+          window.location.origin,
+        ).href;
+        const boldFontUrl = new URL(
+          '/fonts/lil-grotesk/LilGrotesk-Bold.woff2',
+          window.location.origin,
+        ).href;
+        // keep the provider keys so its glyphs still work if a local font fails
+        style['font-faces'] = {
+          ...style['font-faces'],
+          'Noto Sans Regular': fontUrl,
+          'Noto Sans Italic': fontUrl,
+          'Noto Sans Bold': boldFontUrl,
+        };
         style.layers = style.layers.map((l) => {
           if (l.type === 'background')
             l.paint = { ...l.paint, 'background-color': '#eaf0f4' };

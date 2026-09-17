@@ -24,6 +24,7 @@
   --control-size: 44px;
   --focus-color: #315d7a;
   --text-secondary: #53616d;
+  --font-sans: var(--font-lil-grotesk), Arial, sans-serif;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
@@ -56,8 +57,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --radius-lg: var(--radius);
-  --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: var(--font-lil-grotesk), Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -68,8 +68,7 @@ body {
   min-height: 100%;
   background: #edf3f7;
   color: #2a2f37;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
 }
@@ -4150,12 +4149,7 @@ p {
   font-size: 12px;
 }
 .atlas-map-popup {
-  font:
-    13px/1.5 -apple-system,
-    BlinkMacSystemFont,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font: 13px/1.5 var(--font-sans);
   color: #4c5563;
   padding: 7px;
 }

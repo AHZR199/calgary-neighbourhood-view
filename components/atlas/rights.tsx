@@ -6,9 +6,9 @@ export function RightsAndAttribution() {
         <h2>Licences & attribution</h2>
       </div>
       <p>
-        Calgary Neighbourhood View is an independent, noncommercial
-        project. Each source keeps its own terms; public access alone does not
-        mean unrestricted reuse.
+        Calgary Neighbourhood View is an independent, noncommercial project.
+        Each source keeps its own terms; public access alone does not mean
+        unrestricted reuse.
       </p>
       <div className="rights-grid">
         <article>
@@ -147,11 +147,11 @@ export function RightsAndAttribution() {
         <article>
           <h3>Calculations & linked material</h3>
           <p>
-            Neighbourhood View’s calculations use individually sourced
-            numeric facts and original formulas. Estimates are not official
-            valuations or tax bills. Current CPS workbook figures and
-            unconfirmed City profile-PDF extracts are linked at their original
-            source rather than redistributed.
+            Neighbourhood View’s calculations use individually sourced numeric
+            facts and original formulas. Estimates are not official valuations
+            or tax bills. Current CPS workbook figures and unconfirmed City
+            profile-PDF extracts are linked at their original source rather than
+            redistributed.
           </p>
           <p>
             Walkability and transit figures are original proximity estimates. No
@@ -167,6 +167,14 @@ export function RightsAndAttribution() {
           </a>
         </article>
       </div>
+      <p>
+        Interface type: Lil Grotesk by Bastien Sozeau / NoirBlancRouge,
+        self-hosted under the{' '}
+        <a href="/fonts/lil-grotesk/OFL.txt" target="_blank" rel="noreferrer">
+          SIL Open Font License 1.1
+        </a>
+        .
+      </p>
       <div className="rights-downloads">
         <a href="/data/rights-register.json" download>
           Source reuse register <ArrowUpRight size={14} />

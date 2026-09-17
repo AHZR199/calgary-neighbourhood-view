@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import './globals.css';
 import './interface.css';
 import '../components/atlas/motion.css';
 import './mobile.css';
+
+const lilGrotesk = localFont({
+  src: '../public/fonts/lil-grotesk/LilGrotesk-Variable.woff2',
+  variable: '--font-lil-grotesk',
+  weight: '100 900',
+  style: 'normal',
+  display: 'swap',
+});
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -23,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={lilGrotesk.variable}>
       <body>{children}</body>
     </html>
   );

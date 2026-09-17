@@ -193,7 +193,8 @@ export default function PrivacyPage() {
                 supports delivery, troubleshooting and protection against abuse.
               </p>
               <p>
-                Your browser requests map tiles and map lettering directly from{' '}
+                Your browser requests map tiles and, if needed, fallback map
+                lettering directly from{' '}
                 <a href="https://openfreemap.org/privacy/">OpenFreeMap</a>.
                 Selecting City of Calgary aerial imagery also sends requests to{' '}
                 <a href="https://www.esri.com/en-us/privacy/privacy-statements/privacy-statement">
@@ -202,7 +203,8 @@ export default function PrivacyPage() {
                 . Those providers receive your IP address and the requested map
                 area, plus ordinary connection information. This does not mean
                 the app has obtained your device’s precise location. Interface
-                fonts do not require an external font service.
+                fonts are served by this website and do not require an external
+                font service.
               </p>
               <p>
                 Privacy email is handled through{' '}
