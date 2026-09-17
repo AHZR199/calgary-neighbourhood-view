@@ -44,6 +44,7 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 500;
+  min-width: 0;
 }
 .solar-date-controls input,
 .solar-orientation select {
@@ -62,6 +63,7 @@
   display: flex;
   flex: 1;
   gap: 4px;
+  min-width: 0;
 }
 .solar-presets button {
   flex: 1;
@@ -72,6 +74,7 @@
   background: #f6f9fb;
   color: #476174;
   font-size: 12px;
+  min-width: 0;
 }
 .solar-presets button[aria-pressed='true'] {
   border-color: #90b1c9;
@@ -308,11 +311,28 @@
   outline: 2px solid #315d7a;
   outline-offset: 3px;
 }
+@media (max-width: 760px) {
+  .solar-date-controls input,
+  .solar-orientation select {
+    font-size: 16px;
+  }
+  .solar-date-controls label {
+    flex: 1 1 145px;
+  }
+  .solar-presets {
+    flex-basis: 200px;
+  }
+  .solar-heading,
+  .solar-time-label {
+    flex-wrap: wrap;
+  }
+}
 @media (max-width: 380px) {
   .solar-date-controls label {
     width: 100%;
   }
   .solar-position {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 5px;
   }
   .solar-reading > strong {

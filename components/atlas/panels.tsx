@@ -2,10 +2,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { LOCAL_DATA_CHANGED } from '@/lib/atlas/privacy-storage';
-import { ChartAxes, chartScale } from './charts';
+import { ChartAxes, ChartData, chartScale } from './charts';
 import { MobilityContext } from './mobility';
 import { SchoolsContext } from './schools';
 import { AreaContext } from './overview-context';
+import type { NearbySection } from './nearby';
 import { RightsAndAttribution } from './rights';
 import { PropertyFacts } from './property-facts';
 import { RadonPanel } from './radon';
@@ -222,6 +223,31 @@ export function CrimeChart({
           2019
         </span>
       </div>
+      <ChartData
+        caption={`${crime.name}: published monthly crime counts, 2018 and 2019`}
+        columns={['Month', '2018', '2019']}
+        rows={[
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ].map((label, index) => ({
+          label,
+          values: [
+            b.find((month) => month.month === index + 1)?.publishedCount ?? '—',
+            a.find((month) => month.month === index + 1)?.publishedCount ?? '—',
+          ],
+        }))}
+        note="Published counts for the selected crime categories. A dash means no published value; it is not zero."
+      />
     </div>
   );
 }
@@ -240,7 +266,7 @@ export function Overview({
   community: Community;
   property: Property | null;
   onLayer: (layer: Layer) => void;
-  onNearby: (section: 'schools' | 'gettingAround') => void;
+  onNearby: (section: NearbySection) => void;
   onSun: () => void;
   onProperty: (p: Property) => void;
   onSource: (id: string) => void;
@@ -461,7 +487,7 @@ export function Overview({
       <AreaContext
         community={community}
         property={property}
-        onLayer={onLayer}
+        onNearby={onNearby}
       />
       <CensusContext code={code} />
       <section className="overview-topic">
@@ -522,7 +548,12 @@ export function Overview({
           ))}
         </section>
       )}
-      <BuyerChecklist placeId={property?.rollNumber ?? code} />
+      <details className="reading-detail">
+        <summary>
+          Buying checklist · saved on this device <ChevronRight size={15} />
+        </summary>
+        <BuyerChecklist placeId={property?.rollNumber ?? code} />
+      </details>
       <SourceLink
         id="assessments"
         onSource={onSource}
@@ -953,6 +984,27 @@ export function WaterPanel({
         (a, b) => b[1] - a[1],
       )
     : [];
+  const materialColors = [
+    '#b98260',
+    '#5b9298',
+    '#8b91ac',
+    '#a6b69c',
+    '#c6b69f',
+  ];
+  const materialSummary = materials.slice(0, 5).map(([name, count], index) => ({
+    name: readableMaterial(name),
+    count,
+    color: materialColors[index],
+  }));
+  const otherMaterialCount = materials
+    .slice(5)
+    .reduce((sum, [, count]) => sum + count, 0);
+  if (otherMaterialCount > 0)
+    materialSummary.push({
+      name: 'Other recorded materials',
+      count: otherMaterialCount,
+      color: '#c7cfd5',
+    });
   return (
     <div className="panel-flow">
       <div className="water-intro">
@@ -1019,39 +1071,22 @@ export function WaterPanel({
               <h3>Public main materials</h3>
               <span>{number(water['water-mains'].count)} segments</span>
             </div>
-            <div className="material-stack">
-              {materials.map(([name, count], i) => (
+            <div className="material-stack" aria-hidden="true">
+              {materialSummary.map(({ name, count, color }) => (
                 <div
                   key={name}
-                  title={`${readableMaterial(name)}: ${count}`}
                   style={{
                     flex: count,
-                    background: [
-                      '#b98260',
-                      '#5b9298',
-                      '#8b91ac',
-                      '#a6b69c',
-                      '#c6b69f',
-                    ][i % 5],
+                    background: color,
                   }}
                 />
               ))}
             </div>
-            {materials.slice(0, 5).map(([name, count], i) => (
+            {materialSummary.map(({ name, count, color }) => (
               <div className="material-row" key={name}>
                 <span>
-                  <i
-                    style={{
-                      background: [
-                        '#b98260',
-                        '#5b9298',
-                        '#8b91ac',
-                        '#a6b69c',
-                        '#c6b69f',
-                      ][i % 5],
-                    }}
-                  />
-                  {readableMaterial(name)}
+                  <i style={{ background: color }} />
+                  {name}
                 </span>
                 <strong>
                   {Math.round((count / water['water-mains'].count) * 100)}%
@@ -1059,6 +1094,22 @@ export function WaterPanel({
                 </strong>
               </div>
             ))}
+            {otherMaterialCount > 0 && (
+              <details className="reading-detail">
+                <summary>
+                  All public main materials <ChevronRight size={15} />
+                </summary>
+                {materials.map(([name, count]) => (
+                  <div className="material-row" key={name}>
+                    <span>{readableMaterial(name)}</span>
+                    <strong>
+                      {number(count)}
+                      <small>segments</small>
+                    </strong>
+                  </div>
+                ))}
+              </details>
+            )}
           </section>
           <div className="history-callout">
             <CalendarDays size={20} />
@@ -1118,7 +1169,6 @@ export function AirPanel({
     .join(' ');
   return (
     <div className="panel-flow">
-      <RadonPanel onSource={onSource} />
       <div className="air-hero">
         <span className="metric-label">Calgary air quality health index</span>
         <div className="air-orbit">
@@ -1234,6 +1284,22 @@ export function AirPanel({
               )}
             </span>
           </div>
+          <ChartData
+            caption="Calgary AQHI: saved recent city observations"
+            columns={['Observed · Calgary time', 'AQHI']}
+            rows={observations.map((observation) => ({
+              label: new Date(observation.observedAt).toLocaleString('en-CA', {
+                timeZone: 'America/Edmonton',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZoneName: 'short',
+              }),
+              values: [observation.aqhi],
+            }))}
+          />
         </section>
       )}
       {air.stations.length > 0 && (
@@ -1267,6 +1333,7 @@ export function AirPanel({
       )}
       <ParticulateHistory />
       <SourceLink id="air" onSource={onSource} />
+      <RadonPanel onSource={onSource} />
     </div>
   );
 }
@@ -1588,9 +1655,11 @@ export function BuyerChecklist({ placeId }: { placeId: string }) {
 export function SourcesView({
   focus,
   onBack,
+  backLabel = 'Return to map',
 }: {
   focus: string;
   onBack: () => void;
+  backLabel?: string;
 }) {
   const [category, setCategory] = useState('All');
   useEffect(() => {
@@ -1618,7 +1687,7 @@ export function SourcesView({
           <p>Publishers, dates, geographic coverage and reuse terms.</p>
         </div>
         <button className="secondary-button" onClick={onBack}>
-          Return to map <ArrowRight size={16} />
+          {backLabel} <ArrowRight size={16} />
         </button>
       </div>
       <div className="sources-intro">

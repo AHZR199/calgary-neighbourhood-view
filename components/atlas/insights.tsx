@@ -1,5 +1,5 @@
 'use client';
-import { ChartAxes, chartScale } from './charts';
+import { ChartAxes, ChartData, chartScale } from './charts';
 import { useEffect, useState } from 'react';
 import {
   ArrowUpRight,
@@ -89,92 +89,112 @@ export function CensusContext({ code }: { code: string }) {
         <h3>People & households</h3>
         <span className="data-badge">2021 census</span>
       </div>
-      {metrics.length > 0 && (
-        <div className="census-grid">
-          {metrics.map((metric) => (
-            <div key={metric.label}>
-              <strong>
-                {metric.value == null ? null : number(metric.value)}
-                {metric.unit && <small>{metric.unit}</small>}
-              </strong>
-              <span>{metric.label}</span>
-            </div>
-          ))}
-        </div>
+      {(row.populationPrivateHouseholds != null ||
+        row.households.averageSize != null) && (
+        <p className="quiet-note">
+          {[
+            row.populationPrivateHouseholds != null
+              ? `${number(row.populationPrivateHouseholds)} residents in private households`
+              : null,
+            row.households.averageSize != null
+              ? `${number(row.households.averageSize)} people per household`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
       )}
-      {(ages.length > 0 || sizes.length > 0) && (
-        <details className="reading-detail">
-          <summary>
-            Age & household composition <ChevronRight size={14} />
-          </summary>
-          {ages.length > 0 && (
-            <>
-              <h4 className="distribution-label">Age of residents</h4>
-              <div
-                className="percent-axis"
-                aria-label="Percentage scale from 0 to 100"
-              >
-                <span>0%</span>
-                <span>50%</span>
-                <span>100%</span>
+      <details className="reading-detail">
+        <summary>
+          Household figures, ages & sources <ChevronRight size={14} />
+        </summary>
+        {metrics.length > 0 && (
+          <div className="census-grid">
+            {metrics.map((metric) => (
+              <div key={metric.label}>
+                <strong>
+                  {metric.value == null ? null : number(metric.value)}
+                  {metric.unit && <small>{metric.unit}</small>}
+                </strong>
+                <span>{metric.label}</span>
               </div>
-              <div className="age-distribution">
-                {ages.map((item) => (
-                  <div key={item.label}>
-                    <span>{item.label} years</span>
-                    <div>
-                      <span style={{ width: `${item.percent}%` }} />
+            ))}
+          </div>
+        )}
+        {(ages.length > 0 || sizes.length > 0) && (
+          <details className="reading-detail">
+            <summary>
+              Age & household composition <ChevronRight size={14} />
+            </summary>
+            {ages.length > 0 && (
+              <>
+                <h4 className="distribution-label">Age of residents</h4>
+                <div
+                  className="percent-axis"
+                  aria-label="Percentage scale from 0 to 100"
+                >
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
+                <div className="age-distribution">
+                  {ages.map((item) => (
+                    <div key={item.label}>
+                      <span>{item.label} years</span>
+                      <div>
+                        <span style={{ width: `${item.percent}%` }} />
+                      </div>
+                      <strong>{item.percent}%</strong>
                     </div>
-                    <strong>{item.percent}%</strong>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-          {sizes.length > 0 && (
-            <>
-              <h4 className="distribution-label">People per household</h4>
-              <div className="housing-mix">
-                {sizes.map((item) => (
-                  <div key={item.label}>
-                    <span>{item.label}</span>
-                    <strong>{item.percent}%</strong>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </details>
-      )}
-      <p className="quiet-note">
-        Historical data on 2022 community geography; excludes collective
-        dwellings. Published rounding is preserved. This does not describe
-        individual residents.
-      </p>
-      <a
-        className="source-link"
-        href="https://data.calgary.ca/d/f9wk-wej9"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Open population & age data <ArrowUpRight size={13} />
-      </a>
-      <a
-        className="source-link"
-        href="https://data.calgary.ca/d/msjx-5ygv"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Open household-size data <ArrowUpRight size={13} />
-      </a>
-      <a
-        className="source-link"
-        href="https://www.calgary.ca/communities/profiles.html"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Income, tenure & full City profiles <ArrowUpRight size={13} />
-      </a>
+                  ))}
+                </div>
+              </>
+            )}
+            {sizes.length > 0 && (
+              <>
+                <h4 className="distribution-label">People per household</h4>
+                <div className="housing-mix">
+                  {sizes.map((item) => (
+                    <div key={item.label}>
+                      <span>{item.label}</span>
+                      <strong>{item.percent}%</strong>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </details>
+        )}
+        <p className="quiet-note">
+          Historical data on 2022 community geography; excludes collective
+          dwellings. Published rounding is preserved. This does not describe
+          individual residents.
+        </p>
+        <a
+          className="source-link"
+          href="https://data.calgary.ca/d/f9wk-wej9"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open population & age data <ArrowUpRight size={13} />
+        </a>
+        <a
+          className="source-link"
+          href="https://data.calgary.ca/d/msjx-5ygv"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open household-size data <ArrowUpRight size={13} />
+        </a>
+        <a
+          className="source-link"
+          href="https://www.calgary.ca/communities/profiles.html"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Income, tenure & full City profiles <ArrowUpRight size={13} />
+        </a>
+      </details>
     </section>
   );
 }
@@ -833,6 +853,15 @@ export function ParticulateHistory() {
           Sep 12
         </text>
       </svg>
+      <ChartData
+        caption={`${item.name}: daily fine particulate matter means`}
+        columns={['Date', 'PM₂.₅ · µg/m³']}
+        rows={item.daily.map((day) => ({
+          label: day.date,
+          values: [day.mean ?? 'Incomplete day'],
+        }))}
+        note="Daily means require 24 valid hours. Incomplete days have no plotted mean. Dates follow the source without an assumed timezone."
+      />
       <p className="quiet-note">
         31-day station record, provisional and not fully quality-controlled.
         Daily means require 24 valid hours; incomplete days stay blank. Source

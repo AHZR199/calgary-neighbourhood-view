@@ -149,6 +149,7 @@ export default function Home() {
     [toast, setToast] = useState(''),
     [refreshing, setRefreshing] = useState(false),
     [refreshError, setRefreshError] = useState('');
+  const [sourceReturnView, setSourceReturnView] = useState<View>('explore');
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const saveRequested = useRef(false);
   const panelScroll = useRef<HTMLDivElement>(null),
@@ -332,7 +333,17 @@ export default function Home() {
         event.preventDefault();
         setSearchOpen((x) => !x);
       }
-      if (event.key === 'Escape') setExpanded(false);
+      if (
+        event.key === 'Escape' &&
+        !document.querySelector('[role="dialog"]')
+      ) {
+        setExpanded(false);
+        requestAnimationFrame(() => {
+          const summary = document.getElementById('mobile-place-summary');
+          if (summary?.getClientRects().length)
+            summary.focus({ preventScroll: true });
+        });
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -394,6 +405,7 @@ export default function Home() {
   function chooseCommunity(next: string) {
     setLandmarkView(null);
     setMapFocused(false);
+    setExpanded(false);
     setCode(next);
     setProperty(null);
     setView('explore');
@@ -403,6 +415,7 @@ export default function Home() {
   function chooseProperty(p: Property) {
     setLandmarkView(null);
     setMapFocused(false);
+    setExpanded(false);
     setData((d) =>
       d && !d.properties.some((x) => x.rollNumber === p.rollNumber)
         ? { ...d, properties: [...d.properties, p] }
@@ -464,8 +477,24 @@ export default function Home() {
     setView('explore');
   }
   function showSource(id: string) {
+    if (view !== 'sources') setSourceReturnView(view);
     setSourceFocus(id);
     setView('sources');
+  }
+  function openDetails() {
+    setMapFocused(false);
+    setExpanded(true);
+    requestAnimationFrame(() =>
+      document.getElementById('place-details')?.focus({ preventScroll: true }),
+    );
+  }
+  function closeDetails() {
+    setExpanded(false);
+    requestAnimationFrame(() =>
+      document
+        .getElementById('mobile-place-summary')
+        ?.focus({ preventScroll: true }),
+    );
   }
   function toggleSaved(place = currentPlace) {
     saveRequested.current = true;
@@ -799,7 +828,9 @@ export default function Home() {
     : null;
 
   return (
-    <main className={`atlas-app ${view !== 'explore' ? 'workspace-open' : ''}`}>
+    <main
+      className={`atlas-app ${view !== 'explore' ? 'workspace-open' : ''} ${expanded ? 'details-expanded' : ''}`}
+    >
       <a
         className="skip-link"
         href={view === 'explore' ? '#place-details' : '#workspace-content'}
@@ -860,7 +891,10 @@ export default function Home() {
           aria-label="Main views"
           value={view}
           onValueChange={(v) => {
+            if (v === 'sources' && view !== 'sources')
+              setSourceReturnView(view);
             setView(v as View);
+            if (v === 'explore') setExpanded(false);
             if (v === 'finder') setFinderVisited(true);
             if (v === 'sources') setSourceFocus('');
           }}
@@ -945,7 +979,10 @@ export default function Home() {
               setMapFocused(true);
               setAction({ type: 'greenLine', id: Date.now() });
             }}
-            onLayerChange={chooseLayer}
+            onLayerChange={(next) => {
+              chooseLayer(next);
+              openDetails();
+            }}
             onOverlayChange={(value) => {
               setOverlay(value);
               setNearbySection(
@@ -964,6 +1001,7 @@ export default function Home() {
                     : { ...current, train: true },
                 );
               chooseLayer('nearby');
+              setExpanded(false);
             }}
           />
           <div className="map-tools glass">
@@ -1035,6 +1073,33 @@ export default function Home() {
               className={`inspector ${expanded ? 'expanded' : ''} ${mapFocused ? 'map-focused' : ''}`}
               aria-label="Place details"
             >
+              <button
+                id="mobile-place-summary"
+                className="mobile-place-summary"
+                type="button"
+                aria-label={`View details for ${name}`}
+                aria-controls="place-details-body"
+                aria-expanded={expanded}
+                onClick={openDetails}
+              >
+                <span>
+                  <small>
+                    {property
+                      ? communityLabel(community)
+                      : 'Selected neighbourhood'}
+                  </small>
+                  <strong>{name}</strong>
+                </span>
+                <span className="mobile-summary-action">
+                  Details <ChevronUp size={18} />
+                </span>
+              </button>
+              <div className="mobile-panel-bar">
+                <button type="button" onClick={closeDetails}>
+                  <ChevronDown size={18} /> Back to map
+                </button>
+                <span>Place details</span>
+              </div>
               <button
                 className="drawer-handle"
                 onClick={() => setExpanded((x) => !x)}
@@ -1114,15 +1179,7 @@ export default function Home() {
                   type="button"
                   aria-controls="place-details-body"
                   aria-expanded={false}
-                  onClick={() => {
-                    setMapFocused(false);
-                    setExpanded(false);
-                    requestAnimationFrame(() =>
-                      document
-                        .getElementById('place-details')
-                        ?.focus({ preventScroll: true }),
-                    );
-                  }}
+                  onClick={openDetails}
                 >
                   Show details <ChevronUp size={16} aria-hidden="true" />
                 </button>
@@ -1136,6 +1193,21 @@ export default function Home() {
                       : 'planning sector'}
                   </small>
                 </p>
+                <label className="mobile-section-picker">
+                  <span className="sr-only">Details section</span>
+                  <select
+                    value={layer}
+                    onChange={(event) =>
+                      chooseLayer(event.target.value as Layer)
+                    }
+                  >
+                    {LAYERS.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
               <div
                 id="place-details-body"
@@ -1177,7 +1249,10 @@ export default function Home() {
                           setOverlay('none');
                           chooseLayer('nearby');
                         }}
-                        onProperty={chooseProperty}
+                        onProperty={(record) => {
+                          chooseProperty(record);
+                          openDetails();
+                        }}
                         onSource={showSource}
                       />
                     )}{' '}
@@ -1187,7 +1262,10 @@ export default function Home() {
                         data={data}
                         community={community}
                         property={property}
-                        onProperty={chooseProperty}
+                        onProperty={(record) => {
+                          chooseProperty(record);
+                          openDetails();
+                        }}
                         onSource={showSource}
                         onSearch={() => setSearchOpen(true)}
                       />
@@ -1223,7 +1301,10 @@ export default function Home() {
                         data={data}
                         community={community}
                         property={property}
-                        onProperty={chooseProperty}
+                        onProperty={(record) => {
+                          chooseProperty(record);
+                          openDetails();
+                        }}
                         onSource={showSource}
                       />
                     )}{' '}
@@ -1407,12 +1488,22 @@ export default function Home() {
         </div>
       )}
       {view === 'sources' && (
-        <SourcesView focus={sourceFocus} onBack={() => setView('explore')} />
+        <SourcesView
+          focus={sourceFocus}
+          backLabel={
+            sourceReturnView === 'finder'
+              ? 'Back to neighbourhood finder'
+              : sourceReturnView === 'explore'
+                ? 'Back to exploring'
+                : `Back to ${sourceReturnView}`
+          }
+          onBack={() => setView(sourceReturnView)}
+        />
       )}
       {view === 'about' && (
         <AboutView
           onBack={() => setView('explore')}
-          onSources={() => setView('sources')}
+          onSources={() => showSource('')}
           onClearLocalData={clearLocalData}
         />
       )}
@@ -1678,8 +1769,16 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="comparison-scroll">
+            <div
+              className="comparison-scroll"
+              tabIndex={0}
+              role="region"
+              aria-label="Comparison table. Scroll horizontally to see every place."
+            >
               <table className="comparison-table">
+                <caption className="comparison-scroll-hint">
+                  Swipe to compare all places →
+                </caption>
                 <thead>
                   <tr>
                     <th>Public records</th>

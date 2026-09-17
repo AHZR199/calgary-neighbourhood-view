@@ -248,6 +248,22 @@ function SchoolSummary({
     : `inside ${communityLabel(community)}`;
   const count = (level: SchoolLevel) =>
     matches.filter((school) => school.levels.includes(level)).length;
+  const nearestByGrade = gradeFilters
+    .filter((grade) => ['elementary', 'juniorHigh', 'high'].includes(grade.id))
+    .map((grade) => ({
+      grade,
+      school: matches.find((school) =>
+        school.levels.includes(grade.id as SchoolLevel),
+      ),
+    }))
+    .filter(
+      (
+        item,
+      ): item is {
+        grade: (typeof gradeFilters)[number];
+        school: SchoolMatch;
+      } => Boolean(item.school),
+    );
   return (
     <>
       <p className="schools-intro">
@@ -255,33 +271,19 @@ function SchoolSummary({
         {label}. Distances are straight-line from{' '}
         {originLabel(community, property)}.
       </p>
-      <div
-        className="schools-level-summary"
-        aria-label={`Published grade groups ${label}`}
-      >
-        <div>
-          <strong>{count('elementary')}</strong>
-          <span>Elementary</span>
-        </div>
-        <div>
-          <strong>{count('juniorHigh')}</strong>
-          <span>Junior high</span>
-        </div>
-        <div>
-          <strong>{count('high')}</strong>
-          <span>High school</span>
-        </div>
-      </div>
-      {matches.length > 0 ? (
+      {nearestByGrade.length > 0 ? (
         <ul
           className="schools-summary-list"
-          aria-label="Closest mapped schools in this selection"
+          aria-label="Nearest mapped school for each grade group in this selection"
         >
-          {matches.slice(0, 3).map((school) => (
-            <li key={school.id}>
+          {nearestByGrade.map(({ grade, school }) => (
+            <li key={grade.id}>
               <div>
+                <small>
+                  {grade.label} · {count(grade.id as SchoolLevel)} in this
+                  selection
+                </small>
                 <strong>{school.name}</strong>
-                {school.grades && <small>{school.grades}</small>}
               </div>
               <span>{distanceLabel(school.distanceM)}</span>
             </li>
@@ -289,15 +291,14 @@ function SchoolSummary({
         </ul>
       ) : (
         <p className="schools-status">
-          No school points are mapped in this selection. The nearby search also
-          includes schools across neighbourhood boundaries.
+          {matches.length
+            ? 'These records do not include the selected grade groups. Browse the full school directory for published levels and nearby options.'
+            : 'No school points are mapped in this selection. The nearby search also includes schools across neighbourhood boundaries.'}
         </p>
       )}
       <p className="schools-note">
-        A school may cover more than one grade group.
-        {count('unknown') > 0
-          ? ` ${count('unknown')} ${count('unknown') === 1 ? 'record has no reported level' : 'records have no reported level'}.`
-          : ''}
+        Nearby does not mean designated. Confirm grade, program and eligibility
+        with the school board. A school can serve more than one grade group.
       </p>
       {onMore && (
         <button className="schools-more" type="button" onClick={onMore}>
@@ -309,7 +310,21 @@ function SchoolSummary({
           <ChevronRight size={15} aria-hidden="true" />
         </button>
       )}
-      <SchoolSources data={data} onSource={onSource} />
+      <details className="reading-detail">
+        <summary>
+          School records & sources <ChevronRight size={14} />
+        </summary>
+        {count('unknown') > 0 && (
+          <p className="schools-note">
+            {count('unknown')}{' '}
+            {count('unknown') === 1
+              ? 'record has no reported level'
+              : 'records have no reported level'}
+            .
+          </p>
+        )}
+        <SchoolSources data={data} onSource={onSource} full />
+      </details>
     </>
   );
 }

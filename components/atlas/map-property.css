@@ -25,6 +25,7 @@
 .map-property-options button span {
   display: block;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 .map-property-options button small {
   display: block;
@@ -89,6 +90,22 @@
   z-index: 4;
 }
 @media (max-width: 760px) {
+  .map-property-dialog[data-slot='dialog-content'] {
+    width: calc(100% - 24px);
+    max-width: 480px;
+    max-height: calc(100dvh - 24px);
+    padding: 20px 16px;
+    gap: 12px;
+    overscroll-behavior: contain;
+    scroll-padding-block: 16px;
+  }
+  .map-property-dialog h2 {
+    padding-right: 38px;
+    font-size: 18px;
+  }
+  .map-property-options button {
+    padding: 14px 6px;
+  }
   .maplibregl-ctrl-attrib {
     max-width: calc(100vw - 24px);
   }

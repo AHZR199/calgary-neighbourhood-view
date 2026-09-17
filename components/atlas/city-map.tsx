@@ -79,12 +79,27 @@ function cameraPadding(map: ml.Map, desired: Required<ml.PaddingOptions>) {
   };
 }
 
+function compactMap(map: ml.Map) {
+  const { clientWidth: width, clientHeight: height } = map.getContainer();
+  return width <= 760 || (width <= 960 && height <= 500);
+}
+
+function mobileMapPadding(map: ml.Map, landmark = false) {
+  const short = map.getContainer().clientHeight <= 500;
+  return {
+    top: short ? 110 : 174,
+    bottom: short ? 120 : landmark ? 265 : 205,
+    left: 24,
+    right: short ? 90 : 62,
+  };
+}
+
 function focusSelectedPlace(
   map: ml.Map,
   selection: Pick<Props, 'community' | 'property' | 'is3d'>,
   resetOrientation = false,
 ) {
-  const mobile = map.getContainer().clientWidth < 760;
+  const mobile = compactMap(map);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const orientation = resetOrientation
     ? { bearing: -24, pitch: selection.is3d ? 57 : 0 }
@@ -97,7 +112,7 @@ function focusSelectedPlace(
       padding: cameraPadding(
         map,
         mobile
-          ? { top: 150, bottom: 320, left: 20, right: 20 }
+          ? mobileMapPadding(map)
           : { top: 90, bottom: 90, left: 40, right: 420 },
       ),
       duration: reduced ? 0 : 1400,
@@ -108,7 +123,7 @@ function focusSelectedPlace(
       padding: cameraPadding(
         map,
         mobile
-          ? { top: 160, bottom: 315, left: 50, right: 40 }
+          ? mobileMapPadding(map)
           : { top: 140, bottom: 130, left: 110, right: 460 },
       ),
       maxZoom: 14.7,
@@ -127,7 +142,7 @@ function focusLandmark(
   },
   animate = true,
 ) {
-  const mobile = map.getContainer().clientWidth < 760;
+  const mobile = compactMap(map);
   const tall =
     key === 'tower' || key === 'bow' || key === 'sky' || key === 'olympic';
   map.easeTo({
@@ -138,7 +153,7 @@ function focusLandmark(
     padding: cameraPadding(
       map,
       mobile
-        ? { top: 230, bottom: 260, left: 25, right: 25 }
+        ? mobileMapPadding(map, true)
         : { top: tall ? 340 : 180, bottom: 40, left: 40, right: 430 },
     ),
     duration:
@@ -148,11 +163,7 @@ function focusLandmark(
   });
 }
 
-function fitGreenLineRoute(
-  map: ml.Map,
-  data: FeatureCollection,
-  mapFocused: boolean,
-) {
+function fitGreenLineRoute(map: ml.Map, data: FeatureCollection) {
   const bounds = new ml.LngLatBounds();
   for (const feature of data.features) {
     const geometry = feature.geometry;
@@ -168,19 +179,14 @@ function fitGreenLineRoute(
     }
   }
   if (bounds.isEmpty()) return;
-  const desktop = map.getContainer().clientWidth > 760;
+  const desktop = !compactMap(map);
   map.fitBounds(bounds, {
-    padding: {
-      top: 100,
-      bottom: desktop
-        ? 140
-        : Math.min(
-            mapFocused ? 330 : 450,
-            Math.max(0, map.getContainer().clientHeight - 220),
-          ),
-      left: 35,
-      right: desktop ? 410 : 35,
-    },
+    padding: cameraPadding(
+      map,
+      desktop
+        ? { top: 100, bottom: 140, left: 35, right: 410 }
+        : mobileMapPadding(map),
+    ),
     bearing: 0,
     maxZoom: 13,
     duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900,
@@ -1160,21 +1166,27 @@ export default function CityMap(props: Props) {
           ])
             m.moveLayer(id, 'atlas-buildings');
           let previousWidth = m.getContainer().clientWidth;
+          let previousCompact = compactMap(m);
           const observer = new ResizeObserver(() => {
             if (!m || disposed) return;
             m.resize();
             const width = m.getContainer().clientWidth;
-            const switchedLayout = width < 760 !== previousWidth < 760;
+            const switchedLayout =
+              compactMap(m) !== previousCompact ||
+              Math.abs(width - previousWidth) > 120;
             previousWidth = width;
+            previousCompact = compactMap(m);
             const key = current.current.landmark;
             if (switchedLayout && key) {
               void import('./calgary-landmarks').then(({ LANDMARKS }) => {
                 if (!m || disposed || current.current.landmark !== key) return;
                 focusLandmark(m, key, LANDMARKS[key], false);
               });
+            } else if (switchedLayout && current.current.active) {
+              focusSelectedPlace(m, current.current);
             }
           });
-          observer.observe(container.current!);
+          observer.observe(m.getContainer());
           m.once('remove', () => observer.disconnect());
           setReady(true);
           setFailed(false);
@@ -1533,7 +1545,7 @@ export default function CityMap(props: Props) {
           current.current.action.type === 'greenLine' &&
           current.current.transitLayers.greenLine
         )
-          fitGreenLineRoute(m, data, current.current.mapFocused);
+          fitGreenLineRoute(m, data);
       }),
     )
       .then(() => {
@@ -1567,7 +1579,7 @@ export default function CityMap(props: Props) {
       current.current.transitLayers.greenLine
     ) {
       const data = transitCache.current.get('green-line');
-      if (data) fitGreenLineRoute(m, data, current.current.mapFocused);
+      if (data) fitGreenLineRoute(m, data);
     }
     if (type === 'home')
       m.flyTo({

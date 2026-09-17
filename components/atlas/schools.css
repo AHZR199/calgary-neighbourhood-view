@@ -361,9 +361,24 @@
 .schools-section :is(button, p, a, h3, h4, span) {
   white-space: normal;
 }
+.schools-summary-list strong,
+.school-links a,
+.schools-source-links a {
+  overflow-wrap: anywhere;
+}
 .schools-section :is(button, a, input, select):focus-visible {
   outline: 2px solid #315d7a;
   outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .schools-section select,
+  .schools-section input[type='search'] {
+    font-size: 16px;
+  }
+  .schools-heading {
+    flex-wrap: wrap;
+    gap: 5px 12px;
+  }
 }
 @media (max-width: 380px) {
   .school-card-top {
@@ -377,6 +392,14 @@
   }
   .schools-scope-options button {
     flex-basis: calc(50% - 6px);
+  }
+  .schools-grade-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .schools-grade-filter {
+    min-width: 0;
+    justify-content: space-between;
   }
 }
 @media print {

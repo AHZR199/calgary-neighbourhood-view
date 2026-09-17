@@ -90,6 +90,13 @@ function MatchCard({
 }) {
   const { profile } = match;
   const active = match.criteria.filter((criterion) => criterion.weight > 0);
+  const tradeoffs = match.tradeoffs.filter(
+    (tradeoff) =>
+      !tradeoff.startsWith('Missing priority data:') &&
+      tradeoff !== 'Choose at least one priority to calculate a match score.' &&
+      tradeoff !==
+        'Less than 70% of your selected priority weight has data, so no overall score is shown.',
+  );
   return (
     <li className="finder-result-card">
       <div className="finder-card-heading">
@@ -135,27 +142,31 @@ function MatchCard({
           </ul>
         </div>
       )}
-      <div className="finder-evidence">
-        <h4>What to weigh up</h4>
-        {match.tradeoffs.length ? (
+      {tradeoffs.length > 0 && (
+        <div className="finder-evidence">
+          <h4>What to weigh up</h4>
           <ul>
-            {match.tradeoffs.map((tradeoff) => (
+            {tradeoffs.map((tradeoff) => (
               <li key={tradeoff}>{tradeoff}</li>
             ))}
           </ul>
-        ) : (
-          <p className="finder-note">
-            The measured priorities fit well at the reference point. Individual
-            streets and homes can have quite different access, costs and
-            surroundings.
-          </p>
+        </div>
+      )}
+      <p className="finder-coverage">
+        <span>
+          Data covers <strong>{match.coverage}%</strong> of your priority weight
+          {match.score === null ? ' · No overall score' : ''}.
+        </span>
+        {match.missing.length > 0 && (
+          <span>Missing: {match.missing.join(', ')}.</span>
         )}
-      </div>
-      <p className="finder-note">
-        Data covers {match.coverage}% of your selected priority weight. A match
-        score is a comparison of these preferences, not a rating of the
-        neighbourhood or a prediction of suitability.
       </p>
+      <div className="finder-card-actions">
+        <button type="button" onClick={() => onExplore(profile.code)}>
+          <MapPin size={15} aria-hidden="true" /> Explore {profile.name}
+          <ArrowRight size={14} aria-hidden="true" />
+        </button>
+      </div>
       <details className="finder-detail">
         <summary>See the scoring and coverage</summary>
         <table className="finder-method-table">
@@ -218,16 +229,6 @@ function MatchCard({
           </p>
         )}
       </details>
-      <div className="finder-card-actions">
-        <button type="button" onClick={() => onExplore(profile.code)}>
-          <MapPin size={15} aria-hidden="true" /> Explore {profile.name}
-          <ArrowRight size={14} aria-hidden="true" />
-        </button>
-        <button type="button" onClick={() => onSource('neighbourhood-finder')}>
-          Method & sources
-          <ArrowUpRight size={12} aria-hidden="true" />
-        </button>
-      </div>
     </li>
   );
 }
@@ -249,6 +250,9 @@ export function NeighbourhoodFinder({
   );
   const [budget, setBudget] = useState('');
   const [submitted, setSubmitted] = useState<FinderPreferences | null>(null);
+  const [mobileView, setMobileView] = useState<'preferences' | 'results'>(
+    'preferences',
+  );
   const [validation, setValidation] = useState('');
   useEffect(() => {
     let cancelled = false;
@@ -307,6 +311,7 @@ export function NeighbourhoodFinder({
     }
     setValidation('');
     setSubmitted(next);
+    setMobileView('results');
     requestAnimationFrame(() => {
       resultsRef.current?.scrollIntoView({
         block: 'start',
@@ -387,8 +392,44 @@ export function NeighbourhoodFinder({
           )}
         </div>
       ) : (
-        <div className="finder-layout">
-          <form className="finder-form" ref={formRef} onSubmit={submit}>
+        <div className="finder-layout" data-mobile-view={mobileView}>
+          {result && (
+            <nav
+              className="finder-mobile-nav"
+              aria-label="Neighbourhood finder"
+            >
+              {(['preferences', 'results'] as const).map((view) => (
+                <button
+                  type="button"
+                  key={view}
+                  aria-pressed={mobileView === view}
+                  aria-controls={`${id}-${view}`}
+                  onClick={() => {
+                    setMobileView(view);
+                    requestAnimationFrame(() => {
+                      const target =
+                        view === 'preferences'
+                          ? formRef.current
+                          : resultsRef.current;
+                      target?.scrollIntoView({ block: 'start' });
+                      target?.focus({ preventScroll: true });
+                    });
+                  }}
+                >
+                  {view === 'preferences'
+                    ? 'Your preferences'
+                    : `Shortlist${recommendations.length ? ` · ${recommendations.length}` : ''}`}
+                </button>
+              ))}
+            </nav>
+          )}
+          <form
+            id={`${id}-preferences`}
+            className="finder-form"
+            ref={formRef}
+            tabIndex={-1}
+            onSubmit={submit}
+          >
             <fieldset>
               <legend>
                 <span className="finder-step-number">01</span> Budget & location
@@ -617,6 +658,7 @@ export function NeighbourhoodFinder({
                   setPreferences(DEFAULT_FINDER_PREFERENCES);
                   setBudget('');
                   setSubmitted(null);
+                  setMobileView('preferences');
                   setValidation('');
                 }}
               >
@@ -629,6 +671,7 @@ export function NeighbourhoodFinder({
             </p>
           </form>
           <div
+            id={`${id}-results`}
             ref={resultsRef}
             className="finder-results"
             role="region"
@@ -782,11 +825,19 @@ export function NeighbourhoodFinder({
             <div className="finder-method">
               <h3>Read the result in context</h3>
               <p>
-                The score is a weighted average of available measures. Missing
-                data is left out and coverage is shown; a score requires at
-                least 70% of your selected priority weight. It is not a measure
-                of safety, school quality, investment return or the people who
-                live in an area.
+                The score compares your preferences; it is not a neighbourhood
+                rating or a prediction of suitability. It is a weighted average
+                of available measures. Missing data is left out, not treated as
+                zero. A score needs at least one selected priority and 70% data
+                coverage of your selected priority weight. It does not measure
+                safety, school quality, investment return or the people who live
+                in an area.
+              </p>
+              <p>
+                Even when the measured priorities fit well, individual streets
+                and homes can have quite different access, costs and
+                surroundings. Distances and transit access refer to one
+                neighbourhood reference point; check the exact home address.
               </p>
               <p>
                 Assessments use the {data.metadata.assessmentYear} roll. Transit

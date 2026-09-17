@@ -117,6 +117,44 @@ export function useMobility(
   }, [data, lat, lon, quadrant, serviceDay]);
   return { result, error, quadrant, retry: () => setAttempt((v) => v + 1) };
 }
+function EssentialPlaces({
+  items,
+}: {
+  items: ReturnType<typeof nearbyEssentials>['breakdown'];
+}) {
+  return (
+    <div className="essentials-list">
+      {items
+        .filter((item) => item.nearest)
+        .map((item) => {
+          const nearest = item.nearest!;
+          return (
+            <div key={item.id}>
+              <span>
+                {item.label}
+                <small>
+                  {nearest.name ||
+                    `Mapped ${nearest.subcategory.replaceAll('_', ' ')}`}
+                </small>
+              </span>
+              <a
+                href={
+                  nearest.sourceUrl ||
+                  `https://data.calgary.ca/d/${nearest.sourceId}`
+                }
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${item.label}: ${nearest.name || 'mapped location'}, ${distanceLabel(nearest.distanceM)}, source`}
+              >
+                {distanceLabel(nearest.distanceM)}
+                <ArrowUpRight size={12} />
+              </a>
+            </div>
+          );
+        })}
+    </div>
+  );
+}
 export function MobilityContext({
   community,
   property,
@@ -341,37 +379,11 @@ export function MobilityContext({
           <span>Mapped nearby places</span>
         </div>
       )}
-      <div className="essentials-list">
-        {essentials.breakdown
-          .filter((c) => c.nearest)
-          .map((c) => (
-            <div key={c.id}>
-              <span>
-                {c.label}
-                <small>
-                  {c.nearest
-                    ? c.nearest.name ||
-                      `Mapped ${c.nearest.subcategory.replaceAll('_', ' ')}`
-                    : null}
-                </small>
-              </span>
-              {c.nearest ? (
-                <a
-                  href={
-                    c.nearest.sourceUrl ||
-                    `https://data.calgary.ca/d/${c.nearest.sourceId}`
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`${c.label}: ${c.nearest.name || 'mapped location'}, ${distanceLabel(c.nearest.distanceM)}, source`}
-                >
-                  {distanceLabel(c.nearest.distanceM)}
-                  <ArrowUpRight size={12} />
-                </a>
-              ) : null}
-            </div>
-          ))}
-      </div>
+      <EssentialPlaces
+        items={essentials.breakdown.filter(
+          (item) => !compact || item.id === 'groceries',
+        )}
+      />
       <div className="essentials-list supplemental-list">
         {result.supplemental
           .filter(
@@ -411,6 +423,21 @@ export function MobilityContext({
             </div>
           ))}
       </div>
+      {compact &&
+        essentials.breakdown.some(
+          (item) => item.id !== 'groceries' && item.nearest,
+        ) && (
+          <details className="reading-detail">
+            <summary>
+              More nearby essentials <ChevronRight size={14} />
+            </summary>
+            <EssentialPlaces
+              items={essentials.breakdown.filter(
+                (item) => item.id !== 'groceries',
+              )}
+            />
+          </details>
+        )}
       <p className="quiet-note">
         Nearest mapped locations; completeness and current opening are not
         guaranteed. Child care and gyms do not change the walkability estimate.
@@ -461,25 +488,40 @@ export function MobilityContext({
           Download walkability methodology <ArrowUpRight size={12} />
         </a>
       </details>
-      <p className="data-attribution">
-        City open data & Calgary Transit ·{' '}
-        <a
-          href="https://www.openstreetmap.org/copyright"
-          target="_blank"
-          rel="noreferrer"
-        >
-          © OpenStreetMap contributors
-        </a>{' '}
-        ·{' '}
-        <a href="/data/access-amenities-osm.geojson" download>
-          OSM essentials (ODbL)
-        </a>{' '}
-        ·{' '}
-        <a href="/data/access-supplement-osm.geojson" download>
-          Child care & fitness extract (ODbL)
-        </a>
-        . Captured 14 September 2026.
-      </p>
+      {compact ? (
+        <p className="data-attribution">
+          City open data & Calgary Transit ·{' '}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noreferrer"
+          >
+            © OpenStreetMap contributors (ODbL)
+          </a>{' '}
+          · captured 14 September 2026. Full records and credits are in All
+          nearby.
+        </p>
+      ) : (
+        <p className="data-attribution">
+          City open data & Calgary Transit ·{' '}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noreferrer"
+          >
+            © OpenStreetMap contributors
+          </a>{' '}
+          ·{' '}
+          <a href="/data/access-amenities-osm.geojson" download>
+            OSM essentials (ODbL)
+          </a>{' '}
+          ·{' '}
+          <a href="/data/access-supplement-osm.geojson" download>
+            Child care & fitness extract (ODbL)
+          </a>
+          . Captured 14 September 2026.
+        </p>
+      )}
     </section>
   );
 }

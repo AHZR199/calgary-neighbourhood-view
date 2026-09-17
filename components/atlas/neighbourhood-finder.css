@@ -14,6 +14,9 @@
 .finder-results {
   min-width: 0;
 }
+.finder-mobile-nav {
+  display: none;
+}
 .finder-form fieldset {
   min-width: 0;
   padding: 0;
@@ -340,6 +343,18 @@
 .finder-evidence li::marker {
   color: #95aec1;
 }
+.finder-coverage {
+  display: grid;
+  gap: 4px;
+  margin: 15px 0 0;
+  color: #637b8c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.finder-coverage strong {
+  font-weight: 500;
+  color: #304c61;
+}
 .finder-card-actions {
   display: flex;
   flex-wrap: wrap;
@@ -353,10 +368,23 @@
   gap: 6px;
   min-height: 44px;
   color: #315d7b;
-  font-size: 12px;
+  font-size: 13px;
+  text-align: left;
+  min-width: 0;
+}
+.finder-card-actions button svg {
+  flex-shrink: 0;
 }
 .finder-card-actions button:first-child {
+  padding: 10px 12px;
+  border: 1px solid #cbdce8;
+  border-radius: 5px;
+  background: #edf5fa;
   font-weight: 500;
+}
+.finder-card-actions button:hover {
+  background: #e3eff7;
+  border-color: #9cb9cd;
 }
 .finder-detail {
   margin-top: 12px;
@@ -507,6 +535,10 @@
   outline: 2px solid #315d7a;
   outline-offset: 8px;
 }
+.finder-form:focus-visible {
+  outline: 2px solid #315d7a;
+  outline-offset: 8px;
+}
 @media (max-width: 980px) {
   .finder-layout {
     grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
@@ -520,14 +552,61 @@
   }
 }
 @media (max-width: 760px) {
+  .finder-mobile-nav {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #d5e2ec;
+    border-radius: 8px;
+    background: #edf4f9;
+  }
+  .finder-mobile-nav button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 7px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    font-size: 13px;
+    color: #526f84;
+  }
+  .finder-mobile-nav button[aria-pressed='true'] {
+    border-color: #c4d7e5;
+    background: #fff;
+    color: #244f6c;
+  }
+  .finder-layout[data-mobile-view='results'] > .finder-form,
+  .finder-layout[data-mobile-view='preferences']:has(.finder-mobile-nav)
+    > .finder-results {
+    display: none;
+  }
+  .finder-field input,
+  .finder-field select,
+  .finder-priority select {
+    font-size: 16px;
+  }
+  .finder-priority {
+    grid-template-columns: minmax(0, 1fr) 110px;
+    gap: 10px;
+  }
   .finder-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 34px;
+    gap: 24px;
+  }
+  .finder-form,
+  .finder-results {
+    scroll-margin-top: 72px;
   }
   .finder-results {
     padding-top: 24px;
     border-top: 1px solid #cbdde9;
-    scroll-margin-top: 20px;
+  }
+  .finder-layout[data-mobile-view='results'] > .finder-results {
+    padding-top: 0;
+    border-top: 0;
   }
   .finder-empty {
     padding: 22px 18px;

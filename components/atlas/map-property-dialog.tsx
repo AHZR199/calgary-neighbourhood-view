@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ export function MapPropertyDialog({
   onSelect: (property: Property) => void;
   onSearch: () => void;
 }) {
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const [filter, setFilter] = useState({ result, query: '' });
   const query = filter.result === result ? filter.query : '';
   const records =
@@ -42,8 +43,18 @@ export function MapPropertyDialog({
         }
       }}
     >
-      <DialogContent className="map-property-dialog">
-        <DialogTitle>Choose the address and unit</DialogTitle>
+      <DialogContent
+        className="map-property-dialog"
+        onOpenAutoFocus={(event) => {
+          if (window.matchMedia('(max-width: 760px), (pointer: coarse)').matches) {
+            event.preventDefault();
+            titleRef.current?.focus({ preventScroll: true });
+          }
+        }}
+      >
+        <DialogTitle ref={titleRef} tabIndex={-1}>
+          Choose the address and unit
+        </DialogTitle>
         <DialogDescription>
           {result?.records.length} residential accounts overlap this point.
           Confirm the address before opening a record.

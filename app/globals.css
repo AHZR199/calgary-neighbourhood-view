@@ -976,8 +976,8 @@ p {
   color: #586373 !important;
 }
 .maplibregl-ctrl-bottom-right {
-  right: 4px !important;
-  bottom: 0 !important;
+  right: 4px;
+  bottom: 0;
 }
 .map-unavailable {
   position: absolute;

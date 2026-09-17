@@ -7,8 +7,8 @@ import {
   titleCase,
   type Community,
   type Property,
-  type Layer,
 } from '@/lib/atlas/data';
+import type { NearbySection } from './nearby';
 import { containsPoint } from '@/lib/atlas/geography';
 interface Permit {
   id: string;
@@ -50,11 +50,11 @@ function loadContext(): Promise<Context> {
 export function AreaContext({
   community,
   property,
-  onLayer,
+  onNearby,
 }: {
   community: Community;
   property: Property | null;
-  onLayer: (layer: Layer) => void;
+  onNearby: (section: NearbySection) => void;
 }) {
   const [data, setData] = useState<Context | null>(null);
   useEffect(() => {
@@ -92,7 +92,7 @@ export function AreaContext({
       <section className="overview-topic">
         <div className="section-line">
           <h3>Development & change</h3>
-          <button onClick={() => onLayer('nearby')}>
+          <button onClick={() => onNearby('development')}>
             Applications <ChevronRight size={14} />
           </button>
         </div>
@@ -133,8 +133,8 @@ export function AreaContext({
       <section className="overview-topic">
         <div className="section-line">
           <h3>Environmental checks</h3>
-          <button onClick={() => onLayer('nearby')}>
-            Map layers <ChevronRight size={14} />
+          <button onClick={() => onNearby('checks')}>
+            Area checks <ChevronRight size={14} />
           </button>
         </div>
         <div className="overview-evidence">

@@ -1,5 +1,64 @@
 import { chartScale } from '@/lib/atlas/chart-scale';
 export { chartScale };
+
+export function ChartData({
+  caption,
+  columns,
+  rows,
+  note,
+}: {
+  caption: string;
+  columns: string[];
+  rows: { label: string; values: (string | number)[] }[];
+  note?: string;
+}) {
+  if (!rows.length) return null;
+  return (
+    <details className="mt-3 border-y border-[#dbe5ed] text-[#526a7c]">
+      <summary className="min-h-11 cursor-pointer py-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#315d7a]">
+        View chart data
+      </summary>
+      {note && <p className="mb-3 text-xs leading-relaxed">{note}</p>}
+      <table className="mb-3 w-full border-collapse text-left text-xs tabular-nums">
+        <caption className="sr-only">{caption}</caption>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={column}
+                scope="col"
+                className="border-b border-[#ccdce8] px-2 py-2 align-bottom font-medium first:pl-0 last:pr-0"
+              >
+                {column}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.label}>
+              <th
+                scope="row"
+                className="border-b border-[#e3ebf1] py-2 pr-2 align-top font-normal"
+              >
+                {row.label}
+              </th>
+              {row.values.map((value, index) => (
+                <td
+                  key={index}
+                  className="border-b border-[#e3ebf1] px-2 py-2 align-top last:pr-0"
+                >
+                  {value}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  );
+}
+
 export function ChartAxes({
   scale,
   unit,
