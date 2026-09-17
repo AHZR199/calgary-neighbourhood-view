@@ -1272,3 +1272,20 @@ button:active {
     top: 190px;
   }
 }
+
+.brand-wordmark {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: #2c4556;
+  white-space: nowrap;
+}
+@media (max-width: 760px),
+  (max-width: 960px) and (max-height: 500px) and (orientation: landscape) {
+  .brand-wordmark {
+    font-size: 17px;
+  }
+}

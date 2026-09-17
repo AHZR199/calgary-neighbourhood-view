@@ -29,6 +29,8 @@ import {
   Trash2,
   Construction,
   RefreshCw,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import {
   SegmentedControl,
@@ -138,8 +140,11 @@ export default function Home() {
   const [saved, setSaved] = useState<SavedPlace[]>([]),
     [compare, setCompare] = useState<string[]>([]),
     [compareOpen, setCompareOpen] = useState(false),
-    [reportOpen, setReportOpen] = useState(false),
-    [expanded, setExpanded] = useState(false);
+    [reportOpen, setReportOpen] = useState(false);
+  const [detailsMode, setDetailsMode] = useState<
+    'compact' | 'preview' | 'full'
+  >('compact');
+  const expanded = detailsMode === 'full';
   const [mapFocused, setMapFocused] = useState(false);
   const [finderVisited, setFinderVisited] = useState(false);
   const [landmarkView, setLandmarkView] = useState<
@@ -152,6 +157,7 @@ export default function Home() {
   const [sourceReturnView, setSourceReturnView] = useState<View>('explore');
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const saveRequested = useRef(false);
+  const panelScrollOffset = useRef(0);
   const panelScroll = useRef<HTMLDivElement>(null),
     toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const community = useMemo(
@@ -353,11 +359,16 @@ export default function Home() {
       }
       if (
         event.key === 'Escape' &&
-        !document.querySelector('[role="dialog"]')
+        !event.defaultPrevented &&
+        !document.querySelector('[role="dialog"], [role="menu"]')
       ) {
-        setExpanded(false);
+        setDetailsMode(detailsMode === 'full' ? 'preview' : 'compact');
         requestAnimationFrame(() => {
-          const summary = document.getElementById('mobile-place-summary');
+          const summary = document.getElementById(
+            detailsMode === 'full'
+              ? 'mobile-details-size'
+              : 'mobile-place-summary',
+          );
           if (summary?.getClientRects().length)
             summary.focus({ preventScroll: true });
         });
@@ -365,8 +376,9 @@ export default function Home() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [detailsMode]);
   useEffect(() => {
+    panelScrollOffset.current = 0;
     panelScroll.current?.scrollTo({ top: 0, behavior: 'instant' });
     document.querySelector('.layer-dock [data-state=checked]')?.scrollIntoView({
       inline: 'nearest',
@@ -376,6 +388,16 @@ export default function Home() {
         : 'smooth',
     });
   }, [code, property?.rollNumber, layer]);
+  useEffect(() => {
+    if (view !== 'explore') return;
+    const frame = requestAnimationFrame(() =>
+      panelScroll.current?.scrollTo({
+        top: panelScrollOffset.current,
+        behavior: 'instant',
+      }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [view]);
   useEffect(() => {
     if (!searchOpen) return;
     const q = query.trim();
@@ -423,7 +445,7 @@ export default function Home() {
   function chooseCommunity(next: string) {
     setLandmarkView(null);
     setMapFocused(false);
-    setExpanded(false);
+    setDetailsMode((mode) => (mode === 'full' ? 'full' : 'preview'));
     setCode(next);
     setProperty(null);
     setView('explore');
@@ -433,7 +455,7 @@ export default function Home() {
   function chooseProperty(p: Property) {
     setLandmarkView(null);
     setMapFocused(false);
-    setExpanded(false);
+    setDetailsMode((mode) => (mode === 'full' ? 'full' : 'preview'));
     setData((d) =>
       d && !d.properties.some((x) => x.rollNumber === p.rollNumber)
         ? { ...d, properties: [...d.properties, p] }
@@ -501,16 +523,24 @@ export default function Home() {
   }
   function openDetails() {
     setMapFocused(false);
-    setExpanded(true);
+    setDetailsMode((mode) => (mode === 'full' ? 'full' : 'preview'));
     requestAnimationFrame(() =>
       document.getElementById('place-details')?.focus({ preventScroll: true }),
     );
   }
   function closeDetails() {
-    setExpanded(false);
+    setDetailsMode('compact');
     requestAnimationFrame(() =>
       document
         .getElementById('mobile-place-summary')
+        ?.focus({ preventScroll: true }),
+    );
+  }
+  function toggleDetailsSize() {
+    setDetailsMode((mode) => (mode === 'full' ? 'preview' : 'full'));
+    requestAnimationFrame(() =>
+      document
+        .getElementById('mobile-details-size')
         ?.focus({ preventScroll: true }),
     );
   }
@@ -838,6 +868,15 @@ export default function Home() {
   });
   const reportAssessment =
     property?.assessedValue ?? data?.aggregates[code]?.median;
+  const detailsSource = {
+    overview: 'boundaries',
+    property: 'assessments',
+    crime: 'crime',
+    water: 'services',
+    air: 'air',
+    politics: 'federal',
+    nearby: 'development',
+  }[layer];
   const reportCrime =
     data?.crime[code]?.latestYearComparison.current.publishedCount;
   const reportPipeRecord = property ? data?.pipes[property.rollNumber] : null;
@@ -847,7 +886,8 @@ export default function Home() {
 
   return (
     <main
-      className={`atlas-app ${view !== 'explore' ? 'workspace-open' : ''} ${expanded ? 'details-expanded' : ''}`}
+      className={`atlas-app ${view !== 'explore' ? 'workspace-open' : ''} ${expanded ? 'details-expanded' : detailsMode === 'preview' ? 'details-preview' : ''}`}
+      data-details-mode={detailsMode}
     >
       <a
         className="skip-link"
@@ -856,7 +896,7 @@ export default function Home() {
           event.preventDefault();
           if (view === 'explore') {
             setMapFocused(false);
-            setExpanded(true);
+            setDetailsMode('preview');
           }
           requestAnimationFrame(() => {
             document
@@ -871,6 +911,7 @@ export default function Home() {
       </a>
       <CityMap
         active={view === 'explore'}
+        detailsMode={detailsMode}
         basemap={basemap}
         overlay={overlay}
         transitLayers={transitLayers}
@@ -900,10 +941,7 @@ export default function Home() {
           aria-label="Calgary Neighbourhood View home"
           data-dialog-focus-fallback
         >
-          <span className="brand-copy">
-            <small>CALGARY</small>
-            <span className="brand-name">Neighbourhood View</span>
-          </span>
+          <span className="brand-wordmark">Calgary Neighbourhood View</span>
         </Link>
         <SegmentedControl
           aria-label="Main views"
@@ -912,7 +950,7 @@ export default function Home() {
             if (v === 'sources' && view !== 'sources')
               setSourceReturnView(view);
             setView(v as View);
-            if (v === 'explore') setExpanded(false);
+            if (v === 'explore') setDetailsMode('compact');
             if (v === 'finder') setFinderVisited(true);
             if (v === 'sources') setSourceFocus('');
           }}
@@ -951,6 +989,7 @@ export default function Home() {
           <section className="search-zone">
             <button
               className="search-bar glass"
+              aria-label="Address, neighbourhood or quadrant"
               onClick={() => setSearchOpen(true)}
             >
               <Search size={19} />
@@ -981,7 +1020,7 @@ export default function Home() {
           <MapLayers
             onShowLandmark={(landmark) => {
               setLandmarkView(landmark);
-              setExpanded(false);
+              setDetailsMode('compact');
               setMapFocused(true);
               setIs3d(true);
               setAction({ type: landmark, id: Date.now() });
@@ -993,7 +1032,7 @@ export default function Home() {
             onTransitLayersChange={setTransitLayers}
             onShowGreenLine={() => {
               setLandmarkView(null);
-              setExpanded(false);
+              setDetailsMode('compact');
               setMapFocused(true);
               setAction({ type: 'greenLine', id: Date.now() });
             }}
@@ -1019,7 +1058,7 @@ export default function Home() {
                     : { ...current, train: true },
                 );
               chooseLayer('nearby');
-              setExpanded(false);
+              setDetailsMode('compact');
             }}
           />
           <div className="map-tools glass">
@@ -1088,7 +1127,7 @@ export default function Home() {
           )}
           {!landmarkView && (
             <aside
-              className={`inspector ${expanded ? 'expanded' : ''} ${mapFocused ? 'map-focused' : ''}`}
+              className={`inspector ${expanded ? 'expanded' : detailsMode === 'preview' ? 'preview' : ''} ${mapFocused ? 'map-focused' : ''}`}
               aria-label="Place details"
             >
               <button
@@ -1097,7 +1136,7 @@ export default function Home() {
                 type="button"
                 aria-label={`View details for ${name}`}
                 aria-controls="place-details-body"
-                aria-expanded={expanded}
+                aria-expanded={detailsMode !== 'compact'}
                 onClick={openDetails}
               >
                 <span>
@@ -1112,15 +1151,44 @@ export default function Home() {
                   Details <ChevronUp size={18} />
                 </span>
               </button>
-              <div className="mobile-panel-bar">
-                <button type="button" onClick={closeDetails}>
-                  <ChevronDown size={18} /> Back to map
+              <div
+                className="mobile-panel-bar"
+                aria-label="Details view controls"
+              >
+                <button
+                  type="button"
+                  onClick={closeDetails}
+                  aria-label="Minimize details"
+                >
+                  <ChevronDown size={18} aria-hidden="true" />
+                  <span className="mobile-minimize-label">Minimize</span>
                 </button>
-                <span>Place details</span>
+                <button
+                  id="mobile-details-size"
+                  type="button"
+                  onClick={toggleDetailsSize}
+                  aria-label={
+                    expanded
+                      ? 'Show map alongside details'
+                      : 'Expand details to full screen'
+                  }
+                  aria-controls="place-details-body"
+                >
+                  {expanded ? (
+                    <Minimize2 size={16} aria-hidden="true" />
+                  ) : (
+                    <Maximize2 size={16} aria-hidden="true" />
+                  )}
+                  {expanded ? 'Map & cards' : 'Expand'}
+                </button>
               </div>
               <button
                 className="drawer-handle"
-                onClick={() => setExpanded((x) => !x)}
+                onClick={() =>
+                  setDetailsMode((mode) =>
+                    mode === 'compact' ? 'preview' : 'compact',
+                  )
+                }
                 aria-label={expanded ? 'Collapse details' : 'Expand details'}
               >
                 <span />
@@ -1172,7 +1240,11 @@ export default function Home() {
                     </button>
                     <button
                       className="icon-button mobile-expand"
-                      onClick={() => setExpanded((x) => !x)}
+                      onClick={() =>
+                        setDetailsMode((mode) =>
+                          mode === 'compact' ? 'preview' : 'compact',
+                        )
+                      }
                       aria-label={
                         expanded ? 'Collapse details' : 'Expand details'
                       }
@@ -1230,7 +1302,13 @@ export default function Home() {
               <div
                 id="place-details-body"
                 className="inspector-scroll"
+                role="region"
+                aria-label="Place information"
+                tabIndex={0}
                 ref={panelScroll}
+                onScroll={(event) => {
+                  panelScrollOffset.current = event.currentTarget.scrollTop;
+                }}
               >
                 {data && community ? (
                   <>
@@ -1358,7 +1436,7 @@ export default function Home() {
                         onTransitLayersChange={setTransitLayers}
                         onShowGreenLine={() => {
                           setLandmarkView(null);
-                          setExpanded(false);
+                          setDetailsMode('compact');
                           setMapFocused(true);
                           setAction({ type: 'greenLine', id: Date.now() });
                         }}
@@ -1386,26 +1464,21 @@ export default function Home() {
                     <span>Opening Calgary’s public records…</span>
                   </div>
                 )}
+                <div className="mobile-preview-footer">
+                  <button onClick={() => showSource(detailsSource)}>
+                    Sources & coverage
+                  </button>
+                  <Link href="/privacy" prefetch={false}>
+                    Privacy
+                  </Link>
+                  <Link href="/terms" prefetch={false}>
+                    Terms
+                  </Link>
+                </div>
               </div>
               <div className="inspector-footer">
                 <BookOpen size={13} />
-                <button
-                  onClick={() =>
-                    showSource(
-                      layer === 'property'
-                        ? 'assessments'
-                        : layer === 'overview'
-                          ? 'boundaries'
-                          : layer === 'water'
-                            ? 'services'
-                            : layer === 'politics'
-                              ? 'federal'
-                              : layer === 'nearby'
-                                ? 'development'
-                                : layer,
-                    )
-                  }
-                >
+                <button onClick={() => showSource(detailsSource)}>
                   Sources & coverage
                 </button>
                 <Link className="privacy-link" href="/privacy" prefetch={false}>

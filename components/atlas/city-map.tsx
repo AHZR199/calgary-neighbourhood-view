@@ -28,6 +28,7 @@ interface Props {
   transitLayers: TransitMapLayers;
   onTransitStatus: (status: TransitMapStatus) => void;
   mapFocused: boolean;
+  detailsMode: 'compact' | 'preview' | 'full';
   landmark: LandmarkKey | null;
   data: AtlasData | null;
   community: Community | undefined;
@@ -59,17 +60,24 @@ const empty: FeatureCollection = { type: 'FeatureCollection', features: [] };
 const cityTransitAttribution =
   'Calgary Transit / City of Calgary · <a href="https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa/">Open Government Licence – City of Calgary</a>';
 
-function cameraPadding(map: ml.Map, desired: Required<ml.PaddingOptions>) {
+function cameraPadding(
+  map: ml.Map,
+  desired: Required<ml.PaddingOptions>,
+  preview = false,
+) {
   const { clientWidth: width, clientHeight: height } = map.getContainer();
+  const mobile = preview && compactMap(map);
   const horizontal = desired.left + desired.right;
   const vertical = desired.top + desired.bottom;
   const xScale = Math.min(
     1,
-    Math.max(0, width - Math.min(240, width / 2)) / Math.max(1, horizontal),
+    Math.max(0, width - Math.min(mobile ? 120 : 240, width / 2)) /
+      Math.max(1, horizontal),
   );
   const yScale = Math.min(
     1,
-    Math.max(0, height - Math.min(200, height / 2)) / Math.max(1, vertical),
+    Math.max(0, height - Math.min(mobile ? 80 : 200, height / 2)) /
+      Math.max(1, vertical),
   );
   return {
     left: desired.left * xScale,
@@ -84,23 +92,99 @@ function compactMap(map: ml.Map) {
   return width <= 760 || (width <= 960 && height <= 500);
 }
 
-function mobileMapPadding(map: ml.Map, landmark = false) {
-  const short = map.getContainer().clientHeight <= 500;
+function mobileMapPadding(
+  map: ml.Map,
+  detailsMode: Props['detailsMode'],
+  landmark = false,
+) {
+  const { clientWidth: width, clientHeight: height } = map.getContainer();
+  const short = width <= 960 && height <= 500 && width > height;
+  const app = map.getContainer().closest('.atlas-app');
+  const header = app?.querySelector('.atlas-header');
+  const nav = app?.querySelector('.header-tabs');
+  const safeTop = header
+    ? Number.parseFloat(getComputedStyle(header).paddingTop) || 0
+    : 0;
+  const navHeight = nav
+    ? Number.parseFloat(getComputedStyle(nav).height) || (short ? 56 : 62)
+    : short
+      ? 56
+      : 62;
+  const preview = detailsMode === 'preview';
+  //use the target sheet dimensions, not its height while it is animating.
+  if (short && preview)
+    return {
+      top: safeTop + 110,
+      bottom: navHeight + 20,
+      left: 24,
+      right: Math.min(width * 0.44, 340) + 28,
+    };
+  if (preview)
+    return {
+      top: safeTop + 118,
+      bottom: navHeight + Math.min(420, height * 0.42) + 26,
+      left: 24,
+      right: 24,
+    };
   return {
-    top: short ? 110 : 174,
-    bottom: short ? 120 : landmark ? 265 : 205,
+    top: safeTop + (short ? 110 : 174),
+    bottom:
+      (short ? 120 : landmark ? 265 : 205) + navHeight - (short ? 56 : 62),
     left: 24,
     right: short ? 90 : 62,
   };
 }
 
+function placeCameraPadding(
+  map: ml.Map,
+  selection: Pick<Props, 'detailsMode' | 'property' | 'landmark'>,
+) {
+  const tall =
+    selection.landmark &&
+    ['tower', 'bow', 'sky', 'olympic'].includes(selection.landmark);
+  return cameraPadding(
+    map,
+    compactMap(map)
+      ? mobileMapPadding(map, selection.detailsMode, !!selection.landmark)
+      : selection.landmark
+        ? { top: tall ? 340 : 180, bottom: 40, left: 40, right: 430 }
+        : selection.property
+          ? { top: 90, bottom: 90, left: 40, right: 420 }
+          : { top: 140, bottom: 130, left: 110, right: 460 },
+    selection.detailsMode === 'preview',
+  );
+}
+
+function updateCameraPadding(
+  map: ml.Map,
+  selection: Pick<Props, 'detailsMode' | 'property' | 'landmark'>,
+  animate = true,
+) {
+  const padding = placeCameraPadding(map, selection);
+  const previous = map.getPadding();
+  if (
+    (Object.keys(padding) as (keyof typeof padding)[]).every(
+      (side) => Math.abs(padding[side] - (previous[side] ?? 0)) < 0.5,
+    )
+  )
+    return;
+  map.easeTo({
+    padding,
+    duration:
+      animate && !matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 220
+        : 0,
+  });
+}
+
 function focusSelectedPlace(
   map: ml.Map,
-  selection: Pick<Props, 'community' | 'property' | 'is3d'>,
+  selection: Pick<Props, 'community' | 'property' | 'is3d' | 'detailsMode'>,
   resetOrientation = false,
+  animate = true,
 ) {
-  const mobile = compactMap(map);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const padding = placeCameraPadding(map, { ...selection, landmark: null });
   const orientation = resetOrientation
     ? { bearing: -24, pitch: selection.is3d ? 57 : 0 }
     : {};
@@ -109,25 +193,15 @@ function focusSelectedPlace(
       ...orientation,
       center: [selection.property.longitude, selection.property.latitude],
       zoom: 16.8,
-      padding: cameraPadding(
-        map,
-        mobile
-          ? mobileMapPadding(map)
-          : { top: 90, bottom: 90, left: 40, right: 420 },
-      ),
-      duration: reduced ? 0 : 1400,
+      padding,
+      duration: reduced || !animate ? 0 : 1400,
     });
   else if (selection.community)
     map.fitBounds(selection.community.bounds, {
       ...orientation,
-      padding: cameraPadding(
-        map,
-        mobile
-          ? mobileMapPadding(map)
-          : { top: 140, bottom: 130, left: 110, right: 460 },
-      ),
+      padding,
       maxZoom: 14.7,
-      duration: reduced ? 0 : 1300,
+      duration: reduced || !animate ? 0 : 1300,
     });
 }
 
@@ -140,22 +214,20 @@ function focusLandmark(
     pitch: number;
     bearing: number;
   },
+  detailsMode: Props['detailsMode'],
   animate = true,
 ) {
   const mobile = compactMap(map);
-  const tall =
-    key === 'tower' || key === 'bow' || key === 'sky' || key === 'olympic';
   map.easeTo({
     center: landmark.coordinates,
     zoom: landmark.zoom - (mobile ? 0.6 : 0),
     pitch: landmark.pitch,
     bearing: landmark.bearing,
-    padding: cameraPadding(
-      map,
-      mobile
-        ? mobileMapPadding(map, true)
-        : { top: tall ? 340 : 180, bottom: 40, left: 40, right: 430 },
-    ),
+    padding: placeCameraPadding(map, {
+      detailsMode,
+      landmark: key,
+      property: null,
+    }),
     duration:
       !animate || matchMedia('(prefers-reduced-motion: reduce)').matches
         ? 0
@@ -163,7 +235,11 @@ function focusLandmark(
   });
 }
 
-function fitGreenLineRoute(map: ml.Map, data: FeatureCollection) {
+function fitGreenLineRoute(
+  map: ml.Map,
+  data: FeatureCollection,
+  detailsMode: Props['detailsMode'],
+) {
   const bounds = new ml.LngLatBounds();
   for (const feature of data.features) {
     const geometry = feature.geometry;
@@ -185,7 +261,8 @@ function fitGreenLineRoute(map: ml.Map, data: FeatureCollection) {
       map,
       desktop
         ? { top: 100, bottom: 140, left: 35, right: 410 }
-        : mobileMapPadding(map),
+        : mobileMapPadding(map, detailsMode),
+      detailsMode === 'preview',
     ),
     bearing: 0,
     maxZoom: 13,
@@ -201,6 +278,8 @@ export default function CityMap(props: Props) {
   const container = useRef<HTMLDivElement>(null),
     map = useRef<ml.Map | null>(null),
     cameraInitialized = useRef(false),
+    attributionPresented = useRef(false),
+    framedDetailsMode = useRef<Props['detailsMode'] | null>(null),
     current = useRef(props),
     activePopup = useRef<ml.Popup | null>(null),
     propertyRequest = useRef<AbortController | null>(null),
@@ -216,6 +295,8 @@ export default function CityMap(props: Props) {
   useEffect(() => {
     if (!container.current) return;
     loadedSources.current.clear();
+    cameraInitialized.current = false;
+    framedDetailsMode.current = null;
     let disposed = false;
     let m: ml.Map | undefined;
     const start = async () => {
@@ -1166,25 +1247,48 @@ export default function CityMap(props: Props) {
           ])
             m.moveLayer(id, 'atlas-buildings');
           let previousWidth = m.getContainer().clientWidth;
+          let previousHeight = m.getContainer().clientHeight;
           let previousCompact = compactMap(m);
           const observer = new ResizeObserver(() => {
             if (!m || disposed) return;
-            m.resize();
-            const width = m.getContainer().clientWidth;
+            const { clientWidth: width, clientHeight: height } =
+              m.getContainer();
+            if (width === previousWidth && height === previousHeight) return;
             const switchedLayout =
               compactMap(m) !== previousCompact ||
-              Math.abs(width - previousWidth) > 120;
+              width > height !== previousWidth > previousHeight;
             previousWidth = width;
+            previousHeight = height;
             previousCompact = compactMap(m);
+            m.resize();
+            if (
+              !current.current.active ||
+              (compactMap(m) && current.current.detailsMode === 'full')
+            ) {
+              framedDetailsMode.current = null;
+              return;
+            }
+            framedDetailsMode.current = current.current.detailsMode;
             const key = current.current.landmark;
             if (switchedLayout && key) {
               void import('./calgary-landmarks').then(({ LANDMARKS }) => {
-                if (!m || disposed || current.current.landmark !== key) return;
-                focusLandmark(m, key, LANDMARKS[key], false);
+                if (
+                  !m ||
+                  disposed ||
+                  current.current.landmark !== key ||
+                  !current.current.active ||
+                  (compactMap(m) && current.current.detailsMode === 'full')
+                )
+                  return;
+                focusLandmark(
+                  m,
+                  key,
+                  LANDMARKS[key],
+                  current.current.detailsMode,
+                  false,
+                );
               });
-            } else if (switchedLayout && current.current.active) {
-              focusSelectedPlace(m, current.current);
-            }
+            } else updateCameraPadding(m, current.current, false);
           });
           observer.observe(m.getContainer());
           m.once('remove', () => observer.disconnect());
@@ -1301,14 +1405,73 @@ export default function CityMap(props: Props) {
   }, [props.community, props.property, ready]);
   useEffect(() => {
     const m = map.current;
-    if (!m || !ready) return;
-    if (!cameraInitialized.current && !props.property) {
-      cameraInitialized.current = true;
+    if (!m || !ready || !props.active || attributionPresented.current) return;
+    const credit = m
+      .getContainer()
+      .querySelector<HTMLDetailsElement>('.maplibregl-ctrl-attrib');
+    if (!credit) return;
+    const toggle = credit.querySelector('summary');
+    toggle?.setAttribute('aria-label', 'Map credits');
+    toggle?.setAttribute('title', 'Map credits');
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const cancel = () => clearTimeout(timer);
+    const schedule = () => {
+      cancel();
+      if (document.hidden || getComputedStyle(credit).visibility === 'hidden')
+        return;
+      //show the credits before collapsing them, as the OSM attribution guidance allows.
+      timer = setTimeout(() => {
+        if (
+          document.hidden ||
+          getComputedStyle(credit).visibility === 'hidden' ||
+          credit.matches(':hover') ||
+          credit.contains(document.activeElement)
+        )
+          return;
+        credit.classList.remove('maplibregl-compact-show');
+        credit.open = false;
+        attributionPresented.current = true;
+      }, 5000);
+    };
+    const keepOpen = () => {
+      attributionPresented.current = true;
+      cancel();
+    };
+    schedule();
+    document.addEventListener('visibilitychange', schedule);
+    credit.addEventListener('pointerdown', keepOpen);
+    credit.addEventListener('keydown', keepOpen);
+    return () => {
+      cancel();
+      document.removeEventListener('visibilitychange', schedule);
+      credit.removeEventListener('pointerdown', keepOpen);
+      credit.removeEventListener('keydown', keepOpen);
+    };
+  }, [ready, props.active, props.detailsMode]);
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !ready || (!props.property && !props.community)) return;
+    const initialized = cameraInitialized.current;
+    cameraInitialized.current = true;
+    framedDetailsMode.current = current.current.detailsMode;
+    focusSelectedPlace(m, current.current, false, initialized);
+  }, [props.community, props.property, ready]);
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !ready || !props.active) return;
+    if (!compactMap(m)) {
+      framedDetailsMode.current = props.detailsMode;
       return;
     }
-    cameraInitialized.current = true;
-    focusSelectedPlace(m, current.current);
-  }, [props.community, props.property, ready]);
+    if (
+      props.detailsMode === 'full' ||
+      framedDetailsMode.current === props.detailsMode
+    )
+      return;
+    framedDetailsMode.current = props.detailsMode;
+    //a new selection already flies to this padding; do not interrupt that flight.
+    updateCameraPadding(m, current.current);
+  }, [props.detailsMode, props.active, ready]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready) return;
@@ -1467,12 +1630,13 @@ export default function CityMap(props: Props) {
         center: [-114.02, 51.14],
         zoom: 11.8,
         pitch: 35,
-        padding: {
-          top: 60,
-          bottom: 80,
-          left: 20,
-          right: m.getContainer().clientWidth > 760 ? 390 : 40,
-        },
+        padding: cameraPadding(
+          m,
+          compactMap(m)
+            ? mobileMapPadding(m, current.current.detailsMode)
+            : { top: 60, bottom: 80, left: 20, right: 390 },
+          current.current.detailsMode === 'preview',
+        ),
         duration: matchMedia('(prefers-reduced-motion: reduce)').matches
           ? 0
           : 1000,
@@ -1545,7 +1709,7 @@ export default function CityMap(props: Props) {
           current.current.action.type === 'greenLine' &&
           current.current.transitLayers.greenLine
         )
-          fitGreenLineRoute(m, data);
+          fitGreenLineRoute(m, data, current.current.detailsMode);
       }),
     )
       .then(() => {
@@ -1579,7 +1743,7 @@ export default function CityMap(props: Props) {
       current.current.transitLayers.greenLine
     ) {
       const data = transitCache.current.get('green-line');
-      if (data) fitGreenLineRoute(m, data);
+      if (data) fitGreenLineRoute(m, data, current.current.detailsMode);
     }
     if (type === 'home')
       m.flyTo({
@@ -1587,7 +1751,9 @@ export default function CityMap(props: Props) {
         zoom: 14.2,
         bearing: -24,
         pitch: current.current.is3d ? 57 : 0,
-        padding: { top: 0, bottom: 0, left: 0, right: 0 },
+        padding: compactMap(m)
+          ? placeCameraPadding(m, current.current)
+          : { top: 0, bottom: 0, left: 0, right: 0 },
         duration: matchMedia('(prefers-reduced-motion: reduce)').matches
           ? 0
           : 1000,
@@ -1603,7 +1769,7 @@ export default function CityMap(props: Props) {
       void import('./calgary-landmarks')
         .then(({ LANDMARKS }) => {
           if (cancelled || map.current !== m || !current.current.active) return;
-          focusLandmark(m, type, LANDMARKS[type]);
+          focusLandmark(m, type, LANDMARKS[type], current.current.detailsMode);
         })
         .catch(() => {});
     }
