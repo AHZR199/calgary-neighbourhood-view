@@ -79,6 +79,7 @@ import { resolveRepresentatives } from '@/lib/atlas/geography';
 import { getPublicPropertyDetails } from '@/lib/atlas/property-details';
 import { HomeResearchNotes } from '@/components/atlas/property-facts';
 import { PlaceActions } from '@/components/atlas/place-actions';
+import { searchCommunities as findCommunities } from '@/lib/atlas/community-search';
 import {
   CORE,
   LAYERS,
@@ -132,6 +133,7 @@ export default function Home() {
     [transitStatus, setTransitStatus] = useState<TransitMapStatus>('idle');
   const [is3d, setIs3d] = useState(true),
     [action, setAction] = useState({ type: 'start', id: 0 });
+  const [selectionRevision, setSelectionRevision] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false),
     [query, setQuery] = useState(''),
     [remoteResults, setRemoteResults] = useState<Property[]>([]),
@@ -157,6 +159,7 @@ export default function Home() {
   const [sourceReturnView, setSourceReturnView] = useState<View>('explore');
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const saveRequested = useRef(false);
+  const initialPropertyRequest = useRef<AbortController | null>(null);
   const panelScrollOffset = useRef(0);
   const panelScroll = useRef<HTMLDivElement>(null),
     toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -222,19 +225,22 @@ export default function Home() {
             setCode(p.communityCode);
             setLayer('property');
           } else if (params.get('address')) {
+            const controller = new AbortController();
+            initialPropertyRequest.current = controller;
             void fetch('/api/assessments', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ q: params.get('address')! }),
               cache: 'no-store',
               referrerPolicy: 'no-referrer',
+              signal: controller.signal,
             })
               .then((r) => r.json() as Promise<{ records?: Property[] }>)
               .then((response) => {
                 const found = response.records?.find(
                   (p) => p.rollNumber === roll,
                 );
-                if (found && !cancelled) {
+                if (found && !cancelled && !controller.signal.aborted) {
                   setProperty(found);
                   setCode(found.communityCode);
                   setLayer('property');
@@ -280,6 +286,7 @@ export default function Home() {
       });
     return () => {
       cancelled = true;
+      initialPropertyRequest.current?.abort();
     };
   }, [loadAttempt]);
   useEffect(() => {
@@ -387,7 +394,7 @@ export default function Home() {
         ? 'instant'
         : 'smooth',
     });
-  }, [code, property?.rollNumber, layer]);
+  }, [code, property?.rollNumber, layer, selectionRevision]);
   useEffect(() => {
     if (view !== 'explore') return;
     const frame = requestAnimationFrame(() =>
@@ -425,6 +432,7 @@ export default function Home() {
           return d.records;
         })
         .then((rows) => {
+          if (controller.signal.aborted) return;
           setRemoteResults(rows);
           setSearchBusy(false);
         })
@@ -443,9 +451,12 @@ export default function Home() {
     };
   }, [query, searchOpen]);
   function chooseCommunity(next: string) {
+    initialPropertyRequest.current?.abort();
+    setSelectionRevision((revision) => revision + 1);
+    setAction((previous) => ({ type: 'start', id: previous.id + 1 }));
     setLandmarkView(null);
     setMapFocused(false);
-    setDetailsMode((mode) => (mode === 'full' ? 'full' : 'preview'));
+    setDetailsMode('preview');
     setCode(next);
     setProperty(null);
     setView('explore');
@@ -453,9 +464,12 @@ export default function Home() {
     setQuery('');
   }
   function chooseProperty(p: Property) {
+    initialPropertyRequest.current?.abort();
+    setSelectionRevision((revision) => revision + 1);
+    setAction((previous) => ({ type: 'start', id: previous.id + 1 }));
     setLandmarkView(null);
     setMapFocused(false);
-    setDetailsMode((mode) => (mode === 'full' ? 'full' : 'preview'));
+    setDetailsMode('preview');
     setData((d) =>
       d && !d.properties.some((x) => x.rollNumber === p.rollNumber)
         ? { ...d, properties: [...d.properties, p] }
@@ -809,29 +823,15 @@ export default function Home() {
     }
     return () => lifecycle.abort();
   }, []);
-  const searchCommunities =
-    data?.communities.features
-      .map((f) => f.properties)
-      .filter(
-        (c) =>
-          !query ||
-          `${c.name} ${c.comm_code} ${c.sector}`
-            .toLowerCase()
-            .includes(query.toLowerCase()),
-      )
-      .sort(
-        (a, b) =>
-          (CORE.includes(a.comm_code) ? -1 : 1) -
-            (CORE.includes(b.comm_code) ? -1 : 1) ||
-          a.name.localeCompare(b.name),
-      )
-      .slice(0, query ? 9 : 4) ?? [];
+  const searchCommunities = findCommunities(
+    data?.communities.features.map((f) => f.properties) ?? [],
+    query,
+  );
   const searchProperties = useMemo(() => {
+    const term = query.trim().toLowerCase();
     const local =
       data?.properties.filter(
-        (p) =>
-          query.length > 1 &&
-          p.address.toLowerCase().includes(query.toLowerCase()),
+        (p) => term.length > 1 && p.address.toLowerCase().includes(term),
       ) ?? [];
     return [
       ...new Map(
@@ -924,6 +924,7 @@ export default function Home() {
         layer={layer}
         is3d={is3d}
         action={action}
+        selectionRevision={selectionRevision}
         onCommunity={chooseCommunity}
         onPropertyRecord={chooseProperty}
         onSearch={() => setSearchOpen(true)}
@@ -1198,7 +1199,7 @@ export default function Home() {
                   <button
                     className="back-to-community"
                     onClick={() => {
-                      setProperty(null);
+                      chooseCommunity(code);
                       setLayer('overview');
                     }}
                   >
@@ -1495,7 +1496,14 @@ export default function Home() {
               className={`map-legend glass ${Object.values(transitLayers).some(Boolean) ? 'has-transit-legend' : ''}`}
             >
               {!(layer === 'nearby' && overlay === 'transit') && (
-                <div className="primary-map-legend">
+                <div
+                  className="primary-map-legend"
+                  data-map-hint={
+                    layer === 'overview' ||
+                    layer === 'property' ||
+                    (layer === 'nearby' && overlay === 'none')
+                  }
+                >
                   <span className={`legend-dot ${layer}`} />
                   <span>
                     {layer === 'water'
@@ -1631,7 +1639,7 @@ export default function Home() {
                   onClick={() => setCompareOpen(true)}
                 >
                   <Columns3 size={16} />
-                  Compare selected ({compare.length})
+                  Open comparison ({compare.length})
                 </button>
               </div>
               <div className="saved-grid">
@@ -1766,7 +1774,13 @@ export default function Home() {
                       </span>
                       <span>
                         <strong>{communityLabel(c)}</strong>
-                        <small>{titleCase(c.sector)} planning sector</small>
+                        <small>
+                          {c.class === 'Quadrant'
+                            ? 'City quadrant'
+                            : c.sector
+                              ? `${titleCase(c.sector)} planning sector`
+                              : titleCase(c.class)}
+                        </small>
                       </span>
                       {CORE.includes(c.comm_code) && (
                         <span className="search-coverage">

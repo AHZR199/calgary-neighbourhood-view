@@ -182,8 +182,8 @@ export const money = (n: number, digits = 0) =>
 export const compactMoney = (n: number) =>
   n >= 1e6 ? `$${(n / 1e6).toFixed(2)}m` : `$${Math.round(n / 1000)}k`;
 export const number = (n: number) => new Intl.NumberFormat('en-CA').format(n);
-export const titleCase = (s: string) =>
-  s
+export const titleCase = (s: string | null | undefined) =>
+  (s ?? '')
     .toLowerCase()
     .replace(/(^|[\s/-])\S/g, (c) => c.toUpperCase())
     .replace(/\b(Nw|Ne|Sw|Se)\b/g, (c) => c.toUpperCase())
@@ -253,7 +253,16 @@ export async function loadAtlas(): Promise<AtlasData> {
   return {
     communities: {
       ...communities,
-      features: [...communities.features, ...quadrants.features],
+      features: [...communities.features, ...quadrants.features].map(
+        (feature) => ({
+          ...feature,
+          properties: {
+            ...feature.properties,
+            // some park boundaries have no planning sector in the City data
+            sector: feature.properties.sector ?? '',
+          },
+        }),
+      ),
     },
     properties: properties.map((property) => {
       const construction = summarizeConstruction(

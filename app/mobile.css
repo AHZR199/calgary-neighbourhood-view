@@ -447,14 +447,21 @@
     padding: 0;
   }
   .atlas-app.details-preview .map-legend {
-    bottom: calc(var(--mobile-nav) + min(420px, 42dvh) + 58px);
-    max-width: calc(100% - 24px);
+    bottom: calc(var(--mobile-nav) + min(420px, 42dvh) + 12px);
+    max-width: calc(100% - 60px);
     max-height: 72px;
     overflow: auto;
     pointer-events: auto;
   }
   .atlas-app.details-preview .map-legend:not(.has-transit-legend) {
     display: none;
+  }
+  .atlas-app.details-preview .primary-map-legend[data-map-hint='true'],
+  .atlas-app.details-preview .transit-map-legend[data-status='ready'] > small {
+    display: none;
+  }
+  .atlas-app.details-preview .transit-legend-items {
+    gap: 4px 10px;
   }
   .atlas-app.details-preview .maplibregl-ctrl-bottom-right {
     bottom: calc(var(--mobile-nav) + min(420px, 42dvh) + 12px);
@@ -752,8 +759,9 @@
     display: block;
   }
   .atlas-app.details-preview .map-legend {
-    bottom: calc(var(--mobile-nav) + 58px);
-    max-width: calc(100vw - min(44vw, 340px) - 44px);
+    bottom: calc(var(--mobile-nav) + 12px);
+    left: 44px;
+    max-width: calc(100vw - min(44vw, 340px) - 76px);
   }
   .atlas-app.details-preview .maplibregl-ctrl-bottom-right {
     bottom: calc(var(--mobile-nav) + 4px);

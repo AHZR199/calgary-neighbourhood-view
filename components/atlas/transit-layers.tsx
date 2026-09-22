@@ -109,7 +109,11 @@ export function TransitLegend({
   status: TransitMapStatus;
 }) {
   return (
-    <div className="transit-map-legend" aria-label="Transit map legend">
+    <div
+      className="transit-map-legend"
+      aria-label="Transit map legend"
+      data-status={status}
+    >
       <div className="transit-legend-items">
         {layers.train && (
           <>

@@ -182,13 +182,6 @@ export function NearbyPanel({
         {section === 'gettingAround' && (
           <>
             <section>
-              <div className="section-line">
-                <h3>Transit on the map</h3>
-              </div>
-              <p className="quiet-note">
-                Turn routes and stations on individually. These overlays stay
-                visible when you explore other data layers.
-              </p>
               <TransitLayerChoices
                 layers={transitLayers}
                 status={transitStatus}

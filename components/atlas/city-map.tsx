@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as ml from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { RefreshCw } from 'lucide-react';
 import type { AtlasData, Community, Layer, Property } from '@/lib/atlas/data';
 import { isLandmarkKey, type LandmarkKey } from '@/lib/atlas/landmarks';
 import { buildingLookupPoint } from '@/lib/atlas/map-selection';
+import { fitPlaceBounds } from '@/lib/atlas/map-camera';
 import './map-property.css';
 import {
   MapPropertyDialog,
@@ -36,6 +37,7 @@ interface Props {
   layer: Layer;
   is3d: boolean;
   action: { type: string; id: number };
+  selectionRevision: number;
   onCommunity: (code: string) => void;
   onProperty: (roll: string) => void;
   onPropertyRecord: (property: Property) => void;
@@ -111,18 +113,21 @@ function mobileMapPadding(
       ? 56
       : 62;
   const preview = detailsMode === 'preview';
+  const legend = app?.querySelector('.map-legend.has-transit-legend');
+  const legendSpace =
+    preview && legend ? Math.ceil(legend.getBoundingClientRect().height) : 0;
   //use the target sheet dimensions, not its height while it is animating.
   if (short && preview)
     return {
       top: safeTop + 110,
-      bottom: navHeight + 20,
+      bottom: navHeight + 20 + legendSpace,
       left: 24,
       right: Math.min(width * 0.44, 340) + 28,
     };
   if (preview)
     return {
       top: safeTop + 118,
-      bottom: navHeight + Math.min(420, height * 0.42) + 26,
+      bottom: navHeight + Math.min(420, height * 0.42) + 26 + legendSpace,
       left: 24,
       right: 24,
     };
@@ -185,9 +190,10 @@ function focusSelectedPlace(
 ) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const padding = placeCameraPadding(map, { ...selection, landmark: null });
-  const orientation = resetOrientation
-    ? { bearing: -24, pitch: selection.is3d ? 57 : 0 }
-    : {};
+  const orientation = {
+    pitch: selection.is3d ? 57 : 0,
+    ...(resetOrientation ? { bearing: -24 } : {}),
+  };
   if (selection.property)
     map.flyTo({
       ...orientation,
@@ -197,9 +203,8 @@ function focusSelectedPlace(
       duration: reduced || !animate ? 0 : 1400,
     });
   else if (selection.community)
-    map.fitBounds(selection.community.bounds, {
+    fitPlaceBounds(map, selection.community.bounds, padding, {
       ...orientation,
-      padding,
       maxZoom: 14.7,
       duration: reduced || !animate ? 0 : 1300,
     });
@@ -239,6 +244,7 @@ function fitGreenLineRoute(
   map: ml.Map,
   data: FeatureCollection,
   detailsMode: Props['detailsMode'],
+  animate = true,
 ) {
   const bounds = new ml.LngLatBounds();
   for (const feature of data.features) {
@@ -256,18 +262,25 @@ function fitGreenLineRoute(
   }
   if (bounds.isEmpty()) return;
   const desktop = !compactMap(map);
-  map.fitBounds(bounds, {
-    padding: cameraPadding(
+  fitPlaceBounds(
+    map,
+    bounds,
+    cameraPadding(
       map,
       desktop
         ? { top: 100, bottom: 140, left: 35, right: 410 }
         : mobileMapPadding(map, detailsMode),
       detailsMode === 'preview',
     ),
-    bearing: 0,
-    maxZoom: 13,
-    duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900,
-  });
+    {
+      bearing: 0,
+      maxZoom: 13,
+      duration:
+        !animate || matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 0
+          : 900,
+    },
+  );
 }
 
 export default function CityMap(props: Props) {
@@ -278,6 +291,9 @@ export default function CityMap(props: Props) {
   const container = useRef<HTMLDivElement>(null),
     map = useRef<ml.Map | null>(null),
     cameraInitialized = useRef(false),
+    framedPitch = useRef<boolean | null>(null),
+    cancelPaddingUpdate = useRef<(() => void) | null>(null),
+    pendingReframe = useRef(false),
     attributionPresented = useRef(false),
     framedDetailsMode = useRef<Props['detailsMode'] | null>(null),
     current = useRef(props),
@@ -287,6 +303,101 @@ export default function CityMap(props: Props) {
   useEffect(() => {
     current.current = props;
   });
+  const requestPaddingUpdate = useCallback(
+    (m: ml.Map, animate = true, reframe = false) => {
+      pendingReframe.current ||= reframe;
+      cancelPaddingUpdate.current?.();
+      let frame = 0;
+      let cancelled = false;
+      const detach = () => {
+        cancelAnimationFrame(frame);
+        m.off('moveend', afterMove);
+      };
+      const cancel = () => {
+        cancelled = true;
+        detach();
+        if (cancelPaddingUpdate.current === cancel)
+          cancelPaddingUpdate.current = null;
+      };
+      const apply = () => {
+        if (cancelled || map.current !== m) return;
+        detach();
+        if (m.isMoving()) {
+          m.on('moveend', afterMove);
+          return;
+        }
+        const selection = current.current;
+        if (
+          !selection.active ||
+          (compactMap(m) && selection.detailsMode === 'full')
+        ) {
+          framedDetailsMode.current = null;
+          cancel();
+          return;
+        }
+        framedDetailsMode.current = selection.detailsMode;
+        if (!pendingReframe.current) {
+          cancel();
+          updateCameraPadding(m, selection, animate);
+          return;
+        }
+        if (selection.landmark) {
+          const key = selection.landmark;
+          void import('./calgary-landmarks')
+            .then(({ LANDMARKS }) => {
+              if (cancelled || map.current !== m) return;
+              if (
+                m.isMoving() ||
+                current.current.landmark !== key ||
+                !current.current.active ||
+                (compactMap(m) && current.current.detailsMode === 'full')
+              ) {
+                apply();
+                return;
+              }
+              pendingReframe.current = false;
+              cancel();
+              focusLandmark(
+                m,
+                key,
+                LANDMARKS[key],
+                current.current.detailsMode,
+                false,
+              );
+            })
+            .catch(() => {
+              if (cancelled || map.current !== m) return;
+              cancel();
+            });
+          return;
+        }
+        pendingReframe.current = false;
+        cancel();
+        if (
+          selection.action.type === 'greenLine' &&
+          selection.transitLayers.greenLine &&
+          GREEN_LINE_MAP_AVAILABLE
+        ) {
+          const route = transitCache.current.get('green-line');
+          if (route) fitGreenLineRoute(m, route, selection.detailsMode, false);
+          else updateCameraPadding(m, selection, false);
+        } else {
+          framedPitch.current = selection.is3d;
+          focusSelectedPlace(m, selection, false, false);
+        }
+      };
+      function afterMove() {
+        cancelAnimationFrame(frame);
+        //a replacement flight can start during moveend; let it keep its destination.
+        frame = requestAnimationFrame(() => {
+          if (!m.isMoving()) apply();
+        });
+      }
+      cancelPaddingUpdate.current = cancel;
+      apply();
+    },
+    [],
+  );
   const [propertyChoices, setPropertyChoices] =
     useState<MapPropertyChoices | null>(null);
   const [ready, setReady] = useState(false),
@@ -296,6 +407,8 @@ export default function CityMap(props: Props) {
     if (!container.current) return;
     loadedSources.current.clear();
     cameraInitialized.current = false;
+    framedPitch.current = null;
+    pendingReframe.current = false;
     framedDetailsMode.current = null;
     let disposed = false;
     let m: ml.Map | undefined;
@@ -1276,34 +1389,7 @@ export default function CityMap(props: Props) {
             previousHeight = height;
             previousCompact = compactMap(m);
             m.resize();
-            if (
-              !current.current.active ||
-              (compactMap(m) && current.current.detailsMode === 'full')
-            ) {
-              framedDetailsMode.current = null;
-              return;
-            }
-            framedDetailsMode.current = current.current.detailsMode;
-            const key = current.current.landmark;
-            if (switchedLayout && key) {
-              void import('./calgary-landmarks').then(({ LANDMARKS }) => {
-                if (
-                  !m ||
-                  disposed ||
-                  current.current.landmark !== key ||
-                  !current.current.active ||
-                  (compactMap(m) && current.current.detailsMode === 'full')
-                )
-                  return;
-                focusLandmark(
-                  m,
-                  key,
-                  LANDMARKS[key],
-                  current.current.detailsMode,
-                  false,
-                );
-              });
-            } else updateCameraPadding(m, current.current, false);
+            requestPaddingUpdate(m, false, switchedLayout);
           });
           observer.observe(m.getContainer());
           m.once('remove', () => observer.disconnect());
@@ -1319,11 +1405,13 @@ export default function CityMap(props: Props) {
     return () => {
       disposed = true;
       propertyRequest.current?.abort();
+      cancelPaddingUpdate.current?.();
+      pendingReframe.current = false;
       setReady(false);
       m?.remove();
       map.current = null;
     };
-  }, [attempt]);
+  }, [attempt, requestPaddingUpdate]);
   useEffect(() => {
     propertyRequest.current?.abort();
     activePopup.current?.remove();
@@ -1334,6 +1422,7 @@ export default function CityMap(props: Props) {
     props.property?.rollNumber,
     props.layer,
     props.action.id,
+    props.selectionRevision,
     props.active,
   ]);
   useEffect(() => {
@@ -1465,15 +1554,30 @@ export default function CityMap(props: Props) {
   }, [ready, props.active, props.detailsMode]);
   useEffect(() => {
     const m = map.current;
-    if (!m || !ready || (!props.property && !props.community)) return;
+    if (
+      !m ||
+      !ready ||
+      (!current.current.property && !current.current.community)
+    )
+      return;
     const initialized = cameraInitialized.current;
     cameraInitialized.current = true;
     framedDetailsMode.current = current.current.detailsMode;
+    framedPitch.current = current.current.is3d;
     focusSelectedPlace(m, current.current, false, initialized);
-  }, [props.community, props.property, ready]);
+  }, [
+    props.community?.comm_code,
+    props.property?.rollNumber,
+    props.selectionRevision,
+    ready,
+  ]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready || !props.active) return;
+    if (pendingReframe.current) {
+      requestPaddingUpdate(m, false);
+      return;
+    }
     if (!compactMap(m)) {
       framedDetailsMode.current = props.detailsMode;
       return;
@@ -1483,10 +1587,14 @@ export default function CityMap(props: Props) {
       framedDetailsMode.current === props.detailsMode
     )
       return;
-    framedDetailsMode.current = props.detailsMode;
-    //a new selection already flies to this padding; do not interrupt that flight.
-    updateCameraPadding(m, current.current);
-  }, [props.detailsMode, props.active, ready]);
+    //a card change must not cancel a flight or a pan that is still in progress.
+    requestPaddingUpdate(m);
+  }, [props.detailsMode, props.active, ready, requestPaddingUpdate]);
+  useEffect(() => {
+    const m = map.current;
+    if (m && ready && current.current.active && compactMap(m))
+      requestPaddingUpdate(m);
+  }, [transitLayers, ready, requestPaddingUpdate]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready) return;
@@ -1736,13 +1844,34 @@ export default function CityMap(props: Props) {
     return () => controller.abort();
   }, [transitLayers, onTransitStatus, ready]);
   useEffect(() => {
-    if (!ready) return;
-    map.current?.easeTo({
-      pitch: props.is3d ? 57 : 0,
-      duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 0
-        : 700,
-    });
+    const m = map.current;
+    if (!m || !ready || framedPitch.current === props.is3d) return;
+    let frame = 0;
+    const cancel = () => {
+      cancelAnimationFrame(frame);
+      m.off('moveend', afterMove);
+    };
+    const apply = () => {
+      if (m.isMoving()) return;
+      cancel();
+      const is3d = current.current.is3d;
+      if (framedPitch.current === is3d) return;
+      framedPitch.current = is3d;
+      m.easeTo({
+        pitch: is3d ? 57 : 0,
+        duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 0
+          : 700,
+      });
+    };
+    function afterMove() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(apply);
+    }
+    //changing perspective should finish at the selected place, even mid-flight.
+    if (m.isMoving()) m.on('moveend', afterMove);
+    else apply();
+    return cancel;
   }, [props.is3d, ready]);
   useEffect(() => {
     const m = map.current;
@@ -1784,6 +1913,8 @@ export default function CityMap(props: Props) {
       void import('./calgary-landmarks')
         .then(({ LANDMARKS }) => {
           if (cancelled || map.current !== m || !current.current.active) return;
+          //the landmark flight owns this viewing angle, including queued 3d changes.
+          framedPitch.current = current.current.is3d;
           focusLandmark(m, type, LANDMARKS[type], current.current.detailsMode);
         })
         .catch(() => {});
